@@ -1,0 +1,61 @@
+name: Monthly Leaderboard Reset
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'  # midnight UTC on the 1st of every month
+  workflow_dispatch:       # allow manual trigger from GitHub Actions tab
+
+jobs:
+  reset-baseline:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Fetch current Botrix leaderboard
+        id: fetch
+        run: |
+          curl -s "https://botrix.live/api/public/leaderboard?platform=kick&user=FinBuck" \
+            -o /tmp/botrix_raw.json
+          echo "Fetched $(cat /tmp/botrix_raw.json | python3 -c 'import sys,json; print(len(json.load(sys.stdin)))') entries"
+
+      - name: Build new baseline.json
+        run: |
+          MONTH=$(date -u +"%B %Y")
+          SNAPSHOT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          python3 - <<'EOF'
+          import json, os, subprocess
+
+          with open('/tmp/botrix_raw.json') as f:
+              live = json.load(f)
+
+          month = subprocess.check_output(['date', '-u', '+%B %Y']).decode().strip()
+          snapshot = subprocess.check_output(['date', '-u', '+%Y-%m-%dT%H:%M:%SZ']).decode().strip()
+
+          baseline = {
+              "snapshotDate": snapshot,
+              "label": month,
+              "viewers": [
+                  {"name": e["name"], "watchtime": e["watchtime"]}
+                  for e in live
+              ]
+          }
+
+          with open('data/baseline.json', 'w') as f:
+              json.dump(baseline, f, indent=2)
+
+          print(f"Baseline written: {len(baseline['viewers'])} viewers, label: {month}")
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/baseline.json
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: reset leaderboard baseline for $(date -u +'%B %Y')"
+          git push

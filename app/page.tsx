@@ -79,7 +79,7 @@ export default function Home() {
           <div className="mb-4">
             <p className="text-gray-400 text-xs md:text-sm font-semibold uppercase tracking-[0.4em] mb-2">Welcome to</p>
             <h1 className="font-black uppercase tracking-tight leading-tight animated-gradient-text">
-              <span className="block text-6xl md:text-8xl">FinBuck&apos;s</span>
+              <span className="block text-6xl md:text-8xl">FinBucks</span>
               <span className="block text-4xl md:text-5xl">Rewards</span>
             </h1>
           </div>

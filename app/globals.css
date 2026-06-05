@@ -81,24 +81,27 @@ body {
 }
 
 .podium-gold {
+  filter: drop-shadow(0 0 10px rgba(255,215,0,0.5)) drop-shadow(0 0 25px rgba(255,215,0,0.25));
   transition: filter 0.3s ease, transform 0.2s ease;
 }
 .podium-gold:hover {
-  filter: drop-shadow(0 0 16px rgba(255,215,0,0.8)) drop-shadow(0 0 40px rgba(255,215,0,0.4));
+  filter: drop-shadow(0 0 20px rgba(255,215,0,1)) drop-shadow(0 0 50px rgba(255,215,0,0.6)) drop-shadow(0 0 80px rgba(255,215,0,0.3));
   transform: translateY(-4px);
 }
 .podium-silver {
+  filter: drop-shadow(0 0 12px rgba(220,220,220,0.65)) drop-shadow(0 0 30px rgba(200,200,200,0.3));
   transition: filter 0.3s ease, transform 0.2s ease;
 }
 .podium-silver:hover {
-  filter: drop-shadow(0 0 16px rgba(200,200,200,0.7)) drop-shadow(0 0 40px rgba(200,200,200,0.3));
+  filter: drop-shadow(0 0 22px rgba(240,240,240,1)) drop-shadow(0 0 55px rgba(200,200,200,0.6)) drop-shadow(0 0 90px rgba(200,200,200,0.3));
   transform: translateY(-4px);
 }
 .podium-bronze {
+  filter: drop-shadow(0 0 12px rgba(205,127,50,0.65)) drop-shadow(0 0 30px rgba(205,127,50,0.3));
   transition: filter 0.3s ease, transform 0.2s ease;
 }
 .podium-bronze:hover {
-  filter: drop-shadow(0 0 16px rgba(205,127,50,0.8)) drop-shadow(0 0 40px rgba(205,127,50,0.4));
+  filter: drop-shadow(0 0 22px rgba(205,127,50,1)) drop-shadow(0 0 55px rgba(205,127,50,0.65)) drop-shadow(0 0 90px rgba(205,127,50,0.35));
   transform: translateY(-4px);
 }
 

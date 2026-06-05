@@ -16,46 +16,86 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Fetch current Botrix leaderboard
-        id: fetch
         run: |
           curl -s "https://botrix.live/api/public/leaderboard?platform=kick&user=FinBuck" \
             -o /tmp/botrix_raw.json
           echo "Fetched $(cat /tmp/botrix_raw.json | python3 -c 'import sys,json; print(len(json.load(sys.stdin)))') entries"
 
-      - name: Build new baseline.json
+      - name: Save month history then build new baseline
         run: |
-          MONTH=$(date -u +"%B %Y")
-          SNAPSHOT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          mkdir -p data/history
 
           python3 - <<'EOF'
-          import json, os, subprocess
+          import json, os
+          from datetime import datetime, timezone
 
           with open('/tmp/botrix_raw.json') as f:
               live = json.load(f)
 
-          month = subprocess.check_output(['date', '-u', '+%B %Y']).decode().strip()
-          snapshot = subprocess.check_output(['date', '-u', '+%Y-%m-%dT%H:%M:%SZ']).decode().strip()
+          # --- Save history for the month that just ended ---
+          try:
+              with open('data/baseline.json') as f:
+                  baseline = json.load(f)
 
-          baseline = {
-              "snapshotDate": snapshot,
-              "label": month,
-              "viewers": [
-                  {"name": e["name"], "watchtime": e["watchtime"]}
-                  for e in live
-              ]
+              baseline_map = {v['name'].lower(): v['watchtime'] for v in baseline.get('viewers', [])}
+              entries = []
+              for e in live:
+                  key = e['name'].lower()
+                  # Skip viewers who weren't in the baseline snapshot — the Botrix API
+                  # only returns the top 100, so a viewer without a baseline would have
+                  # their full all-time watch time counted, wrongly inflating them.
+                  if key not in baseline_map:
+                      continue
+                  delta = max(0, e['watchtime'] - baseline_map[key])
+                  if delta > 0:
+                      entries.append({'name': e['name'], 'delta': delta})
+              entries.sort(key=lambda x: x['delta'], reverse=True)
+
+              # Month key for the month that just ended (action runs on the 1st)
+              now = datetime.now(timezone.utc)
+              if now.month == 1:
+                  prev_year, prev_month = now.year - 1, 12
+              else:
+                  prev_year, prev_month = now.year, now.month - 1
+
+              month_key = f"{prev_year}-{prev_month:02d}"
+              month_label = datetime(prev_year, prev_month, 1).strftime('%B %Y')
+
+              history_entry = {
+                  'month': month_label,
+                  'monthKey': month_key,
+                  'entries': entries,
+              }
+
+              with open(f"data/history/{month_key}.json", 'w') as f:
+                  json.dump(history_entry, f, indent=2)
+
+              print(f"History saved: data/history/{month_key}.json ({len(entries)} entries for {month_label})")
+
+          except Exception as ex:
+              print(f"Could not save history (first run?): {ex}")
+
+          # --- Write new baseline for the current month ---
+          snapshot = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          month_label_new = datetime.now(timezone.utc).strftime('%B %Y')
+
+          new_baseline = {
+              'snapshotDate': snapshot,
+              'label': month_label_new,
+              'viewers': [{'name': e['name'], 'watchtime': e['watchtime']} for e in live],
           }
 
           with open('data/baseline.json', 'w') as f:
-              json.dump(baseline, f, indent=2)
+              json.dump(new_baseline, f, indent=2)
 
-          print(f"Baseline written: {len(baseline['viewers'])} viewers, label: {month}")
+          print(f"Baseline written: {len(new_baseline['viewers'])} viewers, label: {month_label_new}")
           EOF
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/baseline.json
+          git add data/baseline.json data/history/
           git diff --staged --quiet && echo "No changes to commit" && exit 0
-          git commit -m "chore: reset leaderboard baseline for $(date -u +'%B %Y')"
+          git commit -m "chore: archive previous month results and reset baseline for $(date -u +'%B %Y')"
           git push

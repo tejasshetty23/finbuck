@@ -101,7 +101,13 @@ async function getLeaderboard(preview = false, month?: string): Promise<DisplayE
       (baselineData.viewers as BaselineEntry[]).map((v) => [v.name.toLowerCase(), v.watchtime])
     )
 
+    // The Botrix API only returns the top 100 viewers. Anyone who wasn't in the
+    // snapshot at reset time has no baseline, so we can't compute a real monthly
+    // delta for them — subtracting from 0 would show their full all-time watch
+    // time and wrongly rocket them to the top. Skip viewers without a baseline;
+    // they get captured in the next monthly snapshot.
     return live
+      .filter((e) => baselineMap.has(e.name.toLowerCase()))
       .map((e) => ({
         name: e.name,
         delta: Math.max(0, e.watchtime - (baselineMap.get(e.name.toLowerCase()) ?? 0)),

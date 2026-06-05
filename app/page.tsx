@@ -79,8 +79,8 @@ export default function Home() {
           <div className="mb-4">
             <p className="text-gray-400 text-xs md:text-sm font-semibold uppercase tracking-[0.4em] mb-2">Welcome to</p>
             <h1 className="font-black uppercase tracking-tight leading-tight animated-gradient-text">
-              <span className="block text-6xl md:text-8xl">FinBucks</span>
-              <span className="block text-4xl md:text-5xl">Rewards</span>
+              <span className="block text-5xl sm:text-6xl md:text-8xl">FinBucks</span>
+              <span className="block text-3xl sm:text-4xl md:text-5xl">Rewards</span>
             </h1>
           </div>
 
@@ -287,7 +287,7 @@ export default function Home() {
       {/* ── LEADERBOARD CTA ── */}
       <section className="py-20 px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="relative rounded-3xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-[#100d1f] to-[#07050f] p-12">
+          <div className="relative rounded-3xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-[#100d1f] to-[#07050f] p-7 sm:p-12">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
             <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl" />
 

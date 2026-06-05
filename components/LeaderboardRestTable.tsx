@@ -33,30 +33,30 @@ export default function LeaderboardRestTable({ entries }: { entries: Entry[] }) 
         <table className="w-full">
           <thead>
             <tr className="bg-[#0d0a1a] border-b border-purple-900/30">
-              <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-widest px-6 py-4 w-16">Rank</th>
-              <th className="text-left text-xs font-bold text-gray-500 uppercase tracking-widest px-4 py-4">Name</th>
-              <th className="text-right text-xs font-bold text-gray-500 uppercase tracking-widest px-4 py-4">Watch Time</th>
-              <th className="text-right text-xs font-bold text-gray-500 uppercase tracking-widest px-6 py-4">Reward</th>
+              <th className="text-left text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider sm:tracking-widest px-3 sm:px-6 py-3 sm:py-4 w-10 sm:w-16">Rank</th>
+              <th className="text-left text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider sm:tracking-widest px-2 sm:px-4 py-3 sm:py-4">Name</th>
+              <th className="text-right text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider sm:tracking-widest px-2 sm:px-4 py-3 sm:py-4">Watch Time</th>
+              <th className="text-right text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider sm:tracking-widest px-3 sm:px-6 py-3 sm:py-4">Reward</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((entry, i) => (
               <tr key={entry ? entry.name : `placeholder-${i}`} className="border-b border-purple-900/20 transition-all duration-200 hover:bg-[#00ff87]/5 hover:shadow-[inset_3px_0_0_#00ff87]">
-                <td className="px-6 py-4 text-gray-500 font-bold text-sm">#{i + 4}</td>
-                <td className="px-4 py-4 text-sm" style={{ opacity: entry ? 1 : 0.35 }}>
+                <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-500 font-bold text-xs sm:text-sm">#{i + 4}</td>
+                <td className="px-2 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm" style={{ opacity: entry ? 1 : 0.35 }}>
                   {entry
-                    ? <span className="text-white font-semibold">{entry.name}</span>
-                    : <span className="inline-block h-3.5 w-28 rounded-full bg-purple-900/40" />
+                    ? <span className="text-white font-semibold break-words">{entry.name}</span>
+                    : <span className="inline-block h-3.5 w-20 sm:w-28 rounded-full bg-purple-900/40" />
                   }
                 </td>
-                <td className="px-4 py-4 text-right text-sm" style={{ opacity: entry ? 1 : 0.35 }}>
+                <td className="px-2 sm:px-4 py-3 sm:py-4 text-right text-xs sm:text-sm whitespace-nowrap" style={{ opacity: entry ? 1 : 0.35 }}>
                   {entry
                     ? <span className="text-[#00ff87] font-bold">{formatWatchtime(entry.delta)}</span>
                     : <span className="inline-block h-3.5 w-12 rounded-full bg-purple-900/40" />
                   }
                 </td>
-                <td className="px-6 py-4 text-right">
-                  {i < 7 && <span className="text-[#00ff87] font-black text-sm">$10</span>}
+                <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
+                  {i < 7 && <span className="text-[#00ff87] font-black text-xs sm:text-sm">$10</span>}
                 </td>
               </tr>
             ))}

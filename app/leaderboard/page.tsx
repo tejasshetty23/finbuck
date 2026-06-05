@@ -153,26 +153,26 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
   return (
     <div>
       {/* Top 3 podium */}
-      <div className="grid grid-cols-3 gap-4 mb-10 items-end px-2">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-10 items-end px-0 sm:px-2">
         {podiumOrder.map((entry, i) => {
           const rank = podiumRanks[i]
           const cfg = frameConfig[rank]
           const isFirst = rank === 1
-          const cardH = isFirst ? 340 : 315
+          const cardH = isFirst ? 'clamp(230px, 58vw, 340px)' : 'clamp(210px, 53vw, 315px)'
           const isEmpty = !entry
 
           return (
             <div
               key={isEmpty ? `empty-${rank}` : entry!.name}
               className={`relative flex flex-col items-center ${rank === 1 ? 'podium-gold' : rank === 2 ? 'podium-silver' : 'podium-bronze'}`}
-              style={{ marginTop: isFirst ? 0 : '30px' }}
+              style={{ marginTop: isFirst ? 0 : 'clamp(16px, 5vw, 30px)' }}
             >
               {/* Shield badge */}
               <div className="relative z-20 flex flex-col items-center" style={{ marginBottom: '-2px' }}>
                 <div
                   className="flex items-center justify-center"
                   style={{
-                    width: '52px', height: '58px',
+                    width: 'clamp(38px, 11vw, 52px)', height: 'clamp(42px, 12vw, 58px)',
                     clipPath: 'polygon(12% 0%, 88% 0%, 100% 12%, 100% 68%, 50% 100%, 0% 68%, 0% 12%)',
                     background: cfg.shieldBg,
                     boxShadow: `0 0 20px ${cfg.glow}`,
@@ -181,12 +181,12 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
                   <div
                     className="flex items-center justify-center"
                     style={{
-                      width: '40px', height: '46px',
+                      width: 'clamp(29px, 8.5vw, 40px)', height: 'clamp(33px, 9.7vw, 46px)',
                       clipPath: 'polygon(12% 0%, 88% 0%, 100% 12%, 100% 68%, 50% 100%, 0% 68%, 0% 12%)',
                       background: '#111',
                     }}
                   >
-                    <span className="font-black text-xl" style={{ color: cfg.accent }}>{rank}</span>
+                    <span className="font-black text-base sm:text-xl" style={{ color: cfg.accent }}>{rank}</span>
                   </div>
                 </div>
               </div>
@@ -203,7 +203,7 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
               >
                 {/* Frame: inner black bg — absolutely positioned to reliably cover the border gradient */}
                 <div
-                  className="flex flex-col items-center justify-evenly px-3 py-8"
+                  className="flex flex-col items-center justify-evenly px-1.5 sm:px-3 py-5 sm:py-8"
                   style={{
                     position: 'absolute',
                     top: '6px', left: '6px', right: '6px', bottom: '6px',
@@ -213,37 +213,37 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
                   }}
                 >
                   {/* Corner marks */}
-                  <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: cfg.accent }} />
-                  <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: cfg.accent }} />
-                  <div className="absolute bottom-7 left-4 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: cfg.accent }} />
-                  <div className="absolute bottom-7 right-4 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: cfg.accent }} />
+                  <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-l-2" style={{ borderColor: cfg.accent }} />
+                  <div className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-r-2" style={{ borderColor: cfg.accent }} />
+                  <div className="absolute bottom-5 left-2.5 sm:bottom-7 sm:left-4 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-l-2" style={{ borderColor: cfg.accent }} />
+                  <div className="absolute bottom-5 right-2.5 sm:bottom-7 sm:right-4 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-r-2" style={{ borderColor: cfg.accent }} />
 
                   {/* Name */}
-                  <div className="text-center">
+                  <div className="text-center w-full">
                     {isEmpty
-                      ? <div className="h-5 w-24 rounded-full mx-auto" style={{ background: `${cfg.accent}30` }} />
-                      : <p className="font-black text-white text-xl leading-tight break-all">{entry!.name}</p>
+                      ? <div className="h-4 sm:h-5 w-16 sm:w-24 rounded-full mx-auto" style={{ background: `${cfg.accent}30` }} />
+                      : <p className="font-black text-white text-sm sm:text-xl leading-tight break-words">{entry!.name}</p>
                     }
                   </div>
 
                   {/* Watch time */}
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-xs uppercase tracking-widest" style={{ color: cfg.accent }}>watch time</span>
+                  <div className="flex flex-col items-center gap-0.5 sm:gap-1">
+                    <span className="text-[9px] sm:text-xs uppercase tracking-wider sm:tracking-widest" style={{ color: cfg.accent }}>watch time</span>
                     {isEmpty
-                      ? <div className="h-7 w-16 rounded-full mt-1" style={{ background: `${cfg.accent}25` }} />
-                      : <span className="font-black text-2xl" style={{ color: '#00ff87', textShadow: '0 0 10px rgba(0,255,135,0.5)' }}>{formatWatchtime(entry!.delta)}</span>
+                      ? <div className="h-6 sm:h-7 w-12 sm:w-16 rounded-full mt-1" style={{ background: `${cfg.accent}25` }} />
+                      : <span className="font-black text-base sm:text-2xl text-center leading-tight" style={{ color: '#00ff87', textShadow: '0 0 10px rgba(0,255,135,0.5)' }}>{formatWatchtime(entry!.delta)}</span>
                     }
                   </div>
 
                   {/* Reward */}
                   <div
-                    className="flex flex-col items-center gap-0.5 px-4 py-2 rounded-xl"
+                    className="flex flex-col items-center gap-0.5 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl"
                     style={{ background: cfg.glow.replace('0.5', '0.15').replace('0.35', '0.15').replace('0.4', '0.15'), border: `1px solid ${cfg.accent}` }}
                   >
-                    <span className="text-2xl font-black" style={{ color: cfg.accent }}>
+                    <span className="text-lg sm:text-2xl font-black" style={{ color: cfg.accent }}>
                       {rank === 1 ? '$100' : rank === 2 ? '$50' : '$25'}
                     </span>
-                    <span className="text-[10px] uppercase tracking-widest" style={{ color: cfg.accent, opacity: 0.7 }}>reward</span>
+                    <span className="text-[8px] sm:text-[10px] uppercase tracking-wider sm:tracking-widest" style={{ color: cfg.accent, opacity: 0.7 }}>reward</span>
                   </div>
                 </div>
               </div>
@@ -288,7 +288,7 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
   const isPastMonthNoData = !isCurrentMonth && activeMonthObj && !activeMonthObj.hasData
 
   return (
-    <div className="min-h-screen pt-28 pb-20 px-6 relative">
+    <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 relative">
       <div className="fixed inset-0 -z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/background.png" alt="" className="w-full h-full object-cover object-center" style={{ filter: 'brightness(0.2) saturate(1.1)' }} />
@@ -304,7 +304,7 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
           <span className="text-purple-400 text-sm font-semibold tracking-widest uppercase">{activeLabel}</span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
           Watch Time<br />
           <span className="animated-gradient-text">Leaderboard</span>
         </h1>

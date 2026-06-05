@@ -198,7 +198,7 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
                   background: cfg.border,
                   clipPath: 'polygon(18px 0%, calc(100% - 18px) 0%, 100% 18px, 100% calc(100% - 22px), calc(100% - 14px) 100%, 14px 100%, 0% calc(100% - 22px), 0% 18px)',
                   padding: '6px',
-                  height: `${cardH}px`,
+                  height: cardH,
                 }}
               >
                 {/* Frame: inner black bg — absolutely positioned to reliably cover the border gradient */}

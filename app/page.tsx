@@ -207,7 +207,7 @@ export default function Home() {
 
             {/* CTA button */}
             <a
-              href="https://stake.com/?c=GEMZZ"
+              href="https://stake.com/?c=Gemzzstream"
               target="_blank"
               rel="noopener noreferrer sponsored"
               className="w-full flex items-center justify-center gap-2 text-black font-black py-4 uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(0,255,135,0.3)] hover:shadow-[0_0_40px_rgba(0,255,135,0.5)]"

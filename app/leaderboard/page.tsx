@@ -62,6 +62,37 @@ function generateMonthList(): MonthOption[] {
   return months
 }
 
+interface PreviousWinners {
+  label: string
+  top3: DisplayEntry[]
+}
+
+// Find the most recent completed month (any history file that isn't the current
+// month) and return its top 3 finishers.
+function getPreviousWinners(): PreviousWinners | null {
+  const historyDir = path.join(process.cwd(), 'data', 'history')
+  if (!fs.existsSync(historyDir)) return null
+  const currentKey = getCurrentMonthKey()
+
+  const keys = fs
+    .readdirSync(historyDir)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => f.replace('.json', ''))
+    .filter((k) => k !== currentKey)
+    .sort((a, b) => b.localeCompare(a))
+
+  if (!keys.length) return null
+
+  try {
+    const raw = JSON.parse(fs.readFileSync(path.join(historyDir, `${keys[0]}.json`), 'utf8'))
+    const entries = (raw.entries ?? []) as DisplayEntry[]
+    if (!entries.length) return null
+    return { label: raw.month ?? keys[0], top3: entries.slice(0, 3) }
+  } catch {
+    return null
+  }
+}
+
 async function getLeaderboard(month?: string): Promise<DisplayEntry[]> {
   const currentKey = getCurrentMonthKey()
   const isCurrentMonth = !month || month === currentKey
@@ -271,6 +302,7 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
   const activeLabel = activeMonthObj?.label ?? allMonths[0]?.label ?? ''
   const isCurrentMonth = !selectedMonth || selectedMonth === currentKey
   const isPastMonthNoData = !isCurrentMonth && activeMonthObj && !activeMonthObj.hasData
+  const previousWinners = getPreviousWinners()
 
   return (
     <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 relative">
@@ -347,6 +379,52 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
           </span>
         </a>
       </div>
+
+      {/* Previous month's winners */}
+      {previousWinners && (
+        <div className="max-w-4xl mx-auto mt-12">
+          <div className="text-center mb-6">
+            <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-white">
+              Previous Month&apos;s Winners
+            </h3>
+            <p className="text-purple-400 text-xs sm:text-sm uppercase tracking-widest mt-1">{previousWinners.label}</p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+            {[
+              { rank: 1, accent: '#FFD700', glow: 'rgba(255,215,0,0.4)', medal: '🥇' },
+              { rank: 2, accent: '#C8C8C8', glow: 'rgba(200,200,200,0.3)', medal: '🥈' },
+              { rank: 3, accent: '#CD7F32', glow: 'rgba(205,127,50,0.35)', medal: '🥉' },
+            ].map(({ rank, accent, glow, medal }) => {
+              const winner = previousWinners.top3[rank - 1]
+              return (
+                <div
+                  key={rank}
+                  className="flex flex-col items-center text-center gap-2 rounded-2xl border p-4 sm:p-5"
+                  style={{
+                    borderColor: `${accent}55`,
+                    background: '#000000',
+                    boxShadow: `0 0 18px ${glow}`,
+                  }}
+                >
+                  <span className="text-2xl sm:text-3xl leading-none">{medal}</span>
+                  {winner ? (
+                    <>
+                      <p className="font-black text-white text-xs sm:text-base leading-tight break-words">{winner.name}</p>
+                      <p className="font-black text-sm sm:text-lg" style={{ color: '#00ff87' }}>{formatWatchtime(winner.delta)}</p>
+                    </>
+                  ) : (
+                    <p className="text-gray-600 text-xs">—</p>
+                  )}
+                  <span className="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold" style={{ color: accent }}>
+                    {rank === 1 ? '1st Place' : rank === 2 ? '2nd Place' : '3rd Place'}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

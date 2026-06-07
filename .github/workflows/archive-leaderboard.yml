@@ -1,0 +1,73 @@
+name: Archive Leaderboard
+
+# Botrix Premium now serves a real monthly leaderboard that resets itself, so the
+# live site just mirrors the API. Botrix's public API only exposes the CURRENT
+# interval though — past months would be lost. This job snapshots the current
+# month's standings daily into data/history/<YYYY-MM>.json so the month dropdown
+# keeps a permanent record. Each day overwrites the current month's file; once the
+# month rolls over, that file naturally becomes the final record for that month.
+
+on:
+  schedule:
+    - cron: '40 23 * * *'  # daily at 23:40 UTC (near end of day, before any month flip)
+  workflow_dispatch:        # allow manual trigger from the Actions tab
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Fetch current Botrix leaderboard
+        run: |
+          curl -s "https://botrix.live/api/public/leaderboard?platform=kick&user=FinBuck" \
+            -o /tmp/botrix_raw.json
+          echo "Fetched $(cat /tmp/botrix_raw.json | python3 -c 'import sys,json; print(len(json.load(sys.stdin)))') entries"
+
+      - name: Write current month snapshot
+        run: |
+          mkdir -p data/history
+
+          python3 - <<'EOF'
+          import json
+          from datetime import datetime, timezone
+
+          with open('/tmp/botrix_raw.json') as f:
+              live = json.load(f)
+
+          # watchtime is already this month's total (Botrix monthly interval)
+          entries = [
+              {'name': e['name'], 'delta': e['watchtime']}
+              for e in live if e.get('watchtime', 0) > 0
+          ]
+          entries.sort(key=lambda x: x['delta'], reverse=True)
+
+          now = datetime.now(timezone.utc)
+          month_key = now.strftime('%Y-%m')
+          month_label = now.strftime('%B %Y')
+
+          record = {
+              'month': month_label,
+              'monthKey': month_key,
+              'updatedAt': now.strftime('%Y-%m-%dT%H:%M:%SZ'),
+              'entries': entries,
+          }
+
+          with open(f"data/history/{month_key}.json", 'w') as f:
+              json.dump(record, f, indent=2)
+
+          print(f"Snapshot written: data/history/{month_key}.json ({len(entries)} entries for {month_label})")
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/history/
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: archive leaderboard snapshot for $(date -u +'%B %Y')"
+          git push

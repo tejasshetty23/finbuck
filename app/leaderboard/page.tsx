@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import fs from 'fs'
 import path from 'path'
-import baselineData from '@/data/baseline.json'
 import LeaderboardRestTable from '@/components/LeaderboardRestTable'
 import MonthSelector from '@/components/MonthSelector'
 
@@ -11,11 +10,6 @@ interface BotrixEntry {
   points: number
   level: number
   followage?: { date: string }
-}
-
-interface BaselineEntry {
-  name: string
-  watchtime: number
 }
 
 interface DisplayEntry {
@@ -68,7 +62,7 @@ function generateMonthList(): MonthOption[] {
   return months
 }
 
-async function getLeaderboard(preview = false, month?: string): Promise<DisplayEntry[]> {
+async function getLeaderboard(month?: string): Promise<DisplayEntry[]> {
   const currentKey = getCurrentMonthKey()
   const isCurrentMonth = !month || month === currentKey
 
@@ -84,34 +78,20 @@ async function getLeaderboard(preview = false, month?: string): Promise<DisplayE
     }
   }
 
-  // Current month — live Botrix API
+  // Current month — live Botrix API.
+  // Botrix Premium is set to a monthly leaderboard interval, so `watchtime` is
+  // already this month's total (resets automatically each month on Botrix's side).
+  // We just mirror it directly — no baseline/delta math needed.
   try {
     const res = await fetch(
       'https://botrix.live/api/public/leaderboard?platform=kick&user=FinBuck',
-      { next: { revalidate: 86400 } }
+      { next: { revalidate: 900 } }
     )
     if (!res.ok) return []
     const live: BotrixEntry[] = await res.json()
 
-    if (preview) {
-      return live.map((e) => ({ name: e.name, delta: e.watchtime }))
-    }
-
-    const baselineMap = new Map<string, number>(
-      (baselineData.viewers as BaselineEntry[]).map((v) => [v.name.toLowerCase(), v.watchtime])
-    )
-
-    // The Botrix API only returns the top 100 viewers. Anyone who wasn't in the
-    // snapshot at reset time has no baseline, so we can't compute a real monthly
-    // delta for them — subtracting from 0 would show their full all-time watch
-    // time and wrongly rocket them to the top. Skip viewers without a baseline;
-    // they get captured in the next monthly snapshot.
     return live
-      .filter((e) => baselineMap.has(e.name.toLowerCase()))
-      .map((e) => ({
-        name: e.name,
-        delta: Math.max(0, e.watchtime - (baselineMap.get(e.name.toLowerCase()) ?? 0)),
-      }))
+      .map((e) => ({ name: e.name, delta: e.watchtime }))
       .filter((e) => e.delta > 0)
       .sort((a, b) => b.delta - a.delta)
   } catch {
@@ -274,13 +254,12 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
   )
 }
 
-async function LeaderboardData({ preview, month }: { preview: boolean; month?: string }) {
-  const data = await getLeaderboard(preview, month)
+async function LeaderboardData({ month }: { month?: string }) {
+  const data = await getLeaderboard(month)
   return <LeaderboardTable data={data} />
 }
 
 export default function LeaderboardPage({ searchParams }: { searchParams: Record<string, string> }) {
-  const preview = searchParams?.preview === 'true'
   const selectedMonth = searchParams?.month ?? ''
   const currentKey = getCurrentMonthKey()
   const allMonths = generateMonthList()
@@ -315,9 +294,9 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
           <span className="animated-gradient-text">Leaderboard</span>
         </h1>
         <p className="text-gray-500 text-base max-w-md mx-auto mb-8">
-          Top viewers ranked by total watch time.<br />
+          Top viewers ranked by watch time this month.<br />
           {isCurrentMonth
-            ? <span className="text-gray-600 text-sm">Updated daily</span>
+            ? <span className="text-gray-600 text-sm">Updated live</span>
             : <span className="text-purple-400 text-sm">Viewing past results</span>
           }
         </p>
@@ -342,7 +321,7 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
               </div>
             }
           >
-            <LeaderboardData preview={preview} month={selectedMonth || undefined} />
+            <LeaderboardData month={selectedMonth || undefined} />
           </Suspense>
         )}
       </div>

@@ -129,3 +129,55 @@ body {
   animation: gradient-shift 12s ease infinite;
   filter: drop-shadow(0 0 40px rgba(0,255,135,0.4)) drop-shadow(0 0 80px rgba(0,180,70,0.2));
 }
+
+/* ── Tournament bracket ── */
+.bk-round {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  min-width: 168px;
+}
+.bk-match {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+/* outgoing horizontal stub from each match (not the final/champion column) */
+.bk-round:not(:last-child) .bk-match::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  width: 20px;
+  height: 2px;
+  background: rgba(0, 255, 135, 0.35);
+}
+/* vertical hooks joining each adjacent pair into their parent */
+.bk-round:not(:last-child) .bk-match:nth-child(odd)::before {
+  content: "";
+  position: absolute;
+  left: calc(100% + 20px);
+  top: 50%;
+  width: 2px;
+  height: 50%;
+  background: rgba(0, 255, 135, 0.35);
+}
+.bk-round:not(:last-child) .bk-match:nth-child(even)::before {
+  content: "";
+  position: absolute;
+  left: calc(100% + 20px);
+  bottom: 50%;
+  width: 2px;
+  height: 50%;
+  background: rgba(0, 255, 135, 0.35);
+}
+/* incoming stub into every match that isn't in the first column */
+.bk-in {
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  width: 20px;
+  height: 2px;
+  background: rgba(0, 255, 135, 0.35);
+}

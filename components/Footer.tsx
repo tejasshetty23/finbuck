@@ -13,6 +13,7 @@ export default function Footer() {
           <Link href="/" className="hover:text-[#00ff87] transition-colors">Home</Link>
           <Link href="/leaderboard" className="hover:text-[#00ff87] transition-colors">Leaderboard</Link>
           <Link href="/tournaments" className="hover:text-[#00ff87] transition-colors">Tournaments</Link>
+          <Link href="/wheelspin" className="hover:text-[#00ff87] transition-colors">Wheel Spin</Link>
           <a href="https://kick.com/finbuck" target="_blank" rel="noopener noreferrer" className="hover:text-[#00ff87] transition-colors">Watch Live</a>
         </div>
 

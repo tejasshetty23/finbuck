@@ -66,19 +66,16 @@ export default function WheelSpinPage() {
         </p>
       </div>
 
-      {/* Two wheels */}
+      {/* Control bar + two wheels side by side */}
       <div className="w-[90%] mx-auto">
-        <div className="flex flex-col gap-8 w-full">
-          {/* Step 1 — Subscriber wheel (live Kick chat) */}
-          <div className="rounded-2xl border border-purple-900/40 bg-[#0d0a1a]/40 p-6">
-            <LiveSubscriberWheel />
-          </div>
-
-          {/* Step 2 — Prize wheel + How to claim (mirrors Step 1) */}
-          <div className="relative rounded-2xl border border-[#00ff87]/20 bg-[#0d0a1a]/40 p-6">
-            <div className="flex flex-col md:flex-row-reverse gap-6 md:items-center">
-              {/* Right: prize wheel */}
-              <div className="md:flex-1 w-full flex items-center justify-center">
+        <LiveSubscriberWheel
+          prizeWheel={
+            <div className="relative rounded-2xl border border-[#00ff87]/20 bg-[#0d0a1a]/40 p-6">
+              <div className="mb-8 text-center">
+                <span className="inline-block text-sm font-black uppercase tracking-[0.3em] text-purple-400 mb-2">Step 2</span>
+                <h3 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase leading-tight"><span className="animated-gradient-text-purple">Prize Picker</span></h3>
+              </div>
+              <div className="w-full flex items-center justify-center">
                 <div className="w-full max-w-[460px]">
                   <SpinWheel
                     defaultItems={PRIZE_DEFAULTS}
@@ -90,61 +87,64 @@ export default function WheelSpinPage() {
                   />
                 </div>
               </div>
-
-              {/* Left: heading + how to claim */}
-              <div className="md:flex-1 w-full">
-                <div className="mb-8">
-                  <span className="inline-block text-sm font-black uppercase tracking-[0.3em] text-[#00ff87] mb-2">Step 2</span>
-                  <h3 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase text-white leading-tight">Prize Picker</h3>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  {CLAIM_STEPS.map((step, i, arr) => (
-                    <div key={step.n} className="contents">
-                      <div className="flex items-center gap-4 rounded-xl border border-purple-900/40 bg-[#07050f]/60 p-4">
-                        <div className="relative shrink-0">
-                          <div className="w-12 h-12 rounded-xl flex items-center justify-center text-[#00ff87] bg-[#00ff87]/10 border border-[#00ff87]/30">
-                            {step.icon}
-                          </div>
-                          <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-black flex items-center justify-center">
-                            {step.n}
-                          </span>
-                        </div>
-                        <div className="min-w-0">
-                          <h4 className="text-white font-black uppercase text-sm tracking-wide">{step.title}</h4>
-                          <p className="text-gray-500 text-xs leading-relaxed mt-1">{step.desc}</p>
-                        </div>
-                        {step.href && (
-                          <a
-                            href={step.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ml-auto shrink-0 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-[#00ff87] hover:underline"
-                          >
-                            Open Discord →
-                          </a>
-                        )}
-                      </div>
-
-                      {/* Arrow between steps */}
-                      {i < arr.length - 1 && (
-                        <div className="flex justify-center text-purple-500/60">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-5 h-5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
-          </div>
-        </div>
+          }
+        />
 
         <p className="text-center text-gray-600 text-xs mt-8">
-          Spin the subscriber wheel to pick a winner, then spin the prize wheel for their reward.
+          Spin the giveaway wheel to pick a winner, then spin the prize wheel for their reward.
         </p>
+
+        {/* How to claim — below the wheels */}
+        <div className="max-w-4xl mx-auto mt-20">
+          <div className="flex items-center gap-3 mb-8 justify-center">
+            <div className="h-px flex-1 max-w-[80px] bg-gradient-to-r from-transparent to-[#00ff87]/40" />
+            <span className="text-[#00ff87] text-xs font-bold uppercase tracking-[0.3em]">How to Claim</span>
+            <div className="h-px flex-1 max-w-[80px] bg-gradient-to-l from-transparent to-[#00ff87]/40" />
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-center text-white mb-12">
+            Claim Your <span className="animated-gradient-text">Reward</span>
+          </h2>
+
+          <div className="flex flex-col md:flex-row items-stretch justify-center gap-4 md:gap-2">
+            {CLAIM_STEPS.map((step, i, arr) => (
+              <div key={step.n} className="contents">
+                <div className="flex-1 rounded-2xl border border-purple-900/40 bg-[#0d0a1a]/50 p-6 text-center flex flex-col items-center">
+                  <div className="relative mb-4">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-[#00ff87] bg-[#00ff87]/10 border border-[#00ff87]/30">
+                      {step.icon}
+                    </div>
+                    <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-purple-600 text-white text-xs font-black flex items-center justify-center">
+                      {step.n}
+                    </span>
+                  </div>
+                  <h3 className="text-white font-black uppercase text-sm tracking-wide mb-2">{step.title}</h3>
+                  <p className="text-gray-500 text-xs leading-relaxed mb-4">{step.desc}</p>
+                  {step.href && (
+                    <a
+                      href={step.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-auto inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-[#00ff87] hover:underline"
+                    >
+                      Open Discord →
+                    </a>
+                  )}
+                </div>
+
+                {/* Arrow between steps */}
+                {i < arr.length - 1 && (
+                  <div className="flex items-center justify-center text-purple-500/60 shrink-0 md:px-1">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-6 h-6 rotate-90 md:rotate-0">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )

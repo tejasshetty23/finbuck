@@ -130,6 +130,16 @@ body {
   filter: drop-shadow(0 0 40px rgba(0,255,135,0.4)) drop-shadow(0 0 80px rgba(0,180,70,0.2));
 }
 
+.animated-gradient-text-purple {
+  background: linear-gradient(270deg, #a855f7, #c084fc, #e9d5ff, #c084fc, #a855f7);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 12s ease infinite;
+  filter: drop-shadow(0 0 40px rgba(168,85,247,0.4)) drop-shadow(0 0 80px rgba(124,58,237,0.2));
+}
+
 /* ── Tournament bracket ── */
 .bk-round {
   display: flex;

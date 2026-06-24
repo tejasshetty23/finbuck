@@ -2,20 +2,7 @@
 
 import { useState, useId, useEffect } from 'react'
 
-const COLORS = ['#00ff87', '#a855f7', '#22c55e', '#7c3aed', '#4ade80', '#9333ea', '#16a34a', '#c084fc']
-
-// Max segments drawn on the wheel. The draw itself is over the full pool;
-// for large pools the wheel just shows a sample (with the winner on it).
-const MAX_SEG = 14
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = arr.slice()
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
+const COLORS = ['#00ff87', '#9542e0', '#22c55e', '#6d2fd4', '#4ade80', '#7e26cf', '#16a34a', '#a96ef0']
 
 function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
   const a = ((angleDeg - 90) * Math.PI) / 180
@@ -60,9 +47,12 @@ interface SpinWheelProps {
   // When true, the edit toggle is absolutely positioned in the top-right
   // corner of the nearest positioned ancestor (the Step box).
   editCorner?: boolean
+  // Number of blank green/purple slices to show as a placeholder when the
+  // (controlled) pool has fewer than 2 entries — e.g. before chat connects.
+  placeholderSegments?: number
 }
 
-export default function SpinWheel({ defaultItems = [], editLabel = 'Edit', itemsLabel = 'Items', emptyHint, winWord, controlledItems, editCorner = false }: SpinWheelProps) {
+export default function SpinWheel({ defaultItems = [], editLabel = 'Edit', itemsLabel = 'Items', emptyHint, winWord, controlledItems, editCorner = false, placeholderSegments }: SpinWheelProps) {
   const rawId = useId().replace(/[:]/g, '')
   const [raw, setRaw] = useState(defaultItems.join('\n'))
   const [editing, setEditing] = useState(false)
@@ -85,9 +75,13 @@ export default function SpinWheel({ defaultItems = [], editLabel = 'Edit', items
   const poolKey = pool.join('')
   useEffect(() => {
     if (spinning) return
-    setDisplay(pool.slice(0, MAX_SEG))
+    if (pool.length < 2 && placeholderSegments) {
+      setDisplay(Array(placeholderSegments).fill(''))
+    } else {
+      setDisplay(pool)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [poolKey, spinning])
+  }, [poolKey, spinning, placeholderSegments])
 
   const n = display.length
   const seg = n > 0 ? 360 / n : 360
@@ -95,26 +89,18 @@ export default function SpinWheel({ defaultItems = [], editLabel = 'Edit', items
   function spin() {
     if (spinning || pool.length < 2) return
 
-    // Pick the winner from the ENTIRE pool.
-    const winnerName = pool[Math.floor(Math.random() * pool.length)]
-
-    // Build the segments to show: all of them if small, else the winner + a
-    // random sample of others, so the wheel can land on the real winner.
-    let segs: string[]
-    if (pool.length <= MAX_SEG) {
-      segs = shuffle(pool)
-    } else {
-      const others = shuffle(pool.filter((p) => p !== winnerName)).slice(0, MAX_SEG - 1)
-      segs = shuffle([winnerName, ...others])
-    }
-    const winSeg = segs.indexOf(winnerName)
+    // The whole pool is on the wheel — pick a random segment to land on.
+    const segs = pool
+    const winSeg = Math.floor(Math.random() * segs.length)
+    const winnerName = segs[winSeg]
     setDisplay(segs)
 
     const segCount = segs.length
     const segAngle = 360 / segCount
     const winCenter = winSeg * segAngle + segAngle / 2
     const current = ((rotation % 360) + 360) % 360
-    const delta = (360 - winCenter - current + 720) % 360
+    // Land the winning segment under the pointer at 90° (right side).
+    const delta = (90 - winCenter - current + 720) % 360
     const newRotation = rotation + 5 * 360 + delta
     setRotation(newRotation)
     setSpinning(true)
@@ -142,11 +128,11 @@ export default function SpinWheel({ defaultItems = [], editLabel = 'Edit', items
 
       {/* Wheel */}
       <div className="relative w-full max-w-[440px] mx-auto" style={{ aspectRatio: '1 / 1' }}>
-        {/* Pointer */}
-        <div className="absolute left-1/2 -translate-x-1/2 z-20" style={{ top: '-12px' }}>
-          <svg width="30" height="38" viewBox="0 0 30 38" style={{ filter: 'drop-shadow(0 3px 5px rgba(0,0,0,0.6))' }}>
-            <path d="M15 38 L2 14 A13 13 0 1 1 28 14 Z" fill="#00ff87" />
-            <circle cx="15" cy="14" r="4.5" fill="#07050f" />
+        {/* Pointer — right side, pointing left toward the winner */}
+        <div className="absolute top-1/2 -translate-y-1/2 z-20" style={{ right: '-12px' }}>
+          <svg width="38" height="30" viewBox="0 0 38 30" style={{ filter: 'drop-shadow(0 3px 5px rgba(0,0,0,0.6))' }}>
+            <path d="M0 15 L24 2 A13 13 0 1 1 24 28 Z" fill="#00ff87" />
+            <circle cx="24" cy="15" r="4.5" fill="#07050f" />
           </svg>
         </div>
 
@@ -189,7 +175,11 @@ export default function SpinWheel({ defaultItems = [], editLabel = 'Edit', items
               const start = i * seg
               const end = (i + 1) * seg
               const mid = start + seg / 2
-              const labelPos = polarToCartesian(150, 150, 92, mid)
+              // Place the label along the slice's spoke (radial), centered at
+              // radius 95. Flip it on the left half so it stays upright.
+              const labelPos = polarToCartesian(150, 150, 95, mid)
+              const norm = ((mid % 360) + 360) % 360
+              const rot = norm > 90 && norm < 270 ? mid + 90 : mid - 90
               return (
                 <g key={i}>
                   <path
@@ -208,9 +198,9 @@ export default function SpinWheel({ defaultItems = [], editLabel = 'Edit', items
                     letterSpacing="0.2"
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    transform={`rotate(${mid} ${labelPos.x} ${labelPos.y})`}
+                    transform={`rotate(${rot} ${labelPos.x} ${labelPos.y})`}
                   >
-                    {p.length > 14 ? p.slice(0, 13) + '…' : p}
+                    {p.length > 16 ? p.slice(0, 15) + '…' : p}
                   </text>
                 </g>
               )
@@ -220,7 +210,7 @@ export default function SpinWheel({ defaultItems = [], editLabel = 'Edit', items
         {/* Center SPIN button (static) */}
         <button
           onClick={spin}
-          disabled={spinning || n < 2}
+          disabled={spinning || pool.length < 2}
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 rounded-full flex items-center justify-center font-black uppercase tracking-widest text-[13px] transition-transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
           style={{
             width: '23%',

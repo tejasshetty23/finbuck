@@ -144,8 +144,8 @@ body {
 .bk-round {
   display: flex;
   flex-direction: column;
-  flex: 1 0 auto;
-  min-width: 168px;
+  flex: 0 0 172px;
+  width: 172px;
 }
 .bk-match {
   flex: 1;

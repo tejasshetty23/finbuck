@@ -26,6 +26,13 @@ function buildRounds(entrants: string[]): Rounds {
 
 const clone = (r: Rounds): Rounds => r.map((round) => [...round])
 
+// Shrink the font when a name is longer than the box can fit (14px base).
+function autoFontSize(text: string, maxChars: number): string | undefined {
+  const len = text.length
+  if (len <= maxChars) return undefined
+  return `${Math.max(9, Math.round(14 * (maxChars / len)))}px`
+}
+
 function roundLabel(i: number, finalIdx: number): string {
   if (i === finalIdx) return 'Champion'
   if (i === finalIdx - 1) return 'Final'
@@ -44,9 +51,10 @@ export default function TournamentsPage() {
 
   function createBracket() {
     const clamped = Math.min(32, Math.max(2, Math.floor(count) || 2))
-    const entrants = Array.from({ length: clamped }, (_, i) => `Bucker ${i + 1}`)
+    // Empty entrants/slots so the inputs show numbered placeholders instead.
+    const entrants = Array.from({ length: clamped }, () => '')
     setRounds(buildRounds(entrants))
-    setSlots(Array.from({ length: clamped }, (_, i) => `Slot ${i + 1}`))
+    setSlots(Array.from({ length: clamped }, () => ''))
     setHistory([])
     setChampion(null)
     setShowWin(false)
@@ -225,10 +233,10 @@ export default function TournamentsPage() {
           <div className="overflow-x-auto pb-4">
             <div className="relative min-h-[480px] px-2">
               {/* Bracket rounds — centered as the core */}
-              <div className="relative flex gap-10 items-stretch min-h-[480px] w-max mx-auto">
+              <div className="relative flex gap-10 items-stretch min-h-[480px] w-max mx-auto translate-x-12">
               {/* Slot label column — hidden when more than 8 players */}
               {slots.length <= 8 && (
-                <div className="absolute right-full top-0 bottom-0 mr-6 flex flex-col z-10" style={{ width: '120px' }}>
+                <div className="absolute right-full top-0 bottom-0 mr-6 flex flex-col z-10" style={{ width: '190px' }}>
                   <div className="text-center text-[10px] font-bold uppercase tracking-widest mb-3 text-purple-400">Slot</div>
                   <div className="flex flex-col flex-1">
                     {rounds[0].map((_, i) => (
@@ -236,9 +244,9 @@ export default function TournamentsPage() {
                         <input
                           value={slots[i] ?? ''}
                           onChange={(e) => editSlot(i, e.target.value)}
-                          maxLength={20}
-                          className="w-full rounded-lg border border-purple-900/30 bg-black px-2 py-2 text-center text-sm font-semibold text-white focus:outline-none focus:border-purple-500/60"
-                          style={{ minHeight: '44px' }}
+                          placeholder={`Slot ${i + 1}`}
+                          className="w-full rounded-lg border border-purple-900/30 bg-black px-2 py-2 text-center text-sm font-semibold text-white placeholder-gray-600 focus:outline-none focus:border-purple-500/60"
+                          style={{ minHeight: '44px', fontSize: autoFontSize(slots[i] ?? '', 20) }}
                         />
                       </div>
                     ))}
@@ -275,12 +283,14 @@ export default function TournamentsPage() {
                                 <input
                                   value={slot ?? ''}
                                   onChange={(e) => editName(i, e.target.value)}
-                                  className="w-full bg-transparent px-3 py-2 text-sm text-white font-semibold focus:outline-none"
-                                  maxLength={20}
+                                  placeholder={`Bucker ${i + 1}`}
+                                  className="w-full min-w-0 bg-transparent px-3 py-2 text-sm text-white font-semibold placeholder-gray-600 focus:outline-none"
+                                  style={{ fontSize: autoFontSize(slot ?? '', 16) }}
                                 />
                               )
                             ) : (
                               <span
+                                style={{ fontSize: autoFontSize(slot ?? '', 14) }}
                                 className={`flex-1 px-3 py-2 text-sm font-bold truncate ${
                                   slot ? (isChampionBox ? 'text-yellow-300' : 'text-white') : 'text-gray-700'
                                 }`}

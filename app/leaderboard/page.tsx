@@ -180,7 +180,7 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
 
           return (
             <div
-              key={isEmpty ? `empty-${rank}` : entry!.name}
+              key={rank}
               className={`relative flex flex-col items-center ${rank === 1 ? 'podium-gold' : rank === 2 ? 'podium-silver' : 'podium-bronze'}`}
               style={{ marginTop: isFirst ? 0 : 'clamp(16px, 5vw, 30px)' }}
             >

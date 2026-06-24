@@ -41,7 +41,7 @@ export default function LeaderboardRestTable({ entries }: { entries: Entry[] }) 
           </thead>
           <tbody>
             {rows.map((entry, i) => (
-              <tr key={entry ? entry.name : `placeholder-${i}`} className="border-b border-purple-900/20 transition-all duration-200 hover:bg-[#00ff87]/5 hover:shadow-[inset_3px_0_0_#00ff87]">
+              <tr key={i} className="border-b border-purple-900/20 transition-all duration-200 hover:bg-[#00ff87]/5 hover:shadow-[inset_3px_0_0_#00ff87]">
                 <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-500 font-bold text-xs sm:text-sm">#{i + 4}</td>
                 <td className="px-2 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm" style={{ opacity: entry ? 1 : 0.35 }}>
                   {entry

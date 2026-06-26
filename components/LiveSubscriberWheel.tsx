@@ -19,17 +19,41 @@ interface ChatBadge {
 
 export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: ReactNode }) {
   const [keyword, setKeyword] = useState('!buck')
-  const [subsOnly, setSubsOnly] = useState(true)
+  const [subsOnly, setSubsOnly] = useState(false)
+  // Subluck: when subs-only is off, subscribers get 2x entries on the roller.
+  const [subLuck, setSubLuck] = useState(false)
 
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState('')
   const [entriesRaw, setEntriesRaw] = useState('')
+  // Newline list of entrant usernames who are subscribers (for Subluck weighting).
+  const [subsRaw, setSubsRaw] = useState('')
   const [showEntrants, setShowEntrants] = useState(false)
+
+  // Live chat from the picked winner, shown in the roller's 30s presence check.
+  const [winnerMessages, setWinnerMessages] = useState<{ text: string; at: number }[]>([])
 
   const wsRef = useRef<WebSocket | null>(null)
   const seenRef = useRef<Set<string>>(new Set())
+  // Ref so the (stale) WS onmessage closure always reads the current winner.
+  const watchedWinnerRef = useRef<string | null>(null)
+
+  // Called by the roller: start/stop watching a winner's chat messages.
+  function watchWinner(name: string | null) {
+    watchedWinnerRef.current = name
+    if (name) setWinnerMessages([])
+  }
 
   const entries = entriesRaw.split('\n').map((e) => e.trim()).filter(Boolean)
+
+  // Set of entrant usernames (lowercased) who are subscribers.
+  const subSet = new Set(subsRaw.split('\n').map((s) => s.trim().toLowerCase()).filter(Boolean))
+
+  // Pool sent to the roller: with Subluck on (and subs-only off), subscribers
+  // get 2 entries.
+  const rollerItems = !subsOnly && subLuck
+    ? entries.flatMap((n) => (subSet.has(n.toLowerCase()) ? [n, n] : [n]))
+    : entries
 
   useEffect(() => {
     return () => {
@@ -37,11 +61,12 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
     }
   }, [])
 
-  function addEntry(name: string) {
+  function addEntry(name: string, isSub: boolean) {
     const key = name.toLowerCase()
     if (seenRef.current.has(key)) return
     seenRef.current.add(key)
     setEntriesRaw((prev) => (prev ? `${prev}\n${name}` : name))
+    if (isSub) setSubsRaw((prev) => (prev ? `${prev}\n${name}` : name))
   }
 
   function handleChatMessage(payload: unknown) {
@@ -51,15 +76,24 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
       const username = msg.sender?.username
       if (!username || !content) return
 
+      // Presence check: capture any message from the watched winner.
+      const watched = watchedWinnerRef.current
+      if (watched && username.toLowerCase() === watched.toLowerCase()) {
+        setWinnerMessages((prev) => [...prev, { text: content, at: Date.now() }].slice(-50))
+      }
+
       // Keyword filter (empty keyword = any message counts)
       if (keyword.trim() && content.toLowerCase() !== keyword.trim().toLowerCase()) return
 
       const badges = msg.sender?.identity?.badges ?? []
-      const subBadge = badges.find((b) => b.type === 'subscriber' || b.type === 'founder')
+      // Active subs only: the 'subscriber' badge is tied to a live subscription
+      // and disappears when it lapses. 'founder'/'og' badges persist forever
+      // (even after a sub expires), so they must NOT count.
+      const subBadge = badges.find((b) => b.type === 'subscriber')
 
       if (subsOnly && !subBadge) return
 
-      addEntry(username)
+      addEntry(username, !!subBadge)
     } catch {
       /* ignore malformed messages */
     }
@@ -68,6 +102,12 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
   async function connect() {
     setError('')
     setStatus('connecting')
+
+    // Fresh start each connection: previously-collected (and previously-picked)
+    // viewers are cleared, so everyone must re-type the keyword to enter.
+    seenRef.current = new Set()
+    setEntriesRaw('')
+    setSubsRaw('')
 
     let chatroomId: number | null = null
     try {
@@ -131,9 +171,24 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
   function clearEntries() {
     seenRef.current = new Set()
     setEntriesRaw('')
+    setSubsRaw('')
+  }
+
+  // Remove a picked winner from the pool so they can't be selected again this
+  // connection. They stay in seenRef, so they can't re-enter until a reconnect.
+  function removeEntrant(name: string) {
+    const low = name.toLowerCase()
+    const drop = (raw: string) => raw.split('\n').filter((e) => e.trim().toLowerCase() !== low).join('\n')
+    setEntriesRaw((prev) => drop(prev))
+    setSubsRaw((prev) => drop(prev))
   }
 
   const isConnected = status === 'connected'
+
+  // Green checkbox (green outline → fills green when checked) instead of the
+  // browser's default white box.
+  const checkboxClass =
+    'appearance-none w-4 h-4 rounded-[3px] border-2 border-[#00ff87] bg-transparent checked:bg-[#00ff87] cursor-pointer transition-colors disabled:opacity-50 shrink-0'
 
   return (
     <div>
@@ -151,13 +206,8 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
           />
         </div>
 
-        {/* Subscribers toggle + connect — under the keyword input */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
-          <label className="flex items-center gap-2 h-12 text-sm text-gray-300 cursor-pointer">
-            <input type="checkbox" checked={subsOnly} onChange={(e) => setSubsOnly(e.target.checked)} disabled={isConnected} className="accent-[#00ff87] w-4 h-4" />
-            Subscribers only
-          </label>
-
+        {/* Connect on the left, checkboxes stacked on the right */}
+        <div className="flex items-center justify-center gap-6 mt-4">
           {!isConnected ? (
             <button
               onClick={connect}
@@ -175,6 +225,21 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
               Disconnect
             </button>
           )}
+
+          <div className="flex flex-col gap-1.5">
+            <label className="flex items-center gap-2 text-sm text-[#00ff87] font-semibold cursor-pointer">
+              <input type="checkbox" checked={subsOnly} onChange={(e) => setSubsOnly(e.target.checked)} disabled={isConnected} className={checkboxClass} />
+              Subscribers only
+            </label>
+
+            {/* Subluck — only when subs-only is off: active subscribers get 2x entries */}
+            {!subsOnly && (
+              <label className="flex items-center gap-2 text-sm text-[#00ff87] font-semibold cursor-pointer" title="Subscribers get double entries on the roller">
+                <input type="checkbox" checked={subLuck} onChange={(e) => setSubLuck(e.target.checked)} className={checkboxClass} />
+                <span><span className="font-black">2×</span> Subluck</span>
+              </label>
+            )}
+          </div>
         </div>
 
         {/* Status row */}
@@ -228,7 +293,7 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
             <h3 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase leading-tight"><span className="animated-gradient-text">Giveaway Picker</span></h3>
           </div>
           <div className="w-full flex items-center justify-center">
-            <Roller items={entries} winWord="Winner" />
+            <Roller items={rollerItems} winWord="Congrats!" onWatch={watchWinner} winnerMessages={winnerMessages} onPick={removeEntrant} />
           </div>
         </div>
 

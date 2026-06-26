@@ -140,6 +140,15 @@ body {
   filter: drop-shadow(0 0 40px rgba(168,85,247,0.4)) drop-shadow(0 0 80px rgba(124,58,237,0.2));
 }
 
+/* ── Divine god-rays (winner popup) ── */
+@keyframes godray-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.godray {
+  animation: godray-spin 24s linear infinite;
+}
+
 /* ── Tournament bracket ── */
 .bk-round {
   display: flex;

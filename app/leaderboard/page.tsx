@@ -36,6 +36,16 @@ function formatWatchtime(minutes: number): string {
   return parts.join(' ')
 }
 
+// Shrink the podium name font as the name gets longer so it fits the rectangle.
+function podiumNameFont(name: string): string {
+  const len = name.length
+  if (len <= 9) return 'clamp(11px, 2.5vw, 21px)'
+  if (len <= 12) return 'clamp(10px, 2.2vw, 18px)'
+  if (len <= 16) return 'clamp(9px, 1.9vw, 15px)'
+  if (len <= 20) return 'clamp(8px, 1.6vw, 13px)'
+  return 'clamp(7px, 1.4vw, 11px)'
+}
+
 function getCurrentMonthKey(): string {
   const now = new Date()
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
@@ -134,34 +144,21 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
   const top3 = [data[0] ?? null, data[1] ?? null, data[2] ?? null]
   const rest = data.slice(3)
 
-  const frameConfig: Record<number, {
-    border: string; bg: string; accent: string
-    shieldBg: string; shieldText: string; glow: string
-  }> = {
-    1: {
-      border: '#FFD700',
-      bg: '#000000',
-      accent: '#FFD700',
-      shieldBg: 'linear-gradient(180deg, #fff3a0, #c8920a)',
-      shieldText: '#3d2a00',
-      glow: 'rgba(255,215,0,0.5)',
-    },
-    2: {
-      border: '#C0C0C0',
-      bg: '#000000',
-      accent: '#C8C8C8',
-      shieldBg: 'linear-gradient(180deg, #ffffff, #707070)',
-      shieldText: '#222222',
-      glow: 'rgba(200,200,200,0.35)',
-    },
-    3: {
-      border: '#CD7F32',
-      bg: '#000000',
-      accent: '#CD7F32',
-      shieldBg: 'linear-gradient(180deg, #f0b070, #7a4010)',
-      shieldText: '#3d1800',
-      glow: 'rgba(205,127,50,0.4)',
-    },
+  // All ranks use the SAME frame (so they're identical in size); rank 1 just
+  // gets a crown overlay. Overlay positions are percentages of the frame box.
+  const FRAME_SRC = '/frame-2.png'
+  const FRAME_AR = 467 / 666
+  const POS = { badge: { x: 50, y: 11.5 }, center: { x: 50, y: 50 }, rect: { w: 66, h: 42 }, rewardPos: { x: 50, y: 81 } }
+  const frameMeta: Record<number, { accent: string; glow: string; reward: string; crown: boolean; gradient: string }> = {
+    1: { accent: '#FFD700', glow: 'rgba(255,215,0,0.18)', reward: '$100', crown: true, gradient: 'linear-gradient(180deg, #fff3a0 0%, #ffd700 45%, #c8920a 100%)' },
+    2: { accent: '#C8C8C8', glow: 'rgba(200,200,200,0.16)', reward: '$50', crown: false, gradient: 'linear-gradient(180deg, #ffffff 0%, #c8c8c8 45%, #7a7a7a 100%)' },
+    3: { accent: '#CD7F32', glow: 'rgba(205,127,50,0.16)', reward: '$25', crown: false, gradient: 'linear-gradient(180deg, #f0b070 0%, #cd7f32 45%, #7a4010 100%)' },
+  }
+
+  const rectStyle = {
+    background: 'linear-gradient(160deg, #1a1206, #060402) padding-box, linear-gradient(140deg, #fff1a8 0%, #e6b325 40%, #9c7414 65%, #ffe58a 100%) border-box',
+    border: '3px solid transparent',
+    boxShadow: 'inset 0 0 18px rgba(0,0,0,0.6), 0 0 14px rgba(255,215,0,0.18)',
   }
 
   const podiumOrder = [top3[1], top3[0], top3[2]]
@@ -170,110 +167,88 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
   return (
     <div>
       {/* Top 3 podium */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-10 items-end px-0 sm:px-2">
+      <div className="grid grid-cols-3 gap-2 sm:gap-5 mb-10 items-end px-0 sm:px-2">
         {podiumOrder.map((entry, i) => {
           const rank = podiumRanks[i]
-          const cfg = frameConfig[rank]
-          const isFirst = rank === 1
-          const cardH = isFirst ? 'clamp(230px, 58vw, 340px)' : 'clamp(210px, 53vw, 315px)'
+          const m = frameMeta[rank]
           const isEmpty = !entry
 
           return (
-            <div
-              key={rank}
-              className={`relative flex flex-col items-center ${rank === 1 ? 'podium-gold' : rank === 2 ? 'podium-silver' : 'podium-bronze'}`}
-              style={{ marginTop: isFirst ? 0 : 'clamp(16px, 5vw, 30px)' }}
-            >
-              {/* Shield badge */}
-              <div className="relative z-20 flex flex-col items-center" style={{ marginBottom: '-2px' }}>
+            <div key={rank} className="flex flex-col items-center">
+              {/* Frame image with overlaid content */}
+              <div className="relative w-full" style={{ aspectRatio: `${FRAME_AR}` }}>
+                {/* Crown overlay for 1st place */}
+                {m.crown && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src="/crown.png"
+                    alt=""
+                    className="absolute left-1/2 -translate-x-1/2 select-none pointer-events-none"
+                    style={{ top: '-13%', width: '43%', opacity: isEmpty ? 0.5 : 1 }}
+                  />
+                )}
+
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={FRAME_SRC}
+                  alt={`${rank === 1 ? '1st' : rank === 2 ? '2nd' : '3rd'} place frame`}
+                  className="absolute inset-0 w-full h-full select-none pointer-events-none"
+                  style={{ opacity: isEmpty ? 0.5 : 1 }}
+                />
+
+                {/* Rectangle panel covering the gold circle */}
                 <div
-                  className="flex items-center justify-center"
-                  style={{
-                    width: 'clamp(38px, 11vw, 52px)', height: 'clamp(42px, 12vw, 58px)',
-                    clipPath: 'polygon(12% 0%, 88% 0%, 100% 12%, 100% 68%, 50% 100%, 0% 68%, 0% 12%)',
-                    background: cfg.shieldBg,
-                    boxShadow: `0 0 20px ${cfg.glow}`,
-                  }}
-                >
-                  <div
-                    className="flex items-center justify-center"
-                    style={{
-                      width: 'clamp(29px, 8.5vw, 40px)', height: 'clamp(33px, 9.7vw, 46px)',
-                      clipPath: 'polygon(12% 0%, 88% 0%, 100% 12%, 100% 68%, 50% 100%, 0% 68%, 0% 12%)',
-                      background: '#111',
-                    }}
-                  >
-                    <span className="font-black text-base sm:text-xl" style={{ color: cfg.accent }}>{rank}</span>
-                  </div>
-                </div>
-              </div>
+                  className="absolute -translate-x-1/2 -translate-y-1/2 rounded-xl"
+                  style={{ left: `${POS.center.x}%`, top: `${POS.center.y}%`, width: `${POS.rect.w}%`, height: `${POS.rect.h}%`, opacity: isEmpty ? 0.5 : 1, ...rectStyle }}
+                />
 
-              {/* Frame: outer border */}
-              <div
-                className="relative w-full"
-                style={{
-                  background: cfg.border,
-                  clipPath: 'polygon(18px 0%, calc(100% - 18px) 0%, 100% 18px, 100% calc(100% - 22px), calc(100% - 14px) 100%, 14px 100%, 0% calc(100% - 22px), 0% 18px)',
-                  padding: '6px',
-                  height: cardH,
-                }}
-              >
-                {/* Frame: inner black bg — absolutely positioned to reliably cover the border gradient */}
+                {/* Rank number in the top badge circle */}
                 <div
-                  className="flex flex-col items-center justify-evenly px-1.5 sm:px-3 py-5 sm:py-8"
-                  style={{
-                    position: 'absolute',
-                    top: '6px', left: '6px', right: '6px', bottom: '6px',
-                    background: cfg.bg,
-                    clipPath: 'polygon(15px 0%, calc(100% - 15px) 0%, 100% 15px, 100% calc(100% - 19px), calc(100% - 11px) 100%, 11px 100%, 0% calc(100% - 19px), 0% 15px)',
-                    ...(isEmpty ? { opacity: 0.45 } : {}),
-                  }}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+                  style={{ left: `${POS.badge.x}%`, top: `${POS.badge.y}%` }}
                 >
-                  {/* Corner marks */}
-                  <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-l-2" style={{ borderColor: cfg.accent }} />
-                  <div className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-r-2" style={{ borderColor: cfg.accent }} />
-                  <div className="absolute bottom-5 left-2.5 sm:bottom-7 sm:left-4 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-l-2" style={{ borderColor: cfg.accent }} />
-                  <div className="absolute bottom-5 right-2.5 sm:bottom-7 sm:right-4 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-r-2" style={{ borderColor: cfg.accent }} />
-
-                  {/* Name */}
-                  <div className="text-center w-full">
-                    {isEmpty
-                      ? <div className="h-4 sm:h-5 w-16 sm:w-24 rounded-full mx-auto" style={{ background: `${cfg.accent}30` }} />
-                      : <p className="font-black text-white text-sm sm:text-xl leading-tight break-words">{entry!.name}</p>
-                    }
-                  </div>
-
-                  {/* Watch time */}
-                  <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                    <span className="text-[9px] sm:text-xs uppercase tracking-wider sm:tracking-widest" style={{ color: cfg.accent }}>watch time</span>
-                    {isEmpty
-                      ? <div className="h-6 sm:h-7 w-12 sm:w-16 rounded-full mt-1" style={{ background: `${cfg.accent}25` }} />
-                      : <span className="font-black text-base sm:text-2xl text-center leading-tight" style={{ color: '#00ff87', textShadow: '0 0 10px rgba(0,255,135,0.5)' }}>{formatWatchtime(entry!.delta)}</span>
-                    }
-                  </div>
-
-                  {/* Reward */}
-                  <div
-                    className="flex flex-col items-center gap-0.5 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl"
-                    style={{ background: cfg.glow.replace('0.5', '0.15').replace('0.35', '0.15').replace('0.4', '0.15'), border: `1px solid ${cfg.accent}` }}
-                  >
-                    <span className="text-lg sm:text-2xl font-black" style={{ color: cfg.accent }}>
-                      {rank === 1 ? '$100' : rank === 2 ? '$50' : '$25'}
-                    </span>
-                    <span className="text-[8px] sm:text-[10px] uppercase tracking-wider sm:tracking-widest" style={{ color: cfg.accent, opacity: 0.7 }}>reward</span>
-                  </div>
+                  <span className="font-black leading-none" style={{ color: m.accent, fontSize: 'clamp(13px, 3.4vw, 24px)', textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>{rank}</span>
                 </div>
-              </div>
 
-              {/* Bottom arrow */}
-              <div style={{
-                width: 0, height: 0,
-                borderLeft: '10px solid transparent',
-                borderRight: '10px solid transparent',
-                borderTop: `10px solid ${cfg.accent}`,
-                marginTop: '-1px',
-                opacity: 0.9,
-              }} />
+                {/* Name + watch time inside the rectangle */}
+                <div
+                  className="absolute -translate-x-1/2 -translate-y-1/2 text-center flex flex-col items-center justify-center gap-0.5 sm:gap-1"
+                  style={{ left: `${POS.center.x}%`, top: `${POS.center.y}%`, width: `${POS.rect.w - 10}%` }}
+                >
+                  {isEmpty ? (
+                    <>
+                      <div className="h-3 sm:h-4 w-3/4 rounded-full" style={{ background: `${m.accent}30` }} />
+                      <div className="h-4 sm:h-6 w-1/2 rounded-full mt-1" style={{ background: `${m.accent}25` }} />
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-black text-white leading-tight break-words [overflow-wrap:anywhere]" style={{ fontSize: podiumNameFont(entry!.name), textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>{entry!.name}</p>
+                      <p className="font-black leading-tight" style={{ color: '#00ff87', fontSize: 'clamp(11px, 2.5vw, 22px)', textShadow: '0 0 10px rgba(0,255,135,0.5), 0 1px 3px rgba(0,0,0,0.8)' }}>{formatWatchtime(entry!.delta)}</p>
+                    </>
+                  )}
+                </div>
+
+                {/* Reward in the frame's bottom band */}
+                {!isEmpty && (
+                  <div
+                    className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-0.5 whitespace-nowrap"
+                    style={{ left: `${POS.rewardPos.x}%`, top: `${POS.rewardPos.y}%` }}
+                  >
+                    <span
+                      className="font-black leading-none"
+                      style={{
+                        fontSize: 'clamp(16px, 3.2vw, 30px)',
+                        background: m.gradient,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                        filter: `drop-shadow(0 0 10px ${m.glow})`,
+                      }}
+                    >{m.reward}</span>
+                    <span className="uppercase tracking-wider font-bold leading-none" style={{ color: m.accent, opacity: 0.75, fontSize: 'clamp(9px, 1.7vw, 13px)' }}>reward</span>
+                  </div>
+                )}
+              </div>
             </div>
           )
         })}
@@ -314,13 +289,6 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
 
       {/* Header */}
       <div className="max-w-4xl mx-auto mb-12 text-center">
-        <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-purple-400">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <span className="text-purple-400 text-sm font-semibold tracking-widest uppercase">{activeLabel}</span>
-        </div>
-
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
           Watch Time<br />
           <span className="animated-gradient-text">Leaderboard</span>
@@ -338,7 +306,7 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
       </div>
 
       {/* Leaderboard */}
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto mt-20">
         {isPastMonthNoData ? (
           <div className="text-center py-20 text-gray-500">
             <p className="text-lg font-bold text-white">No data for {activeLabel}.</p>

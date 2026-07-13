@@ -123,6 +123,12 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const order = useMemo(() => shuffleSpread(pool), [poolKey])
 
+  // Preload the winner-popup face image on mount so it shows instantly on a win.
+  useEffect(() => {
+    const img = new window.Image()
+    img.src = '/finbuck-face.png'
+  }, [])
+
   // Build the idle strip whenever the order changes (and we're not rolling).
   useEffect(() => {
     if (rolling) return

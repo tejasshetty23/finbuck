@@ -175,11 +175,10 @@ export default function SpinWheel({ defaultItems = [], editLabel = 'Edit', items
               const start = i * seg
               const end = (i + 1) * seg
               const mid = start + seg / 2
-              // Place the label along the slice's spoke (radial), centered at
-              // radius 95. Flip it on the left half so it stays upright.
-              const labelPos = polarToCartesian(150, 150, 95, mid)
-              const norm = ((mid % 360) + 360) % 360
-              const rot = norm > 90 && norm < 270 ? mid + 90 : mid - 90
+              // Sunburst: each label reads outward along its spoke, centered
+              // midway between the hub and the rim (same for every slice).
+              const labelPos = polarToCartesian(150, 150, 90, mid)
+              const rot = mid - 90
               return (
                 <g key={i}>
                   <path

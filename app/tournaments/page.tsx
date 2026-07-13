@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 type Slot = string | null
 type Rounds = Slot[][]
@@ -48,6 +48,12 @@ export default function TournamentsPage() {
   const [history, setHistory] = useState<Rounds[]>([])
   const [champion, setChampion] = useState<string | null>(null)
   const [showWin, setShowWin] = useState(false)
+
+  // Preload the champion-popup image so it shows instantly on a win.
+  useEffect(() => {
+    const img = new window.Image()
+    img.src = '/finbuck-update.png'
+  }, [])
 
   function createBracket() {
     const clamped = Math.min(32, Math.max(2, Math.floor(count) || 2))
@@ -110,6 +116,10 @@ export default function TournamentsPage() {
   }
 
   const finalIdx = rounds ? rounds.length - 1 : 0
+
+  // Slot the champion started with (the slot next to their round-1 name).
+  const championIndex = rounds && champion ? rounds[0].findIndex((n) => n === champion) : -1
+  const championSlot = championIndex >= 0 ? (slots[championIndex]?.trim() || `Slot ${championIndex + 1}`) : ''
 
   return (
     <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 relative">
@@ -339,17 +349,30 @@ export default function TournamentsPage() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="text-6xl mb-4">🏆</div>
-            <p className="text-xs font-bold uppercase tracking-[0.3em] mb-2" style={{ color: '#FFD700' }}>
-              Champion
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/finbuck-update.png"
+              alt="Champion"
+              className="mx-auto mb-4 max-h-40 w-auto object-contain"
+              style={{ filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.55)) drop-shadow(0 0 22px rgba(255,215,0,0.35))' }}
+            />
+            <p className="text-xs font-black uppercase tracking-[0.3em] mb-1 text-white">
+              Bracket Champion
             </p>
-            <p className="text-3xl font-black text-white mb-6 break-words">{champion}</p>
+            <p className="text-3xl sm:text-4xl font-black mb-2 break-words" style={{ color: '#FFD700', textShadow: '0 0 18px rgba(255,215,0,0.5)' }}>
+              {champion}
+            </p>
+            <p className="mb-6 leading-relaxed">
+              <span className="uppercase tracking-widest text-white font-bold text-[11px]">Won with the slot</span>
+              <br />
+              <span className="font-black text-lg break-words" style={{ color: '#FFD700' }}>{championSlot}</span>
+            </p>
             <button
               onClick={() => setShowWin(false)}
-              className="w-full text-black font-black py-3 rounded-xl uppercase tracking-widest text-sm transition-all"
+              className="w-full text-black font-black py-3 rounded-xl uppercase tracking-widest text-sm transition-all hover:brightness-110"
               style={{ background: 'linear-gradient(135deg, #fff3a0, #ffd700, #c8920a)' }}
             >
-              Close
+              Let&apos;s Go 🎉
             </button>
           </div>
         </div>

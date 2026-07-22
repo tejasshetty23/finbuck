@@ -41,6 +41,9 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
   // the only way to tell them apart, since Kick's chat badges are identical.
   const normalSubscriberRef = useRef<Set<string>>(new Set())
   const giftedSubscriberRef = useRef<Set<string>>(new Set())
+  // False until the paid/gifted lists load. Without them a sub can't be proven
+  // non-gifted, so subs-only must admit nobody rather than risk letting one in.
+  const verifiedRef = useRef(false)
   // Ref so the (stale) WS onmessage closure always reads the current winner.
   const watchedWinnerRef = useRef<string | null>(null)
 
@@ -102,7 +105,9 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
       const key = username.toLowerCase()
       const isGiftedOnly =
         giftedSubscriberRef.current.has(key) && !normalSubscriberRef.current.has(key)
-      const isEligibleSubscriber = hasActiveSub && !isGiftedOnly
+      // Fails closed: if the lists never loaded we can't prove a sub isn't
+      // gifted, so nobody qualifies as a subscriber.
+      const isEligibleSubscriber = hasActiveSub && verifiedRef.current && !isGiftedOnly
 
       if (subsOnly && !isEligibleSubscriber) return
 
@@ -122,6 +127,7 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
     seenRef.current = new Set()
     normalSubscriberRef.current = new Set()
     giftedSubscriberRef.current = new Set()
+    verifiedRef.current = false
     setEntriesRaw('')
     setSubsRaw('')
 
@@ -152,10 +158,11 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
       const data = (await res.json()) as { normal?: string[]; gifted?: string[] }
       normalSubscriberRef.current = new Set((data.normal ?? []).map((u) => u.toLowerCase()))
       giftedSubscriberRef.current = new Set((data.gifted ?? []).map((u) => u.toLowerCase()))
+      verifiedRef.current = true
     } catch {
-      // Chat still connects — but say so, rather than silently letting gifted
-      // subs through (or silently admitting nobody).
-      setVerifyWarning('Could not verify paid vs gifted subs — gifted subs may get through. Reconnect to retry.')
+      // Chat still connects, but nobody counts as a subscriber — better an
+      // empty subs-only roller than a gifted sub sneaking into it.
+      setVerifyWarning('Could not verify paid vs gifted subs — subscriber entries are blocked. Reconnect to retry.')
     }
 
     try {

@@ -144,22 +144,32 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
   const top3 = [data[0] ?? null, data[1] ?? null, data[2] ?? null]
   const rest = data.slice(3)
 
-  // All ranks use the SAME frame (so they're identical in size); rank 1 just
-  // gets a crown overlay. Overlay positions are percentages of the frame box.
-  const FRAME_SRC = '/frame-2.png'
-  const FRAME_AR = 467 / 666
-  const POS = { badge: { x: 50, y: 11.5 }, center: { x: 50, y: 50 }, rect: { w: 66, h: 42 }, rewardPos: { x: 50, y: 81 } }
-  const frameMeta: Record<number, { accent: string; glow: string; reward: string; crown: boolean; gradient: string }> = {
-    1: { accent: '#FFD700', glow: 'rgba(255,215,0,0.18)', reward: '$100', crown: true, gradient: 'linear-gradient(180deg, #fff3a0 0%, #ffd700 45%, #c8920a 100%)' },
-    2: { accent: '#C8C8C8', glow: 'rgba(200,200,200,0.16)', reward: '$50', crown: false, gradient: 'linear-gradient(180deg, #ffffff 0%, #c8c8c8 45%, #7a7a7a 100%)' },
-    3: { accent: '#CD7F32', glow: 'rgba(205,127,50,0.16)', reward: '$25', crown: false, gradient: 'linear-gradient(180deg, #f0b070 0%, #cd7f32 45%, #7a4010 100%)' },
+  // Gold / silver / bronze frames of the same design. One shared aspect ratio
+  // keeps all three identical in size; the badge sits at a slightly different
+  // height in each artwork, so that one position is per-rank. Other overlay
+  // positions are percentages of the frame box.
+  const FRAME_AR = 0.685
+  const POS = { center: { x: 50, y: 50 }, rect: { w: 66, h: 42 }, rewardPos: { x: 50, y: 81 } }
+  const frameMeta: Record<number, {
+    src: string; badge: { x: number; y: number }
+    accent: string; glow: string; reward: string; crown: boolean; gradient: string
+  }> = {
+    1: { src: '/frame-2.png', badge: { x: 50.1, y: 11.6 }, accent: '#FFD700', glow: 'rgba(255,215,0,0.18)', reward: '$100', crown: true, gradient: 'linear-gradient(180deg, #fff3a0 0%, #ffd700 45%, #c8920a 100%)' },
+    2: { src: '/frame-silver.png', badge: { x: 50.1, y: 10.7 }, accent: '#C8C8C8', glow: 'rgba(200,200,200,0.16)', reward: '$50', crown: false, gradient: 'linear-gradient(180deg, #ffffff 0%, #c8c8c8 45%, #7a7a7a 100%)' },
+    3: { src: '/frame-bronze.png', badge: { x: 49.4, y: 10.8 }, accent: '#CD7F32', glow: 'rgba(205,127,50,0.16)', reward: '$25', crown: false, gradient: 'linear-gradient(180deg, #f0b070 0%, #cd7f32 45%, #7a4010 100%)' },
   }
 
-  const rectStyle = {
-    background: 'linear-gradient(160deg, #1a1206, #060402) padding-box, linear-gradient(140deg, #fff1a8 0%, #e6b325 40%, #9c7414 65%, #ffe58a 100%) border-box',
-    border: '3px solid transparent',
-    boxShadow: 'inset 0 0 18px rgba(0,0,0,0.6), 0 0 14px rgba(255,215,0,0.18)',
+  // Info panel border matches each rank's metal.
+  const rectBorder: Record<number, string> = {
+    1: 'linear-gradient(140deg, #fff1a8 0%, #e6b325 40%, #9c7414 65%, #ffe58a 100%)',
+    2: 'linear-gradient(140deg, #ffffff 0%, #cfcfcf 40%, #6f6f6f 65%, #f2f2f2 100%)',
+    3: 'linear-gradient(140deg, #f7cfa6 0%, #cd7f32 40%, #7a4010 65%, #f0b070 100%)',
   }
+  const rectStyleFor = (r: number) => ({
+    background: `linear-gradient(160deg, #14110c, #050505) padding-box, ${rectBorder[r]} border-box`,
+    border: '3px solid transparent',
+    boxShadow: `inset 0 0 18px rgba(0,0,0,0.6), 0 0 14px ${frameMeta[r].glow}`,
+  })
 
   const podiumOrder = [top3[1], top3[0], top3[2]]
   const podiumRanks = [2, 1, 3]
@@ -190,7 +200,7 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
 
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={FRAME_SRC}
+                  src={m.src}
                   alt={`${rank === 1 ? '1st' : rank === 2 ? '2nd' : '3rd'} place frame`}
                   className="absolute inset-0 w-full h-full select-none pointer-events-none"
                   style={{ opacity: isEmpty ? 0.5 : 1 }}
@@ -199,13 +209,13 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
                 {/* Rectangle panel covering the gold circle */}
                 <div
                   className="absolute -translate-x-1/2 -translate-y-1/2 rounded-xl"
-                  style={{ left: `${POS.center.x}%`, top: `${POS.center.y}%`, width: `${POS.rect.w}%`, height: `${POS.rect.h}%`, opacity: isEmpty ? 0.5 : 1, ...rectStyle }}
+                  style={{ left: `${POS.center.x}%`, top: `${POS.center.y}%`, width: `${POS.rect.w}%`, height: `${POS.rect.h}%`, opacity: isEmpty ? 0.5 : 1, ...rectStyleFor(rank) }}
                 />
 
                 {/* Rank number in the top badge circle */}
                 <div
                   className="absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
-                  style={{ left: `${POS.badge.x}%`, top: `${POS.badge.y}%` }}
+                  style={{ left: `${m.badge.x}%`, top: `${m.badge.y}%` }}
                 >
                   <span className="font-black leading-none" style={{ color: m.accent, fontSize: 'clamp(13px, 3.4vw, 24px)', textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>{rank}</span>
                 </div>

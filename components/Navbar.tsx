@@ -19,7 +19,8 @@ export default function Navbar() {
     { href: '/', label: 'Home' },
     { href: '/leaderboard', label: 'Leaderboard' },
     { href: '/tournaments', label: 'Tournaments' },
-    { href: '/wheelspin', label: 'Wheel Spin' },
+    { href: '/wheelspin', label: 'Giveaways' },
+    { href: '/shop', label: 'Shop' },
   ]
 
   const socials = [

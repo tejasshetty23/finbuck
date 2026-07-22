@@ -26,7 +26,7 @@ const ITEMS: ShopItem[] = [
     desc: 'Redeem a $20 bonus buy of your choice',
     points: 5000,
     command: '!BonusBuy',
-    img: '/shop/bonus-20.png',
+    img: '/shop/bonus-20.webp',
     icon: '💸',
   },
   {
@@ -34,7 +34,7 @@ const ITEMS: ShopItem[] = [
     desc: 'Guaranteed spin of the sub wheel',
     points: 15000,
     command: '!shop buy SpinWheel',
-    img: '/shop/spin-wheel.png',
+    img: '/shop/spin-wheel.webp',
     icon: '🎡',
   },
   {
@@ -42,7 +42,7 @@ const ITEMS: ShopItem[] = [
     desc: 'Redeem a $50 bonus buy of your choice',
     points: 20000,
     command: '!SuperBonusBuy',
-    img: '/shop/bonus-50.png',
+    img: '/shop/bonus-50.webp',
     icon: '💰',
   },
   {

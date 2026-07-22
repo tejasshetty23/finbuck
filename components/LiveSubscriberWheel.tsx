@@ -11,6 +11,12 @@ const CHANNEL = 'finbuck'
 
 type Status = 'idle' | 'connecting' | 'connected' | 'error'
 
+interface ChatBadge {
+  type: string
+  text?: string
+  count?: number
+}
+
 export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: ReactNode }) {
   const [keyword, setKeyword] = useState('!buck')
   const [subsOnly, setSubsOnly] = useState(false)
@@ -19,6 +25,8 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
 
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState('')
+  // Shown when the paid-vs-gifted lookup fails, so a silent fallback is visible.
+  const [verifyWarning, setVerifyWarning] = useState('')
   const [entriesRaw, setEntriesRaw] = useState('')
   // Newline list of entrant usernames who are subscribers (for Subluck weighting).
   const [subsRaw, setSubsRaw] = useState('')
@@ -29,9 +37,10 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
 
   const wsRef = useRef<WebSocket | null>(null)
   const seenRef = useRef<Set<string>>(new Set())
-  // KickLogz provides normal and gifted subscriptions separately. This set
-  // contains only its active normal subscribers (never gift recipients).
+  // KickLogz lists normal (self-paid) and gifted subscriptions separately —
+  // the only way to tell them apart, since Kick's chat badges are identical.
   const normalSubscriberRef = useRef<Set<string>>(new Set())
+  const giftedSubscriberRef = useRef<Set<string>>(new Set())
   // Ref so the (stale) WS onmessage closure always reads the current winner.
   const watchedWinnerRef = useRef<string | null>(null)
 
@@ -68,7 +77,7 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
 
   function handleChatMessage(payload: unknown) {
     try {
-      const msg = payload as { content?: string; sender?: { username?: string } }
+      const msg = payload as { content?: string; sender?: { username?: string; identity?: { badges?: ChatBadge[] } } }
       const content = (msg.content ?? '').trim()
       const username = msg.sender?.username
       if (!username || !content) return
@@ -82,10 +91,18 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
       // Keyword filter (empty keyword = any message counts)
       if (keyword.trim() && content.toLowerCase() !== keyword.trim().toLowerCase()) return
 
-      // Kick gives paid and gifted viewers the same chat badge, so badge data
-      // alone cannot enforce this giveaway rule. Eligibility comes from the
-      // server-side KickLogz normal-subscriber list instead.
-      const isEligibleSubscriber = normalSubscriberRef.current.has(username.toLowerCase())
+      // Two independent checks, because neither source is sufficient alone:
+      //  1. The 'subscriber' chat badge proves the sub is CURRENTLY ACTIVE
+      //     ('founder'/'og' persist after expiry, so they must not count).
+      //  2. KickLogz proves it wasn't a GIFT — Kick's badges can't show that.
+      // A past gift recipient who later buys their own sub appears in the
+      // normal list too, so that overrides the gifted blocklist.
+      const badges = msg.sender?.identity?.badges ?? []
+      const hasActiveSub = badges.some((b) => b.type === 'subscriber')
+      const key = username.toLowerCase()
+      const isGiftedOnly =
+        giftedSubscriberRef.current.has(key) && !normalSubscriberRef.current.has(key)
+      const isEligibleSubscriber = hasActiveSub && !isGiftedOnly
 
       if (subsOnly && !isEligibleSubscriber) return
 
@@ -97,12 +114,14 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
 
   async function connect() {
     setError('')
+    setVerifyWarning('')
     setStatus('connecting')
 
     // Fresh start each connection: previously-collected (and previously-picked)
     // viewers are cleared, so everyone must re-type the keyword to enter.
     seenRef.current = new Set()
     normalSubscriberRef.current = new Set()
+    giftedSubscriberRef.current = new Set()
     setEntriesRaw('')
     setSubsRaw('')
 
@@ -124,20 +143,20 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
       return
     }
 
-    // Subscriber verification must never block the live chat connection. Until
-    // this list is ready, subscriber-only mode simply admits nobody, which is
-    // safer than allowing gifted subscribers through.
-    void fetch('/api/subscribers', { cache: 'no-store' })
-      .then(async (res) => {
-        if (!res.ok) return
-        const data = await res.json() as { usernames?: string[] }
-        normalSubscriberRef.current = new Set(
-          (data.usernames ?? []).map((username) => username.toLowerCase())
-        )
-      })
-      .catch(() => {
-        // The chat remains connected; the subscriber-only pool stays empty.
-      })
+    // Load the paid/gifted lists BEFORE the socket opens, so the very first
+    // chat messages are judged with the lists in place. (Awaiting it also stops
+    // an early entrant being recorded as a non-sub and losing Subluck weight.)
+    try {
+      const res = await fetch('/api/subscribers', { cache: 'no-store' })
+      if (!res.ok) throw new Error(`verify returned ${res.status}`)
+      const data = (await res.json()) as { normal?: string[]; gifted?: string[] }
+      normalSubscriberRef.current = new Set((data.normal ?? []).map((u) => u.toLowerCase()))
+      giftedSubscriberRef.current = new Set((data.gifted ?? []).map((u) => u.toLowerCase()))
+    } catch {
+      // Chat still connects — but say so, rather than silently letting gifted
+      // subs through (or silently admitting nobody).
+      setVerifyWarning('Could not verify paid vs gifted subs — gifted subs may get through. Reconnect to retry.')
+    }
 
     try {
       const ws = new WebSocket(PUSHER_WS)
@@ -151,9 +170,8 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
       ws.onmessage = (ev) => {
         try {
           const frame = JSON.parse(ev.data)
-          const eventData = typeof frame.data === 'string' ? JSON.parse(frame.data) : frame.data
           if (frame.event === 'App\\Events\\ChatMessageEvent') {
-            const chat = eventData
+            const chat = typeof frame.data === 'string' ? JSON.parse(frame.data) : frame.data
             handleChatMessage(chat)
           }
         } catch {
@@ -278,6 +296,7 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
         </div>
 
         {error && <p className="text-red-400/80 text-xs leading-relaxed text-center mt-2">{error}</p>}
+        {verifyWarning && <p className="text-amber-400/90 text-xs leading-relaxed text-center mt-2">⚠ {verifyWarning}</p>}
       </div>
 
       {/* Stacked: Step 1 (roller) above Step 2 (prize wheel) */}

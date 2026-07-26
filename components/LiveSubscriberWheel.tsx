@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect, type ReactNode } from 'react'
-import Roller from '@/components/Roller'
+import Roller from './Roller'
 
 // Public Kick Pusher app key (same one Kick's own site uses for live chat).
 const PUSHER_WS = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0&flash=false'

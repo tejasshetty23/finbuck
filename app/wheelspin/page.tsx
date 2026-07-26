@@ -1,5 +1,5 @@
-import SpinWheel from '@/components/SpinWheel'
-import LiveSubscriberWheel from '@/components/LiveSubscriberWheel'
+import SpinWheel from '../../components/SpinWheel'
+import LiveSubscriberWheel from '../../components/LiveSubscriberWheel'
 
 const PRIZE_DEFAULTS = ['10$', '50$ Buy In', '20$', '10$ Buy In', '50$', '20$ Buy In']
 

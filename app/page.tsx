@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import CopyButton from '@/components/CopyButton'
+import CopyButton from '../components/CopyButton'
 
 const socials = [
   {

@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://finbuck.bet'),
   title: 'FinBuck — Kick Streamer',
   description: 'Official website of FinBuck — Casino, Gaming & Entertainment on Kick.',
   openGraph: {

@@ -114,6 +114,23 @@ body {
   transform: translateY(-2px);
 }
 
+/* VS emblem — floats gently. */
+@keyframes vs-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+.vs-float { animation: vs-float 3.4s ease-in-out infinite; }
+
+/* Purple twin of the sponsor card, used by the slot picker. */
+.picker-card {
+  transition: filter 0.4s ease, transform 0.3s ease;
+  filter: drop-shadow(0 0 18px rgba(168, 85, 247, 0.25));
+}
+.picker-card:hover {
+  filter: drop-shadow(0 0 6px #a855f7) drop-shadow(0 0 20px rgba(168,85,247,0.7)) drop-shadow(0 0 50px rgba(168,85,247,0.3));
+  transform: translateY(-2px);
+}
+
 @keyframes gradient-shift {
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }

@@ -20,6 +20,7 @@ export default function Navbar() {
     { href: '/leaderboard', label: 'Leaderboard' },
     { href: '/tournaments', label: 'Tournaments' },
     { href: '/wheelspin', label: 'Giveaways' },
+    { href: '/vschat', label: 'Slot Battles' },
     { href: '/shop', label: 'Shop' },
   ]
 
@@ -79,12 +80,12 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav — absolutely centered */}
-        <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+        <div className="hidden md:flex items-center gap-6 lg:gap-8 absolute left-1/2 -translate-x-1/2">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className={`text-sm font-semibold uppercase tracking-wider transition-colors ${
+              className={`text-sm font-semibold uppercase tracking-wider transition-colors whitespace-nowrap ${
                 pathname === l.href
                   ? 'text-[#00ff87]'
                   : 'text-gray-400 hover:text-white'

@@ -113,6 +113,8 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
   const [showWin, setShowWin] = useState(false)
   const [secondsLeft, setSecondsLeft] = useState(WATCH_SECONDS)
 
+  const [pickError, setPickError] = useState('')
+  const busyRef = useRef(false)
   const stripRef = useRef<HTMLDivElement>(null)
   const startRef = useRef(0)
   const targetRef = useRef(0)
@@ -204,17 +206,32 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showWin, winner])
 
-  function roll(exclude?: string | null) {
-    if (rolling || pool.length < 2) return
+  async function roll(exclude?: string | null) {
+    if (rolling || busyRef.current || pool.length < 2) return
+
+    // The winner is drawn on the server, so the never-pick list stays off the
+    // client entirely. Ineligible names still ride the strip, they just can't
+    // be selected.
+    busyRef.current = true
+    setPickError('')
+    let winnerName: string
+    try {
+      const res = await fetch('/api/roll', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ entrants: order, exclude: exclude ?? null }),
+      })
+      const data = (await res.json()) as { winner?: string; error?: string }
+      if (!res.ok || !data.winner) throw new Error(data.error ?? 'pick failed')
+      winnerName = data.winner
+    } catch {
+      busyRef.current = false
+      setPickError('Could not pick a winner — check the connection and try again.')
+      return
+    }
+    busyRef.current = false
 
     const L = order.length
-    // Pick a winner, optionally excluding the previous (absent) one.
-    let candidates = order
-    if (exclude) {
-      const filtered = order.filter((n) => n.toLowerCase() !== exclude.toLowerCase())
-      if (filtered.length) candidates = filtered
-    }
-    const winnerName = candidates[randInt(candidates.length)]
     const idx = order.indexOf(winnerName)
 
     // Repeat the randomized list enough times to give a long roll, then land on
@@ -236,6 +253,7 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
     setRollSeq((x) => x + 1)
   }
 
+  // At least one entrant must be eligible to win, or there's nothing to roll for.
   const canRoll = pool.length >= 2 && !rolling
 
   return (
@@ -291,6 +309,8 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
       >
         {rolling ? 'Rolling…' : 'Roll'}
       </button>
+
+      {pickError && <p className="mt-3 text-red-400/90 text-xs text-center">{pickError}</p>}
 
       {/* Win popup */}
       {showWin && winner && (

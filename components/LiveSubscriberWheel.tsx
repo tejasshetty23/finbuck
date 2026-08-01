@@ -22,7 +22,7 @@ interface ChatBadge {
 }
 
 export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: ReactNode }) {
-  const [keyword, setKeyword] = useState('!buck')
+  const [keyword, setKeyword] = useState('buck')
   const [subsOnly, setSubsOnly] = useState(false)
   // Subluck: when subs-only is off, subscribers get 2x entries on the roller.
   const [subLuck, setSubLuck] = useState(false)
@@ -243,7 +243,7 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             disabled={isConnected}
-            placeholder="!buck"
+            placeholder="buck"
             className="w-full h-12 bg-[#0d0a1a] border border-purple-700/50 rounded-lg px-4 text-base text-white focus:outline-none focus:border-[#00ff87] disabled:opacity-50"
           />
         </div>

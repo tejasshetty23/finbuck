@@ -489,40 +489,37 @@ function fitFont(text: string, fitChars: number, minPx: number, vw: number, maxP
   return `clamp(${Math.max(7, minPx * k).toFixed(1)}px, ${(vw * k).toFixed(2)}vw, ${(maxPx * k).toFixed(1)}px)`
 }
 
-function parseMult(s: string): number | null {
-  const cleaned = s.replace(/[^0-9.]/g, '')
-  if (!cleaned) return null
-  const n = parseFloat(cleaned)
-  return Number.isNaN(n) ? null : n
-}
-
 /** Reusable avatar with drag-drop / click-to-upload. */
 // Frame aspect + overlay regions (percentages of the frame box), tuned to the
 // neon frame artwork so content sits inside the circle / name bar / slot boxes.
-// Each frame crop has its own aspect ratio and its own ring position, measured
-// from the artwork. The avatar is sized to the ring's INNER diameter (plus a
-// hair of overlap) and the frame renders on top, so the neon ring always draws
-// cleanly over the photo's edge.
+// Positions are percentages of the frame box, measured from the artwork by
+// scanning for its neon lines. The avatar sits just inside the ring and the
+// frame renders on top, so the ring always draws cleanly over the photo's edge.
+// The artwork carries no text — SLOT/WINNER are drawn as HTML so they stay
+// editable and can never desync from the image.
 type Region = {
   ar: number
   avatar: { x: number; y: number; size: number }
   name: { x: number; y: number; w: number }
   slot: { x: number; y: number; w: number }
-  mult: { x: number; y: number; w: number }
+  win: { x: number; y: number; w: number }
+  slotLabelY: number
 }
 const REGION_GREEN: Region = {
-  ar: 715 / 1023,
-  avatar: { x: 44.83, y: 23.56, size: 29.6 },
-  name: { x: 45.0, y: 38.5, w: 33 },
-  slot: { x: 44.6, y: 54.0, w: 54 },
-  mult: { x: 44.7, y: 73.6, w: 54 },
+  ar: 659 / 1024,
+  avatar: { x: 50, y: 23.3, size: 32 },
+  name: { x: 50, y: 39.2, w: 55 },
+  slot: { x: 50, y: 54.7, w: 66 },
+  win: { x: 50, y: 77.6, w: 60 },
+  slotLabelY: 44.8,
 }
 const REGION_PURPLE: Region = {
-  ar: 705 / 1021,
-  avatar: { x: 51.63, y: 23.6, size: 30.4 },
-  name: { x: 51.35, y: 38.5, w: 33 },
-  slot: { x: 51.4, y: 54.1, w: 56 },
-  mult: { x: 51.4, y: 73.6, w: 56 },
+  ar: 664 / 1024,
+  avatar: { x: 50, y: 23.3, size: 32 },
+  name: { x: 50, y: 39.2, w: 55 },
+  slot: { x: 50, y: 54.7, w: 66 },
+  win: { x: 50, y: 77.6, w: 60 },
+  slotLabelY: 44.8,
 }
 
 interface Fighter {
@@ -538,11 +535,11 @@ interface Fighter {
   setName: (v: string) => void
   slot: string
   setSlot: (v: string) => void
-  mult: string
-  setMult: (v: string) => void
+  /** Fill for this side's winner button. */
+  gradient: string
 }
 
-function FighterCard({ f, frameSrc, fillSrc, region, winner }: { f: Fighter; frameSrc: string; fillSrc: string; region: Region; winner: boolean | null }) {
+function FighterCard({ f, frameSrc, fillSrc, region, winner, onWin }: { f: Fighter; frameSrc: string; fillSrc: string; region: Region; winner: boolean | null; onWin: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const glow = winner === true
   const handle = (file?: File) => { if (file) f.setImg(URL.createObjectURL(file)) }
@@ -599,17 +596,58 @@ function FighterCard({ f, frameSrc, fillSrc, region, winner }: { f: Fighter; fra
         onChange={(e) => f.setSlot(e.target.value)}
         placeholder="—"
         className="absolute -translate-x-1/2 -translate-y-1/2 text-center bg-transparent font-bold text-white focus:outline-none placeholder-gray-600"
-        style={{ left: `${region.slot.x}%`, top: `${region.slot.y}%`, width: `${region.slot.w}%`, fontSize: fitFont(f.slot, 18, 10, 1.9, 15) }}
+        style={{ left: `${region.slot.x}%`, top: `${region.slot.y}%`, width: `${region.slot.w}%`, fontSize: fitFont(f.slot, 18, 14, 2.8, 22) }}
       />
 
-      {/* Multiplier */}
-      <input
-        value={f.mult}
-        onChange={(e) => f.setMult(e.target.value)}
-        placeholder="0x"
-        className="absolute -translate-x-1/2 -translate-y-1/2 text-center bg-transparent font-black focus:outline-none placeholder-gray-700"
-        style={{ left: `${region.mult.x}%`, top: `${region.mult.y}%`, width: `${region.mult.w}%`, color: f.color, fontSize: fitFont(f.mult || '0x', 7, 22, 4.6, 40) }}
-      />
+      {/* Section label, drawn as HTML so it stays editable and can never
+          desync from the artwork. */}
+      <span
+        className="absolute -translate-x-1/2 -translate-y-1/2 font-bold uppercase pointer-events-none select-none"
+        style={{
+          left: '50%',
+          top: `${region.slotLabelY}%`,
+          color: f.color,
+          fontSize: 'clamp(9px, 1.3vw, 12px)',
+          letterSpacing: '0.25em',
+        }}
+      >
+        Slot
+      </span>
+
+      {/* Declare this side the winner — chamfered badge to match the frame's
+          own cut-corner boxes, instead of a plain rounded rectangle. */}
+      <button
+        onClick={onWin}
+        className="absolute -translate-x-1/2 -translate-y-1/2 group transition-transform hover:scale-[1.03] active:scale-[0.97]"
+        style={{ left: `${region.win.x}%`, top: `${region.win.y}%`, width: `${region.win.w}%` }}
+      >
+        {/* Gradient border ring */}
+        <div
+          className="relative transition-all duration-300"
+          style={{
+            clipPath: 'polygon(13px 0%, 100% 0%, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0% 100%, 0% 13px)',
+            background: `linear-gradient(135deg, ${f.color}, ${f.color}88)`,
+            padding: '2px',
+            boxShadow: winner === true ? `0 0 24px ${f.color}` : 'none',
+            opacity: winner === false ? 0.5 : 1,
+          }}
+        >
+          {/* Fill */}
+          <div
+            className="flex items-center justify-center font-black uppercase tracking-widest transition-all duration-300"
+            style={{
+              clipPath: 'polygon(11px 0%, 100% 0%, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0% 100%, 0% 11px)',
+              background: winner === true ? f.gradient : `linear-gradient(160deg, ${f.color}14 0%, #07050a 70%)`,
+              color: winner === true ? '#08060f' : f.color,
+              paddingTop: '0.65rem',
+              paddingBottom: '0.65rem',
+              fontSize: 'clamp(11px, 1.6vw, 14px)',
+            }}
+          >
+            {winner === true ? 'Winner' : 'Declare winner'}
+          </div>
+        </div>
+      </button>
     </div>
   )
 }
@@ -619,22 +657,74 @@ export default function VsChatPage() {
   const [houseImg, setHouseImg] = useState('/finbuck-avatar.webp')
   const [houseName, setHouseName] = useState('FinBuck')
   const [houseSlot, setHouseSlot] = useState('')
-  const [houseMult, setHouseMult] = useState('')
 
-  const [chatImg, setChatImg] = useState('/gigachad.webp')
+  const [chatImg, setChatImg] = useState('/deer.webp')
   const [chatName, setChatName] = useState('Chat')
   const [chatSlot, setChatSlot] = useState('')
-  const [chatMult, setChatMult] = useState('')
 
 
-  const hm = parseMult(houseMult)
-  const cm = parseMult(chatMult)
+  // Winner is declared with the button on each card; click the same side again
+  // to clear it (and undo that round's point). Switching sides corrects the
+  // previous point rather than double-counting.
+  const [outcome, setOutcome] = useState<'chat' | 'house' | null>(null)
 
-  let outcome: 'chat' | 'house' | 'tie' | null = null
-  if (hm !== null && cm !== null) outcome = cm > hm ? 'chat' : hm > cm ? 'house' : 'tie'
+  // Running score, persisted so it survives a refresh. Starts at 0-0 on the
+  // server/first paint, then loads whatever was saved once the page mounts —
+  // that one-time swap avoids a server/client hydration mismatch.
+  const SCORE_KEY = 'vschat-score'
+  const [score, setScore] = useState({ house: 0, chat: 0 })
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SCORE_KEY)
+      if (saved) setScore(JSON.parse(saved))
+    } catch {
+      /* localStorage unavailable — score just won't persist */
+    }
+  }, [])
+  useEffect(() => {
+    try {
+      localStorage.setItem(SCORE_KEY, JSON.stringify(score))
+    } catch {
+      /* ignore */
+    }
+  }, [score])
 
-  const house: Fighter = { role: 'The House', color: '#00ff87', img: houseImg, setImg: setHouseImg, name: houseName, setName: setHouseName, slot: houseSlot, setSlot: setHouseSlot, mult: houseMult, setMult: setHouseMult }
-  const chat: Fighter = { role: 'Challenger · from chat', color: '#a855f7', img: chatImg, setImg: setChatImg, name: chatName, setName: setChatName, slot: chatSlot, setSlot: setChatSlot, mult: chatMult, setMult: setChatMult }
+  function declareWinner(side: 'house' | 'chat') {
+    if (outcome === side) {
+      // Same side clicked again — undo the declaration and its point.
+      setOutcome(null)
+      setScore((s) => ({ ...s, [side]: Math.max(0, s[side] - 1) }))
+    } else if (outcome) {
+      // Switching sides mid-round: correct the earlier point instead of
+      // letting both sides end up with one.
+      const prev = outcome
+      setScore((s) => ({ ...s, [prev]: Math.max(0, s[prev] - 1), [side]: s[side] + 1 }))
+      setOutcome(side)
+    } else {
+      setScore((s) => ({ ...s, [side]: s[side] + 1 }))
+      setOutcome(side)
+    }
+  }
+
+  // Resets the picker (and clears any declared winner) for the next battle —
+  // the running score is untouched, so it's still there after a refresh too.
+  function resetRound() {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setRolling(false)
+    setDisplay('Ready to roll')
+    setLanded('')
+    setOutcome(null)
+    setHouseSlot('')
+    setChatSlot('')
+  }
+
+  function resetScore() {
+    setScore({ house: 0, chat: 0 })
+    setOutcome(null)
+  }
+
+  const house: Fighter = { role: 'The House', color: '#00ff87', gradient: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)', img: houseImg, setImg: setHouseImg, name: houseName, setName: setHouseName, slot: houseSlot, setSlot: setHouseSlot }
+  const chat: Fighter = { role: 'Challenger · from chat', color: '#a855f7', gradient: 'linear-gradient(135deg, #c084fc, #a855f7, #7c3aed)', img: chatImg, setImg: setChatImg, name: chatName, setName: setChatName, slot: chatSlot, setSlot: setChatSlot }
 
   // ── Random slot picker ──
   const pool = DEFAULT_POOL
@@ -692,13 +782,36 @@ export default function VsChatPage() {
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight mb-4 whitespace-nowrap">
           <span className="animated-gradient-text">Slot</span> <span className="animated-gradient-text-purple">Battles</span>
         </h1>
-        <p className="text-gray-500 text-base max-w-lg mx-auto">
+        <p className="text-gray-500 text-base max-w-lg mx-auto mb-6">
           A viewer takes on the house. Both spin a slot — highest multiplier wins. Beat FinBuck, take the prize.
         </p>
+
+        {/* Running score — persisted in this browser only, survives a refresh */}
+        <div className="inline-flex items-center gap-5 rounded-xl border border-purple-900/40 bg-[#0d0a1a]/70 px-6 py-3">
+          <div className="text-center">
+            <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#00ff87' }}>FinBuck</p>
+            <p className="text-3xl font-black" style={{ color: '#00ff87' }}>{score.house}</p>
+          </div>
+          <span className="text-gray-600 font-black text-lg">—</span>
+          <div className="text-center">
+            <p className="text-[10px] font-black uppercase tracking-widest text-purple-300">Chat</p>
+            <p className="text-3xl font-black text-purple-300">{score.chat}</p>
+          </div>
+          <button
+            onClick={resetScore}
+            title="Reset score to 0-0"
+            className="ml-2 text-gray-600 hover:text-red-400 transition-colors"
+            aria-label="Reset score"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Random slot picker */}
-      <div className="max-w-5xl mx-auto mb-16">
+      <div className="max-w-5xl mx-auto mb-6">
         <div className="flex items-center gap-3 mb-6 justify-center">
           <div className="h-px flex-1 max-w-[80px] bg-gradient-to-r from-transparent to-purple-500/40" />
           <span className="text-purple-300 text-xs font-black uppercase tracking-[0.3em]">Random Slot Picker</span>
@@ -743,6 +856,13 @@ export default function VsChatPage() {
               >
                 {rolling ? 'Rolling…' : 'Randomize'}
               </button>
+              <button
+                onClick={resetRound}
+                title="Clear the picker and any declared winner — score is kept"
+                className="border border-purple-500/50 text-purple-300 hover:bg-purple-500/10 hover:text-white font-bold py-3 px-5 rounded-xl uppercase tracking-widest text-sm transition-all"
+              >
+                Reset
+              </button>
               {landed && !rolling && (
                 <>
                   <button onClick={() => setHouseSlot(landed)} className="border border-[#00ff87]/50 text-[#00ff87] hover:bg-[#00ff87]/10 font-bold py-2.5 px-3 rounded-lg uppercase tracking-widest text-[10px] transition-all">→ FinBuck</button>
@@ -757,8 +877,8 @@ export default function VsChatPage() {
       {/* Arena */}
       <div className="max-w-5xl mx-auto mb-16">
         <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
-          <div className="w-full md:flex-1 max-w-[330px]">
-            <FighterCard f={house} frameSrc="/frame-green.webp" fillSrc="/frame-green-fill.webp" region={REGION_GREEN} winner={outcome ? outcome === 'house' : null} />
+          <div className="w-full md:flex-1 max-w-[320px]">
+            <FighterCard f={house} frameSrc="/frame2-green.webp" fillSrc="/frame2-green-fill.webp" region={REGION_GREEN} winner={outcome ? outcome === 'house' : null} onWin={() => declareWinner('house')} />
           </div>
 
           {/* VS emblem — floats gently */}
@@ -767,12 +887,12 @@ export default function VsChatPage() {
             <img
               src="/vs.webp"
               alt="VS"
-              className="vs-float relative w-24 sm:w-32 h-auto select-none pointer-events-none"
+              className="vs-float relative w-28 sm:w-36 h-auto select-none pointer-events-none"
             />
           </div>
 
-          <div className="w-full md:flex-1 max-w-[330px]">
-            <FighterCard f={chat} frameSrc="/frame-purple.webp" fillSrc="/frame-purple-fill.webp" region={REGION_PURPLE} winner={outcome ? outcome === 'chat' : null} />
+          <div className="w-full md:flex-1 max-w-[320px]">
+            <FighterCard f={chat} frameSrc="/frame2-purple.webp" fillSrc="/frame2-purple-fill.webp" region={REGION_PURPLE} winner={outcome ? outcome === 'chat' : null} onWin={() => declareWinner('chat')} />
           </div>
         </div>
 
@@ -785,10 +905,10 @@ export default function VsChatPage() {
             : { color: '#c07cff', bg: 'linear-gradient(135deg, #1d0b33 0%, #0f0619 55%, #000000 100%)', border: 'rgba(168,85,247,0.6)', glow: 'rgba(168,85,247,0.3)' }
           return (
             <div
-              className="mt-4 rounded-2xl px-6 py-4 text-center transition-colors"
+              className="mt-4 rounded-2xl px-6 py-4 flex flex-wrap items-center justify-center gap-4 transition-colors"
               style={{
-                background: isWin ? win.bg : outcome === 'tie' ? '#26233a' : '#0d0a1a99',
-                border: isWin ? `1px solid ${win.border}` : outcome === 'tie' ? 'none' : '1px solid rgba(168,85,247,0.55)',
+                background: isWin ? win.bg : '#0d0a1a99',
+                border: isWin ? `1px solid ${win.border}` : '1px solid rgba(168,85,247,0.55)',
                 boxShadow: isWin ? `0 0 28px ${win.glow}` : 'none',
               }}
             >
@@ -808,12 +928,9 @@ export default function VsChatPage() {
                   🏆 More keno money for Fin!
                 </span>
               )}
-              {outcome === 'tie' && (
-                <span className="font-black uppercase tracking-wide text-gray-300 text-lg">Dead heat - respin</span>
-              )}
               {!outcome && (
                 <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#00ff87' }}>
-                  Enter both multipliers to call the winner
+                  Tap a card to declare the winner
                 </span>
               )}
             </div>

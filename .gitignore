@@ -5,6 +5,8 @@ node_modules/
 
 # next.js
 /.next/
+# previous build kept by deploy.sh so a failed rebuild can be rolled back
+/.next.prev/
 /out/
 
 # production

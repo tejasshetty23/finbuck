@@ -42,22 +42,59 @@ function shuffle<T>(arr: T[]): T[] {
   return a
 }
 
-// Shuffle, then push apart any identical neighbours (e.g. a subscriber's two
-// Subluck entries) so the same name never sits back-to-back on the roller.
-function shuffleSpread(arr: string[]): string[] {
-  const a = shuffle(arr)
-  for (let i = 1; i < a.length; i++) {
-    if (a[i] !== a[i - 1]) continue
-    for (let j = i + 1; j < a.length; j++) {
-      const okHere = a[j] !== a[i - 1] && (i + 1 >= a.length || a[j] !== a[i + 1])
-      const okThere = a[j - 1] !== a[i] && (j + 1 >= a.length || a[j + 1] !== a[i])
-      if (okHere && okThere) {
-        ;[a[i], a[j]] = [a[j], a[i]]
-        break
-      }
-    }
+// The strip repeats the order end-to-end, so the last card sits next to the
+// first one — the wrap-around pair counts as adjacent too.
+function hasAdjacentDupe(a: string[]): boolean {
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] === a[(i + 1) % a.length]) return true
   }
-  return a
+  return false
+}
+
+// Scramble the pool so no name lands next to another copy of itself (a
+// subscriber holds two entries under Subluck, and those two arrive adjacent).
+function shuffleSpread(arr: string[]): string[] {
+  const n = arr.length
+  if (n < 3) return shuffle(arr)
+
+  const counts = new Map<string, number>()
+  for (const s of arr) counts.set(s, (counts.get(s) ?? 0) + 1)
+  let maxCount = 0
+  const names: string[] = []
+  counts.forEach((c, nm) => {
+    names.push(nm)
+    if (c > maxCount) maxCount = c
+  })
+
+  // More copies than gaps to put between them — no arrangement can separate
+  // them all, so shuffle and accept it rather than retry forever.
+  if (maxCount > Math.floor(n / 2)) return shuffle(arr)
+
+  // Reshuffle until the draw happens to be clean. Rejection sampling like this
+  // is uniform over valid orders, so the strip stays genuinely random instead
+  // of falling into the repeating pattern a repair pass would leave behind.
+  for (let attempt = 0; attempt < 200; attempt++) {
+    const a = shuffle(arr)
+    if (!hasAdjacentDupe(a)) return a
+  }
+
+  // Fallback for pools too tightly packed to land a clean shuffle by chance:
+  // deal the most-repeated names into even slots, then odd, which spaces every
+  // copy at least two apart by construction.
+  const byCount = shuffle(names)
+  byCount.sort((x, y) => counts.get(y)! - counts.get(x)!)
+  const flat: string[] = []
+  for (const nm of byCount) {
+    for (let k = 0; k < counts.get(nm)!; k++) flat.push(nm)
+  }
+  const out = new Array<string>(n)
+  let pos = 0
+  for (const nm of flat) {
+    out[pos] = nm
+    pos += 2
+    if (pos >= n) pos = 1
+  }
+  return out
 }
 
 // Repeat the list in its given order `blocks` times: every name appears once

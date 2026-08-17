@@ -17,7 +17,7 @@ export default function Navbar() {
 
   const links = [
     { href: '/', label: 'Home' },
-    { href: '/leaderboard', label: 'Leaderboard' },
+    { href: '/leaderboard', label: 'Watchtime' },
     { href: '/tournaments', label: 'Tournaments' },
     { href: '/wheelspin', label: 'Giveaways' },
     { href: '/vschat', label: 'Slot Battles' },

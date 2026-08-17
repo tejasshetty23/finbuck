@@ -98,15 +98,17 @@ export default function Home() {
               </span>
               Watch Live
             </a>
-            <Link
-              href="/leaderboard"
+            <a
+              href="https://gamba.com/promotions/exclusive-leaderboards/18090"
+              target="_blank"
+              rel="noopener noreferrer sponsored"
               className="flex items-center gap-2 border border-purple-500/50 hover:border-purple-400 text-purple-300 hover:text-white font-semibold px-6 py-3 rounded-xl text-sm uppercase tracking-widest transition-all duration-200 hover:bg-purple-500/10"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               Leaderboard
-            </Link>
+            </a>
           </div>
         </div>
 

@@ -300,7 +300,7 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
       {/* Header */}
       <div className="max-w-4xl mx-auto mb-12 text-center">
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
-          Watch Time<br />
+          Watchtime<br />
           <span className="animated-gradient-text">Leaderboard</span>
         </h1>
         <p className="text-gray-500 text-base max-w-md mx-auto mb-8">

@@ -315,13 +315,13 @@ export default function Home() {
               Monthly <span className="text-purple-400">Watchtime Leaderboard</span>
             </h2>
             <p className="text-gray-400 text-base mb-8 max-w-md mx-auto">
-              Who&apos;s the most loyal viewer this month? Check the watch time leaderboard — top fans win recognition every month.
+              Who&apos;s the most loyal viewer this month? Check the watchtime leaderboard — top fans win recognition every month.
             </p>
             <Link
               href="/leaderboard"
               className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold px-8 py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(168,85,247,0.2)] hover:shadow-[0_0_40px_rgba(168,85,247,0.4)]"
             >
-              View Leaderboard
+              View Watchtime
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>

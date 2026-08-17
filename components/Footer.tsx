@@ -11,7 +11,7 @@ export default function Footer() {
 
         <div className="flex gap-6 text-sm text-gray-500">
           <Link href="/" className="hover:text-[#00ff87] transition-colors">Home</Link>
-          <Link href="/leaderboard" className="hover:text-[#00ff87] transition-colors">Leaderboard</Link>
+          <Link href="/leaderboard" className="hover:text-[#00ff87] transition-colors">Watchtime</Link>
           <Link href="/tournaments" className="hover:text-[#00ff87] transition-colors">Tournaments</Link>
           <Link href="/wheelspin" className="hover:text-[#00ff87] transition-colors">Giveaways</Link>
           <Link href="/vschat" className="hover:text-[#00ff87] transition-colors">Slot Battles</Link>

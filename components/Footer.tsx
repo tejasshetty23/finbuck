@@ -4,7 +4,19 @@ export default function Footer() {
   return (
     <footer className="border-t border-purple-900/20 bg-[#07050f] py-10 mt-20">
       <div className="max-w-6xl mx-auto px-6 flex flex-col gap-8">
-        {/* Brand + legal share the top row */}
+        {/* Nav sits on its own full-width row: sharing with the brand and legal
+            text squeezed it enough to break labels mid-word ("Slot Battles"). */}
+        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500 whitespace-nowrap">
+          <Link href="/" className="hover:text-[#00ff87] transition-colors">Home</Link>
+          <Link href="/leaderboard" className="hover:text-[#00ff87] transition-colors">Watchtime</Link>
+          <Link href="/tournaments" className="hover:text-[#00ff87] transition-colors">Tournaments</Link>
+          <Link href="/wheelspin" className="hover:text-[#00ff87] transition-colors">Giveaways</Link>
+          <Link href="/vschat" className="hover:text-[#00ff87] transition-colors">Slot Battles</Link>
+          <Link href="/shop" className="hover:text-[#00ff87] transition-colors">Shop</Link>
+          <a href="https://kick.com/finbuck" target="_blank" rel="noopener noreferrer" className="hover:text-[#00ff87] transition-colors">Watch Live</a>
+        </div>
+
+        {/* Brand + legal below it */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-center md:text-left">
             <span className="font-black text-lg tracking-widest uppercase text-white">FinBuck</span>
@@ -23,18 +35,6 @@ export default function Footer() {
               </a>
             </p>
           </div>
-        </div>
-
-        {/* Nav gets the full width to itself — sharing the row with the brand and
-            legal text squeezed it enough to break labels mid-word ("Slot Battles"). */}
-        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500 whitespace-nowrap">
-          <Link href="/" className="hover:text-[#00ff87] transition-colors">Home</Link>
-          <Link href="/leaderboard" className="hover:text-[#00ff87] transition-colors">Watchtime</Link>
-          <Link href="/tournaments" className="hover:text-[#00ff87] transition-colors">Tournaments</Link>
-          <Link href="/wheelspin" className="hover:text-[#00ff87] transition-colors">Giveaways</Link>
-          <Link href="/vschat" className="hover:text-[#00ff87] transition-colors">Slot Battles</Link>
-          <Link href="/shop" className="hover:text-[#00ff87] transition-colors">Shop</Link>
-          <a href="https://kick.com/finbuck" target="_blank" rel="noopener noreferrer" className="hover:text-[#00ff87] transition-colors">Watch Live</a>
         </div>
       </div>
     </footer>

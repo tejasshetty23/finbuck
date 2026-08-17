@@ -84,7 +84,7 @@ export default function Home() {
             </h1>
           </div>
 
-          <div className="flex flex-col items-center justify-center gap-4 mt-16 w-full max-w-[260px] mx-auto">
+          <div className="flex flex-col items-center justify-center gap-4 mt-24 w-full max-w-[260px] mx-auto">
             <a
               href="https://kick.com/finbuck"
               target="_blank"

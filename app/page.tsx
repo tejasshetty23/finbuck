@@ -89,17 +89,23 @@ export default function Home() {
               href="https://kick.com/finbuck"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center justify-center w-full gap-3 text-black font-bold px-4 py-3.5 text-sm uppercase tracking-wider transition-all duration-200 shadow-[0_0_30px_rgba(0,255,135,0.3)] hover:shadow-[0_0_50px_rgba(0,255,135,0.5)]"
+              className="group w-full p-[2px] transition-all duration-200 shadow-[0_0_20px_rgba(0,255,135,0.15)] hover:shadow-[0_0_40px_rgba(0,255,135,0.45)]"
               style={{
                 clipPath: 'polygon(10px 0%, calc(100% - 10px) 0%, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0% calc(100% - 10px), 0% 10px)',
                 background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a, #00ff87)',
               }}
             >
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-50"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-black"></span>
+              {/* Inner face — translucent so the hero image still reads through */}
+              <span
+                className="flex items-center justify-center w-full gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-[#00ff87] group-hover:text-white transition-colors bg-[#0a0715]/80 backdrop-blur-sm"
+                style={{ clipPath: 'polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px)' }}
+              >
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ff87] opacity-60"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[#00ff87]"></span>
+                </span>
+                Watch Live
               </span>
-              Watch Live
             </a>
             <a
               href="https://gamba.com/promotions/exclusive-leaderboards/18090"

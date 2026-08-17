@@ -71,11 +71,6 @@ export default function Home() {
 
         {/* Content */}
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-[#00ff87]/10 border border-[#00ff87]/30 rounded-full px-4 py-1.5 mb-6">
-            <span className="w-2 h-2 bg-[#00ff87] rounded-full animate-pulse" />
-            <span className="text-[#00ff87] text-sm font-semibold tracking-widest uppercase">Live on Kick</span>
-          </div>
-
           <div className="mb-4">
             <p className="text-gray-400 text-xs md:text-sm font-semibold uppercase tracking-[0.4em] mb-2">Welcome to</p>
             <h1 className="font-black uppercase tracking-tight leading-tight animated-gradient-text">

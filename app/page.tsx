@@ -312,7 +312,7 @@ export default function Home() {
             </svg>
 
             <h2 className="text-3xl md:text-4xl font-black uppercase text-white mb-3">
-              Monthly <span className="text-purple-400">Leaderboard</span>
+              Monthly <span className="text-purple-400">Watchtime Leaderboard</span>
             </h2>
             <p className="text-gray-400 text-base mb-8 max-w-md mx-auto">
               Who&apos;s the most loyal viewer this month? Check the watch time leaderboard — top fans win recognition every month.

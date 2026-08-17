@@ -84,12 +84,12 @@ export default function Home() {
             </h1>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-16">
+          <div className="flex flex-col items-center justify-center gap-4 mt-16 w-full max-w-[300px] mx-auto">
             <a
               href="https://kick.com/finbuck"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-3 text-black font-bold px-6 py-3 rounded-xl text-sm uppercase tracking-widest transition-all duration-200 shadow-[0_0_30px_rgba(0,255,135,0.3)] hover:shadow-[0_0_50px_rgba(0,255,135,0.5)]"
+              className="group flex items-center justify-center w-full gap-3 text-black font-bold px-6 py-3 rounded-xl text-sm uppercase tracking-widest transition-all duration-200 shadow-[0_0_30px_rgba(0,255,135,0.3)] hover:shadow-[0_0_50px_rgba(0,255,135,0.5)]"
               style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)' }}
             >
               <span className="relative flex h-3 w-3">
@@ -102,12 +102,12 @@ export default function Home() {
               href="https://gamba.com/promotions/exclusive-leaderboards/18090"
               target="_blank"
               rel="noopener noreferrer sponsored"
-              className="flex items-center gap-2 border border-purple-500/50 hover:border-purple-400 text-purple-300 hover:text-white font-semibold px-6 py-3 rounded-xl text-sm uppercase tracking-widest transition-all duration-200 hover:bg-purple-500/10"
+              className="flex items-center justify-center w-full gap-2 border border-purple-500/50 hover:border-purple-400 text-purple-300 hover:text-white font-semibold px-6 py-3 rounded-xl text-sm uppercase tracking-widest transition-all duration-200 hover:bg-purple-500/10"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              Leaderboard
+              Gamba Leaderboard
             </a>
           </div>
         </div>

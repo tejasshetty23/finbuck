@@ -199,15 +199,15 @@ export default function Home() {
               >
                 <span className="text-[#00ff87]/70 text-xs font-bold uppercase tracking-[0.3em]">Use Code</span>
                 <div className="flex items-center gap-3">
-                  <span className="text-[#00ff87] font-black text-4xl tracking-widest">GEMZZ</span>
-                  <CopyButton code="GEMZZ" />
+                  <span className="text-[#00ff87] font-black text-4xl tracking-widest">FINBUCK</span>
+                  <CopyButton code="FINBUCK" />
                 </div>
               </div>
             </div>
 
             {/* CTA button */}
             <a
-              href="https://stake.com/?c=Gemzzstream"
+              href="https://gamba.com/?c=finbuck"
               target="_blank"
               rel="noopener noreferrer sponsored"
               className="w-full flex items-center justify-center gap-2 text-black font-black py-4 uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(0,255,135,0.3)] hover:shadow-[0_0_40px_rgba(0,255,135,0.5)]"
@@ -216,7 +216,7 @@ export default function Home() {
                 background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a, #00ff87)',
               }}
             >
-              Play on Stake.com
+              Play on Gamba.com
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
               </svg>

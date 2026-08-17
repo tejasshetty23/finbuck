@@ -160,10 +160,10 @@ export default function Home() {
             {/* Logo */}
             <div className="pt-2">
               <Image
-                src="/stake-logo.png"
-                alt="Stake.com"
-                width={120}
-                height={55}
+                src="/gamba-logo.png"
+                alt="Gamba"
+                width={150}
+                height={52}
                 className="object-contain"
               />
             </div>

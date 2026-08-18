@@ -68,19 +68,22 @@ const WAGER_RANKS = [
   { place: '10', amount: '$150', accent: 'green' as const },
 ]
 
+// Each accent carries a doubled box-shadow (tight halo + wide bloom) plus an
+// inset so the card looks lit from within, and a text-shadow so the numbers
+// glow rather than just sitting on a glowing card.
 const WAGER_ACCENT = {
   green: {
     border: 'border-[#8fff3f]',
-    glow: 'shadow-[0_0_25px_rgba(143,255,63,0.22)]',
-    text: 'text-[#8fff3f]',
-    band: 'bg-[#8fff3f] text-black',
+    glow: 'shadow-[0_0_20px_rgba(143,255,63,0.5),0_0_50px_rgba(143,255,63,0.28),inset_0_0_20px_rgba(143,255,63,0.14)]',
+    text: 'text-[#8fff3f] [text-shadow:0_0_14px_rgba(143,255,63,0.85)]',
+    band: 'bg-[#8fff3f] text-black shadow-[0_0_26px_rgba(143,255,63,0.75)]',
     face: 'bg-[#071200]',
   },
   purple: {
     border: 'border-[#a855f7]',
-    glow: 'shadow-[0_0_25px_rgba(168,85,247,0.22)]',
-    text: 'text-[#c084fc]',
-    band: 'bg-[#a855f7] text-black',
+    glow: 'shadow-[0_0_20px_rgba(168,85,247,0.5),0_0_50px_rgba(168,85,247,0.28),inset_0_0_20px_rgba(168,85,247,0.14)]',
+    text: 'text-[#c084fc] [text-shadow:0_0_14px_rgba(192,132,252,0.85)]',
+    band: 'bg-[#a855f7] text-black shadow-[0_0_26px_rgba(168,85,247,0.75)]',
     face: 'bg-[#0c0620]',
   },
 }
@@ -308,9 +311,12 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-center font-black uppercase leading-[0.95] mb-10">
             <span className="block text-4xl sm:text-5xl md:text-6xl">
-              <span className="text-[#8fff3f]">{WAGER_TOTAL}</span> <span className="text-white">Monthly</span>
+              <span className="text-[#8fff3f] [text-shadow:0_0_25px_rgba(143,255,63,0.9),0_0_60px_rgba(143,255,63,0.5)]">{WAGER_TOTAL}</span>{' '}
+              <span className="text-white [text-shadow:0_0_25px_rgba(255,255,255,0.55),0_0_60px_rgba(255,255,255,0.25)]">Monthly</span>
             </span>
-            <span className="block text-2xl sm:text-3xl md:text-4xl text-purple-400 mt-2">Wager Leaderboard</span>
+            <span className="block text-2xl sm:text-3xl md:text-4xl text-purple-400 mt-2 [text-shadow:0_0_22px_rgba(168,85,247,0.9),0_0_55px_rgba(168,85,247,0.45)]">
+              Wager Leaderboard
+            </span>
           </h2>
 
           {/* Top three — 1st is taller, so items-end keeps the trio sitting on one baseline */}
@@ -324,8 +330,8 @@ export default function Home() {
                     <span
                       className={`font-black tracking-tight ${
                         first
-                          ? 'text-[#8fff3f] text-2xl sm:text-4xl md:text-5xl'
-                          : 'text-white text-xl sm:text-3xl md:text-4xl'
+                          ? 'text-[#8fff3f] text-2xl sm:text-4xl md:text-5xl [text-shadow:0_0_20px_rgba(143,255,63,0.9),0_0_50px_rgba(143,255,63,0.5)]'
+                          : 'text-white text-xl sm:text-3xl md:text-4xl [text-shadow:0_0_20px_rgba(255,255,255,0.6),0_0_50px_rgba(192,132,252,0.5)]'
                       }`}
                     >
                       {p.amount}

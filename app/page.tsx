@@ -46,48 +46,6 @@ const socials = [
   },
 ]
 
-// Monthly wager leaderboard payouts. The ten places total $30,000 — keep
-// WAGER_TOTAL in step with the amounts below if they ever change.
-const WAGER_TOTAL = '$30,000'
-
-const WAGER_PODIUM = [
-  { place: '2nd Place', amount: '$6,000', accent: 'purple' as const },
-  { place: '1st Place', amount: '$15,000', accent: 'green' as const },
-  { place: '3rd Place', amount: '$3,000', accent: 'purple' as const },
-]
-
-// 4th-10th fill a three-column grid. Accent follows the column, and 10th sits
-// alone in the middle one.
-const WAGER_RANKS = [
-  { place: '4', amount: '$2,100', accent: 'purple' as const },
-  { place: '5', amount: '$1,500', accent: 'green' as const },
-  { place: '6', amount: '$900', accent: 'purple' as const },
-  { place: '7', amount: '$600', accent: 'purple' as const },
-  { place: '8', amount: '$450', accent: 'green' as const },
-  { place: '9', amount: '$300', accent: 'purple' as const },
-  { place: '10', amount: '$150', accent: 'green' as const },
-]
-
-// Each accent carries a doubled box-shadow (tight halo + wide bloom) plus an
-// inset so the card looks lit from within, and a text-shadow so the numbers
-// glow rather than just sitting on a glowing card.
-const WAGER_ACCENT = {
-  green: {
-    border: 'border-[#8fff3f]',
-    glow: 'shadow-[0_0_20px_rgba(143,255,63,0.5),0_0_50px_rgba(143,255,63,0.28),inset_0_0_20px_rgba(143,255,63,0.14)]',
-    text: 'text-[#8fff3f] [text-shadow:0_0_14px_rgba(143,255,63,0.85)]',
-    band: 'bg-[#8fff3f] text-black shadow-[0_0_26px_rgba(143,255,63,0.75)]',
-    face: 'bg-[#071200]',
-  },
-  purple: {
-    border: 'border-[#a855f7]',
-    glow: 'shadow-[0_0_20px_rgba(168,85,247,0.5),0_0_50px_rgba(168,85,247,0.28),inset_0_0_20px_rgba(168,85,247,0.14)]',
-    text: 'text-[#c084fc] [text-shadow:0_0_14px_rgba(192,132,252,0.85)]',
-    band: 'bg-[#a855f7] text-black shadow-[0_0_26px_rgba(168,85,247,0.75)]',
-    face: 'bg-[#0c0620]',
-  },
-}
-
 export default function Home() {
   return (
     <>
@@ -302,67 +260,6 @@ export default function Home() {
             </div>
           </div>
           </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── WAGER LEADERBOARD PRIZES ── */}
-      <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-center font-black uppercase leading-[0.95] mb-10">
-            <span className="block text-4xl sm:text-5xl md:text-6xl">
-              <span className="text-[#8fff3f] [text-shadow:0_0_25px_rgba(143,255,63,0.9),0_0_60px_rgba(143,255,63,0.5)]">{WAGER_TOTAL}</span>{' '}
-              <span className="text-white [text-shadow:0_0_25px_rgba(255,255,255,0.55),0_0_60px_rgba(255,255,255,0.25)]">Monthly</span>
-            </span>
-            <span className="block text-2xl sm:text-3xl md:text-4xl text-purple-400 mt-2 [text-shadow:0_0_22px_rgba(168,85,247,0.9),0_0_55px_rgba(168,85,247,0.45)]">
-              Wager Leaderboard
-            </span>
-          </h2>
-
-          {/* Top three — 1st is taller, so items-end keeps the trio sitting on one baseline */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 items-end mb-2 sm:mb-4">
-            {WAGER_PODIUM.map((p) => {
-              const a = WAGER_ACCENT[p.accent]
-              const first = p.accent === 'green'
-              return (
-                <div key={p.place} className={`rounded-xl sm:rounded-2xl overflow-hidden border-2 ${a.border} ${a.glow}`}>
-                  <div className={`${a.face} text-center px-1 ${first ? 'py-6 sm:py-10' : 'py-4 sm:py-8'}`}>
-                    <span
-                      className={`font-black tracking-tight ${
-                        first
-                          ? 'text-[#8fff3f] text-2xl sm:text-4xl md:text-5xl [text-shadow:0_0_20px_rgba(143,255,63,0.9),0_0_50px_rgba(143,255,63,0.5)]'
-                          : 'text-white text-xl sm:text-3xl md:text-4xl [text-shadow:0_0_20px_rgba(255,255,255,0.6),0_0_50px_rgba(192,132,252,0.5)]'
-                      }`}
-                    >
-                      {p.amount}
-                    </span>
-                  </div>
-                  <div className={`${a.band} py-1.5 sm:py-2 text-center font-bold text-[11px] sm:text-sm`}>
-                    {p.place}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          {/* 4th - 10th */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-4">
-            {WAGER_RANKS.map((r, i) => {
-              const a = WAGER_ACCENT[r.accent]
-              const last = i === WAGER_RANKS.length - 1
-              return (
-                <div
-                  key={r.place}
-                  className={`flex items-center justify-between gap-1 rounded-lg sm:rounded-xl border ${a.border} ${a.face} ${a.glow} px-2 sm:px-4 py-2.5 sm:py-3 ${last ? 'col-start-2' : ''}`}
-                >
-                  <span className="font-bold text-[11px] sm:text-sm text-gray-200 whitespace-nowrap">
-                    <span className={a.text}>{r.place}</span>
-                    <sup className="text-[0.6em]">th</sup> Place
-                  </span>
-                  <span className={`font-black text-[11px] sm:text-base ${a.text} whitespace-nowrap`}>{r.amount}</span>
-                </div>
-              )
-            })}
           </div>
         </div>
       </section>

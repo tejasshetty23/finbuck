@@ -1,13 +1,49 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+
+type NavLink = { href: string; label: string }
+type NavGroup = { label: string; children: (NavLink & { icon: ReactNode })[] }
+type NavItem = NavLink | NavGroup
+
+function isGroup(item: NavItem): item is NavGroup {
+  return 'children' in item
+}
+
+const trophyIcon = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8 21h8m-4 0v-4m-7-13h14v3a7 7 0 01-14 0V4zm14 1h2.5a2.5 2.5 0 01-2.5 4.5M5 5H2.5A2.5 2.5 0 005 9.5" />
+  </svg>
+)
+
+const swordsIcon = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14.5 14.5L20 20m0-16l-9 9m-1.5 1.5L4 20m3-6L3 4l4 1 10 10m0 0l1 4-4-1" />
+  </svg>
+)
+
+const NAV_ITEMS: NavItem[] = [
+  { href: '/', label: 'Home' },
+  { href: '/leaderboard', label: 'Watchtime' },
+  {
+    label: 'Games',
+    children: [
+      { href: '/tournaments', label: 'Tournaments', icon: trophyIcon },
+      { href: '/vschat', label: 'Slot Battles', icon: swordsIcon },
+    ],
+  },
+  { href: '/wheelspin', label: 'Giveaways' },
+  { href: '/shop', label: 'Shop' },
+]
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [openGroup, setOpenGroup] = useState<string | null>(null)
   const pathname = usePathname()
+  const groupRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -15,43 +51,36 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const links = [
-    { href: '/', label: 'Home' },
-    { href: '/leaderboard', label: 'Watchtime' },
-    { href: '/tournaments', label: 'Tournaments' },
-    { href: '/wheelspin', label: 'Giveaways' },
-    { href: '/vschat', label: 'Slot Battles' },
-    { href: '/shop', label: 'Shop' },
-  ]
+  // Navigating away closes both menus, including when the click came from
+  // inside the dropdown itself.
+  useEffect(() => {
+    setOpenGroup(null)
+    setMobileOpen(false)
+  }, [pathname])
 
-  const socials = [
-    {
-      label: 'Kick',
-      href: 'https://kick.com/finbuck',
-      icon: (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src="/kick-logo.png" alt="Kick" className="w-5 h-5 object-contain" />
-      ),
-    },
-    {
-      label: 'X / Twitter',
-      href: 'https://x.com/FinBuckk',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
-      ),
-    },
-    {
-      label: 'Discord',
-      href: 'https://discord.com/invite/finbuckers',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.033.056a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-        </svg>
-      ),
-    },
-  ]
+  // Dismiss the dropdown on an outside click or Escape. The ref sits on the nav
+  // container rather than an individual group so this keeps working if more
+  // groups are added; switching between two triggers is handled by onClick.
+  useEffect(() => {
+    if (!openGroup) return
+    const onDown = (e: MouseEvent) => {
+      if (groupRef.current && !groupRef.current.contains(e.target as Node)) setOpenGroup(null)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenGroup(null)
+    }
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [openGroup])
+
+  const linkClass = (active: boolean) =>
+    `text-sm font-semibold uppercase tracking-wider transition-colors whitespace-nowrap ${
+      active ? 'text-[#00ff87]' : 'text-gray-400 hover:text-white'
+    }`
 
   return (
     <nav
@@ -80,22 +109,68 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav — absolutely centered */}
-        <div className="hidden md:flex items-center gap-6 lg:gap-8 absolute left-1/2 -translate-x-1/2">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className={`text-sm font-semibold uppercase tracking-wider transition-colors whitespace-nowrap ${
-                pathname === l.href
-                  ? 'text-[#00ff87]'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              {l.label}
-            </Link>
-          ))}
-        </div>
+        <div ref={groupRef} className="hidden md:flex items-center gap-6 lg:gap-8 absolute left-1/2 -translate-x-1/2">
+          {NAV_ITEMS.map((item) => {
+            if (!isGroup(item)) {
+              return (
+                <Link key={item.href} href={item.href} className={linkClass(pathname === item.href)}>
+                  {item.label}
+                </Link>
+              )
+            }
 
+            // A group counts as active while any of its pages is the current one.
+            const active = item.children.some((c) => c.href === pathname)
+            const open = openGroup === item.label
+
+            return (
+              <div key={item.label} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setOpenGroup(open ? null : item.label)}
+                  aria-expanded={open}
+                  aria-haspopup="menu"
+                  className={`${linkClass(active)} flex items-center gap-1.5`}
+                >
+                  {item.label}
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {open && (
+                  <div
+                    role="menu"
+                    className="absolute left-1/2 -translate-x-1/2 top-full mt-4 w-56 rounded-2xl border border-purple-900/50 bg-[#0d0a1a]/95 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.65)] p-2"
+                  >
+                    {item.children.map((c) => {
+                      const on = pathname === c.href
+                      return (
+                        <Link
+                          key={c.href}
+                          href={c.href}
+                          role="menuitem"
+                          className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-colors ${
+                            on ? 'text-[#00ff87] bg-white/5' : 'text-gray-300 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          <span className={on ? 'text-[#00ff87]' : 'text-purple-400'}>{c.icon}</span>
+                          {c.label}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
 
         {/* Mobile hamburger */}
         <button
@@ -113,21 +188,43 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — a group renders as a heading with its pages nested under
+          it, since a click-to-open flyout is awkward on touch. */}
       {mobileOpen && (
         <div className="md:hidden bg-[#0d0a1a]/95 backdrop-blur-md border-t border-purple-900/30 px-6 py-4 flex flex-col gap-4">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              onClick={() => setMobileOpen(false)}
-              className={`text-sm font-semibold uppercase tracking-wider transition-colors ${
-                pathname === l.href ? 'text-[#00ff87]' : 'text-gray-400'
-              }`}
-            >
-              {l.label}
-            </Link>
-          ))}
+          {NAV_ITEMS.map((item) =>
+            isGroup(item) ? (
+              <div key={item.label} className="flex flex-col gap-3">
+                <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-gray-600">
+                  {item.label}
+                </span>
+                {item.children.map((c) => (
+                  <Link
+                    key={c.href}
+                    href={c.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center gap-3 pl-3 text-sm font-semibold uppercase tracking-wider transition-colors ${
+                      pathname === c.href ? 'text-[#00ff87]' : 'text-gray-400'
+                    }`}
+                  >
+                    <span className={pathname === c.href ? 'text-[#00ff87]' : 'text-purple-400'}>{c.icon}</span>
+                    {c.label}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className={`text-sm font-semibold uppercase tracking-wider transition-colors ${
+                  pathname === item.href ? 'text-[#00ff87]' : 'text-gray-400'
+                }`}
+              >
+                {item.label}
+              </Link>
+            )
+          )}
         </div>
       )}
     </nav>

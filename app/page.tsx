@@ -338,8 +338,8 @@ export default function Home() {
               return (
                 <div
                   key={p.place}
-                  className="prize-metal p-[2px]"
-                  style={{ clipPath: chamfer(14), background: t.border }}
+                  className="prize-metal p-[5px]"
+                  style={{ clipPath: chamfer(17), background: t.border }}
                 >
                   {/* Dark gap separating the two metal frames */}
                   <div className="p-[3px]" style={{ clipPath: chamfer(12), background: '#0a0812' }}>

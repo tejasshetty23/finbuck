@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import Reveal from '../../components/Reveal'
 import fs from 'fs'
 import path from 'path'
 import LeaderboardRestTable from '../../components/LeaderboardRestTable'
@@ -298,6 +299,7 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
       </div>
 
       {/* Header */}
+      <Reveal>
       <div className="max-w-4xl mx-auto mb-12 text-center">
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
           Watchtime<br />
@@ -314,6 +316,7 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
         {/* Month / Year dropdown */}
         <MonthSelector months={allMonths} selected={selectedMonth || currentKey} />
       </div>
+      </Reveal>
 
       {/* Leaderboard */}
       <div className="max-w-4xl mx-auto mt-20">

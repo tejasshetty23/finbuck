@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import CopyButton from '../components/CopyButton'
+import Reveal from '../components/Reveal'
 
 const socials = [
   {
@@ -265,6 +266,7 @@ export default function Home() {
 
       {/* ── SPONSOR ── */}
       <section className="relative py-24 px-6 overflow-hidden">
+        <Reveal>
         <div className="max-w-sm mx-auto">
           {/* Label */}
           <div className="flex items-center gap-3 mb-8 justify-center">
@@ -379,12 +381,14 @@ export default function Home() {
           </div>
           </div>
         </div>
+        </Reveal>
       </section>
 
       {/* ── GAMBA PRIZE POOL ── */}
       {/* relative + z-10: the pattern overlay above is absolutely positioned, so a
           static section would be painted over by it and washed out. */}
       <section className="relative z-10 py-20 px-6">
+        <Reveal>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-white font-black uppercase tracking-[0.25em] text-xs sm:text-lg mb-2 [text-shadow:0_0_12px_rgba(255,255,255,0.25)]">
@@ -510,10 +514,12 @@ export default function Home() {
             </div>
           </div>
         </div>
+        </Reveal>
       </section>
 
       {/* ── SOCIALS ── */}
       <section className="py-20 px-6">
+        <Reveal>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12 relative">
             <div className="absolute inset-0 -mx-10 -my-6 bg-[#07050f]/70 blur-2xl rounded-3xl pointer-events-none" />
@@ -546,10 +552,12 @@ export default function Home() {
             ))}
           </div>
         </div>
+        </Reveal>
       </section>
 
       {/* ── LEADERBOARD CTA ── */}
       <section className="py-20 px-6">
+        <Reveal>
         <div className="max-w-3xl mx-auto text-center">
           <div className="relative rounded-3xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-[#100d1f] to-[#07050f] p-7 sm:p-12">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
@@ -576,6 +584,7 @@ export default function Home() {
             </Link>
           </div>
         </div>
+        </Reveal>
       </section>
       </div>
     </>

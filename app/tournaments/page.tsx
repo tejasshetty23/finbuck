@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Reveal from '../../components/Reveal'
 
 type Slot = string | null
 type Rounds = Slot[][]
@@ -131,6 +132,7 @@ export default function TournamentsPage() {
       </div>
 
       {/* Header */}
+      <Reveal>
       <div className="max-w-4xl mx-auto mb-10 text-center">
         <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-purple-400">
@@ -146,6 +148,7 @@ export default function TournamentsPage() {
           Build a single-elimination bracket and crown a champion.
         </p>
       </div>
+      </Reveal>
 
       {/* Setup screen */}
       {!rounds && (
@@ -210,6 +213,7 @@ export default function TournamentsPage() {
 
       {/* Bracket */}
       {rounds && (
+        <Reveal>
         <div className="max-w-7xl mx-auto">
           {/* Controls */}
           <div className="flex items-center justify-center gap-3 mb-8 flex-wrap">
@@ -335,6 +339,7 @@ export default function TournamentsPage() {
             Tap the <span className="text-[#00ff87]">›</span> arrow next to a player to advance them to the next round.
           </p>
         </div>
+        </Reveal>
       )}
 
       {/* Champion popup */}

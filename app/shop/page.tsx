@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Reveal from '../../components/Reveal'
 
 interface ShopItem {
   name: string
@@ -129,6 +130,7 @@ export default function ShopPage() {
       </div>
 
       {/* Header */}
+      <Reveal>
       <div className="max-w-4xl mx-auto mt-6 mb-8 text-center">
         <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-purple-400">
@@ -141,6 +143,7 @@ export default function ShopPage() {
           The <span className="animated-gradient-text">Shop</span>
         </h1>
       </div>
+      </Reveal>
 
       {/* How to check points */}
       <div className="max-w-2xl mx-auto mb-10">
@@ -160,6 +163,7 @@ export default function ShopPage() {
       </div>
 
       {/* How to earn points */}
+      <Reveal>
       <div className="max-w-6xl mx-auto mb-10">
         <div className="flex items-center justify-center gap-2 mb-5">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5 text-[#00ff87]">
@@ -182,8 +186,10 @@ export default function ShopPage() {
           </div>
         </div>
       </div>
+      </Reveal>
 
       {/* Items */}
+      <Reveal>
       <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {ITEMS.map((item) => (
           <div
@@ -220,6 +226,7 @@ export default function ShopPage() {
           </div>
         ))}
       </div>
+      </Reveal>
 
       {/* Buy popup */}
       {selected && (

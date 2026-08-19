@@ -251,3 +251,33 @@ body {
     transform: rotate(var(--gem-rot, 0deg));
   }
 }
+
+/* Scroll reveal. The hidden state is scoped to prefers-reduced-motion:
+   no-preference, so anyone asking for less motion simply never gets a hidden
+   state to begin with — no JS has to run to rescue them. layout.tsx carries a
+   <noscript> override for the same reason. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .reveal.reveal-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Anchor jumps ease instead of snapping. */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

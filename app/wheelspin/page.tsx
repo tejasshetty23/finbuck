@@ -1,5 +1,6 @@
 import SpinWheel from '../../components/SpinWheel'
 import LiveSubscriberWheel from '../../components/LiveSubscriberWheel'
+import Reveal from '../../components/Reveal'
 
 const PRIZE_DEFAULTS = ['10$', '50$ Buy In', '20$', '10$ Buy In', '50$', '20$ Buy In']
 
@@ -50,6 +51,7 @@ export default function WheelSpinPage() {
       </div>
 
       {/* Header */}
+      <Reveal>
       <div className="max-w-4xl mx-auto mb-12 text-center">
         <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-purple-400">
@@ -65,6 +67,7 @@ export default function WheelSpinPage() {
           First wheel picks a viewer, second wheel picks their prize.
         </p>
       </div>
+      </Reveal>
 
       {/* Control bar + two wheels side by side */}
       <div className="w-[90%] mx-auto">
@@ -96,6 +99,7 @@ export default function WheelSpinPage() {
         </p>
 
         {/* How to claim — below the wheels */}
+        <Reveal>
         <div className="max-w-4xl mx-auto mt-20">
           <div className="flex items-center gap-3 mb-8 justify-center">
             <div className="h-px flex-1 max-w-[80px] bg-gradient-to-r from-transparent to-[#00ff87]/40" />
@@ -145,6 +149,7 @@ export default function WheelSpinPage() {
             ))}
           </div>
         </div>
+        </Reveal>
       </div>
     </div>
   )

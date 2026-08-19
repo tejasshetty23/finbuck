@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Reveal from '../../components/Reveal'
 
 // One slot per line. Duplicates are dropped so the randomiser stays fair —
 // 22 of these titles are carried by more than one provider.
@@ -1473,6 +1474,7 @@ export default function VsChatPage() {
       </div>
 
       {/* Header */}
+      <Reveal>
       <div className="max-w-4xl mx-auto mb-10 text-center">
         <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
@@ -1508,6 +1510,7 @@ export default function VsChatPage() {
           </button>
         </div>
       </div>
+      </Reveal>
 
       {/* Random slot picker */}
       <div className="max-w-5xl mx-auto mb-6">
@@ -1583,6 +1586,7 @@ export default function VsChatPage() {
       </div>
 
       {/* Arena */}
+      <Reveal>
       <div className="max-w-5xl mx-auto mb-16">
         <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
           <div className="w-full md:flex-1 max-w-[320px]">
@@ -1645,6 +1649,7 @@ export default function VsChatPage() {
           )
         })()}
       </div>
+      </Reveal>
 
       {/* How it works */}
       <div className="max-w-5xl mx-auto">

@@ -118,12 +118,15 @@ const PRIZE_RANKS: [string, string][] = [
 // speed so the group never drifts in unison. The smaller ones are hidden below
 // sm, where there is no spare width beside the text.
 const HERO_DECOR = [
-  { src: '/gem.webp',  top: '4%',  left: '5%',  w: 'w-16 sm:w-24', rot: '-14deg', dur: '6.4s', delay: '0s',    op: 0.85, hide: false },
-  { src: '/coin.webp', top: '0%',  left: '85%', w: 'w-14 sm:w-20', rot: '12deg',  dur: '7.1s', delay: '-2.2s', op: 0.8,  hide: false },
-  { src: '/coin.webp', top: '44%', left: '-1%', w: 'w-12 sm:w-16', rot: '18deg',  dur: '5.8s', delay: '-3.4s', op: 0.7,  hide: true },
-  { src: '/gem.webp',  top: '48%', left: '93%', w: 'w-14 sm:w-20', rot: '-9deg',  dur: '6.9s', delay: '-1.1s', op: 0.75, hide: true },
-  { src: '/gem.webp',  top: '78%', left: '11%', w: 'w-11 sm:w-14', rot: '22deg',  dur: '8.2s', delay: '-4.6s', op: 0.7,  hide: false },
-  { src: '/coin.webp', top: '80%', left: '79%', w: 'w-11 sm:w-14', rot: '-20deg', dur: '7.6s', delay: '-5.3s', op: 0.7,  hide: false },
+  // Placed on an ellipse around the headline rather than at the corners of a
+  // box, so they read as a ring hugging the text. Angles skip straight up and
+  // straight down, where "Welcome to" and "Rewards" sit.
+  { src: '/gem.webp',  top: '20%', left: '16%', w: 'w-16 sm:w-24', rot: '-14deg', dur: '6.4s', delay: '0s',    op: 0.85, hide: false },
+  { src: '/coin.webp', top: '21%', left: '78%', w: 'w-14 sm:w-20', rot: '12deg',  dur: '7.1s', delay: '-2.2s', op: 0.8,  hide: false },
+  { src: '/coin.webp', top: '46%', left: '7%',  w: 'w-12 sm:w-16', rot: '18deg',  dur: '5.8s', delay: '-3.4s', op: 0.7,  hide: true },
+  { src: '/gem.webp',  top: '45%', left: '88%', w: 'w-14 sm:w-20', rot: '-9deg',  dur: '6.9s', delay: '-1.1s', op: 0.75, hide: true },
+  { src: '/gem.webp',  top: '73%', left: '18%', w: 'w-11 sm:w-14', rot: '22deg',  dur: '8.2s', delay: '-4.6s', op: 0.7,  hide: false },
+  { src: '/coin.webp', top: '74%', left: '79%', w: 'w-11 sm:w-14', rot: '-20deg', dur: '7.6s', delay: '-5.3s', op: 0.7,  hide: false },
 ]
 
 export default function Home() {
@@ -153,14 +156,14 @@ export default function Home() {
         {/* Content */}
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto top-8">
           <div className="relative mb-4">
-            {/* Gems and chips ring the headline. They get their own box, centred
-                on the headline but far wider than the text column — offsets are
-                percentages of that, so widening it is what creates the clearance.
-                Capped at 94vw so nothing lands outside the viewport, where the
-                hero's overflow-hidden would crop it. pointer-events-none keeps
-                them from swallowing clicks. */}
+            {/* Gems and chips ring the headline, sitting on an ellipse around it
+                rather than at the corners of a box. The box is centred on the
+                text and sized so that ring clears the wordmark without drifting
+                off toward the viewport edges; 92vw keeps it on screen, where the
+                hero's overflow-hidden would otherwise crop it.
+                pointer-events-none keeps them from swallowing clicks. */}
             <div
-              className="pointer-events-none select-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(1240px,94vw)] h-[340px] sm:h-[420px]"
+              className="pointer-events-none select-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(920px,92vw)] h-[300px] sm:h-[360px]"
               aria-hidden
             >
               {HERO_DECOR.map((g, i) => (

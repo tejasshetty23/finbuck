@@ -56,42 +56,28 @@ const PRIZE_PODIUM = [
   { place: '3rd', amount: '$1,000', tier: 'bronze' as const },
 ]
 
-// Metallic faces for the podium blocks. Polished metal isn't a simple light-to-
-// dark ramp — it has a dark reflection band across the middle with brightness
-// returning below it, so each fill runs light -> mid -> dark at 50% -> light
-// again. Diagonal (135deg) so .prize-metal's drift is visible.
+// The frame artwork carries gold/silver/bronze, so each tier only needs its
+// image plus a matching tint for the amount. Content sits inside a 20.5% inset:
+// the opening's bounding box is wider than that, but the ornament spikes inward
+// at each edge midpoint, and 20.5% is the largest centred rectangle that clears
+// them.
 const PRIZE_TIER = {
   gold: {
-    // Frame gradient, read diagonally so the chamfered edge catches light.
-    border: 'linear-gradient(135deg, #fff3b0, #f4bc35, #8a5e05, #ffe486, #f4bc35)',
-    bg: 'linear-gradient(135deg, #fff8d4 0%, #ffe486 15%, #f6c53c 33%, #a97708 50%, #f6c53c 63%, #ffdd76 82%, #c48c0a 100%)',
-    inset: 'inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -8px 14px rgba(0,0,0,0.35)',
-    pad: 'py-6 sm:py-10',
-    avatar: 'w-20 h-20 sm:w-28 sm:h-28',
+    frame: '/frame-gold.webp',
+    tint: '#ffd75e',
+    glow: '0 0 18px rgba(255,215,94,0.75)',
   },
   silver: {
-    border: 'linear-gradient(135deg, #ffffff, #cbd0d6, #6b747e, #f2f5f8, #cbd0d6)',
-    bg: 'linear-gradient(135deg, #ffffff 0%, #eaeef2 15%, #c3cad2 33%, #78828d 50%, #c3cad2 63%, #eef1f4 82%, #99a2ac 100%)',
-    inset: 'inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -8px 14px rgba(0,0,0,0.32)',
-    pad: 'py-5 sm:py-8',
-    avatar: 'w-16 h-16 sm:w-24 sm:h-24',
+    frame: '/frame-silver.webp',
+    tint: '#e8edf3',
+    glow: '0 0 18px rgba(232,237,243,0.6)',
   },
   bronze: {
-    border: 'linear-gradient(135deg, #ffd7b0, #c4713b, #6d3714, #e79b62, #c4713b)',
-    bg: 'linear-gradient(135deg, #ffd7b0 0%, #e79b62 15%, #c9743c 33%, #7c3f18 50%, #c9743c 63%, #e9a26c 82%, #8e4a1d 100%)',
-    inset: 'inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -8px 14px rgba(0,0,0,0.34)',
-    pad: 'py-5 sm:py-8',
-    avatar: 'w-16 h-16 sm:w-24 sm:h-24',
+    frame: '/frame-bronze.webp',
+    tint: '#eda36c',
+    glow: '0 0 18px rgba(237,163,108,0.65)',
   },
 }
-
-// Chamfer matching the sponsor card. The blocks are double-framed, so each
-// nested layer needs its own corner cut: every layer's value is the one above it
-// minus that layer's padding, otherwise the cuts drift out of parallel and the
-// frames look uneven at the corners.
-const chamfer = (px: number) =>
-  `polygon(${px}px 0%, calc(100% - ${px}px) 0%, 100% ${px}px, 100% calc(100% - ${px}px), calc(100% - ${px}px) 100%, ${px}px 100%, 0% calc(100% - ${px}px), 0% ${px}px)`
-
 
 const PRIZE_RANKS: [string, string][] = [
   ['4th', '$550'], ['5th', '$500'], ['6th', '$450'], ['7th', '$400'],
@@ -339,46 +325,40 @@ export default function Home() {
           </div>
 
           {/* Podium — items-end keeps the three blocks on one baseline while 1st stands taller */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 items-end mb-4 sm:mb-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-[1fr_1.25fr_1fr] gap-2 sm:gap-4 items-end mb-4 sm:mb-6 max-w-3xl mx-auto">
             {PRIZE_PODIUM.map((p) => {
               const t = PRIZE_TIER[p.tier]
-              // Outer frame -> dark gap -> inner frame -> metal face. Each layer is
-              // clipped rather than bordered, since clip-path cuts a plain CSS
-              // border away at the corners.
               return (
-                <div
-                  key={p.place}
-                  className="prize-metal p-[5px]"
-                  style={{ clipPath: chamfer(17), background: t.border }}
-                >
-                  {/* Dark gap separating the two metal frames */}
-                  <div className="p-[3px]" style={{ clipPath: chamfer(12), background: '#0a0812' }}>
-                    <div className="prize-metal p-[2px]" style={{ clipPath: chamfer(9), background: t.border }}>
-                      <div
-                        className={`prize-metal relative px-2 text-center ${t.pad}`}
-                        style={{ clipPath: chamfer(7), background: t.bg, boxShadow: t.inset }}
-                      >
-                        {/* Profile circle, ringed in the tier's own frame gradient */}
-                        <div
-                          className={`relative mx-auto mb-2 sm:mb-3 rounded-full p-[2px] sm:p-[3px] ${t.avatar}`}
-                          style={{ background: t.border }}
-                        >
-                          <Image
-                            src="/deer.webp"
-                            alt=""
-                            width={620}
-                            height={620}
-                            className="h-full w-full rounded-full object-cover"
-                          />
-                        </div>
-                        <span className="relative block font-black uppercase leading-none text-black text-xs sm:text-2xl [text-shadow:0_1px_0_rgba(255,255,255,0.75),0_-1px_0_rgba(0,0,0,0.25)]">
-                          {p.place}
-                        </span>
-                        <span className="relative block font-black leading-none text-black text-lg sm:text-4xl mt-1 [text-shadow:0_1px_0_rgba(255,255,255,0.75),0_-1px_0_rgba(0,0,0,0.25)]">
-                          {p.amount}
-                        </span>
-                      </div>
+                <div key={p.place} className="relative aspect-square">
+                  <Image
+                    src={t.frame}
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 33vw, 300px"
+                    className="pointer-events-none select-none object-contain"
+                  />
+                  {/* Largest centred box that clears the frame's inward spikes */}
+                  <div className="absolute inset-[20.5%] flex flex-col items-center justify-center text-center">
+                    <div className="w-[54%] aspect-square overflow-hidden rounded-full">
+                      <Image
+                        src="/deer.webp"
+                        alt=""
+                        width={620}
+                        height={620}
+                        className="h-full w-full object-cover"
+                      />
                     </div>
+                    <span
+                      className="mt-1.5 block font-black uppercase leading-none text-[9px] sm:text-sm"
+                      style={{ color: t.tint, textShadow: t.glow }}
+                    >
+                      {p.place}
+                    </span>
+                    <span
+                      className="mt-0.5 block font-black leading-none text-white text-xs sm:text-2xl [text-shadow:0_0_16px_rgba(255,255,255,0.5)]"
+                    >
+                      {p.amount}
+                    </span>
                   </div>
                 </div>
               )

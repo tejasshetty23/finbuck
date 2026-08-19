@@ -320,7 +320,9 @@ export default function Home() {
       </section>
 
       {/* ── GAMBA PRIZE POOL ── */}
-      <section className="py-20 px-6">
+      {/* relative + z-10: the pattern overlay above is absolutely positioned, so a
+          static section would be painted over by it and washed out. */}
+      <section className="relative z-10 py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-white font-black uppercase tracking-[0.25em] text-xs sm:text-lg mb-2 [text-shadow:0_0_18px_rgba(255,255,255,0.45)]">

@@ -113,6 +113,19 @@ const PRIZE_RANKS: [string, string][] = [
   ['20th', '$50'],
 ]
 
+// Gems and chips drifting around the hero headline. Positions keep clear of the
+// centre column where the headline and CTAs sit; each gets its own rotation and
+// speed so the group never drifts in unison. The smaller ones are hidden below
+// sm, where there is no spare width beside the text.
+const HERO_DECOR = [
+  { src: '/gem.webp',  top: '14%', left: '7%',  w: 'w-16 sm:w-24', rot: '-14deg', dur: '6.4s', delay: '0s',    op: 0.85, hide: false },
+  { src: '/coin.webp', top: '26%', left: '84%', w: 'w-14 sm:w-20', rot: '12deg',  dur: '7.1s', delay: '-2.2s', op: 0.8,  hide: false },
+  { src: '/coin.webp', top: '62%', left: '11%', w: 'w-12 sm:w-16', rot: '18deg',  dur: '5.8s', delay: '-3.4s', op: 0.7,  hide: true },
+  { src: '/gem.webp',  top: '70%', left: '86%', w: 'w-14 sm:w-20', rot: '-9deg',  dur: '6.9s', delay: '-1.1s', op: 0.8,  hide: false },
+  { src: '/gem.webp',  top: '40%', left: '92%', w: 'w-9 sm:w-12',  rot: '22deg',  dur: '8.2s', delay: '-4.6s', op: 0.55, hide: true },
+  { src: '/coin.webp', top: '48%', left: '3%',  w: 'w-9 sm:w-12',  rot: '-20deg', dur: '7.6s', delay: '-5.3s', op: 0.55, hide: true },
+]
+
 export default function Home() {
   return (
     <>
@@ -134,6 +147,30 @@ export default function Home() {
           {/* Purple radial glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-700/10 rounded-full blur-3xl" />
           <div className="absolute top-1/3 left-1/3 w-[400px] h-[400px] bg-green-400/5 rounded-full blur-3xl" />
+        </div>
+
+        {/* Floating gems and chips. z-[5] puts them above the background but
+            behind the z-10 content, so they never sit over the headline, and
+            pointer-events-none keeps them from swallowing clicks on the CTAs. */}
+        <div className="absolute inset-0 z-[5] pointer-events-none select-none" aria-hidden>
+          {HERO_DECOR.map((g, i) => (
+            <Image
+              key={i}
+              src={g.src}
+              alt=""
+              width={320}
+              height={320}
+              className={`gem-float absolute h-auto ${g.w} ${g.hide ? 'hidden sm:block' : ''}`}
+              style={{
+                top: g.top,
+                left: g.left,
+                opacity: g.op,
+                animationDelay: g.delay,
+                ['--gem-rot' as string]: g.rot,
+                ['--gem-dur' as string]: g.dur,
+              }}
+            />
+          ))}
         </div>
 
         {/* Content */}

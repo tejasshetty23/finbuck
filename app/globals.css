@@ -233,3 +233,21 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .prize-float { animation: none; }
 }
+
+/* Hero gems drift around the headline. Rotation and speed come through custom
+   properties so each gem can differ without needing its own keyframes, and the
+   rotate is folded into the same transform as the translate — a second
+   transform on the element would overwrite the first rather than combine. */
+@keyframes gem-float {
+  0%, 100% { transform: translateY(0) rotate(var(--gem-rot, 0deg)); }
+  50%      { transform: translateY(-18px) rotate(calc(var(--gem-rot, 0deg) + 7deg)); }
+}
+
+.gem-float { animation: gem-float var(--gem-dur, 6s) ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gem-float {
+    animation: none;
+    transform: rotate(var(--gem-rot, 0deg));
+  }
+}

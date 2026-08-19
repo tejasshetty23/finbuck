@@ -82,12 +82,12 @@ const PRIZE_TIER = {
   },
 }
 
-// Chamfer matching the sponsor card, sized down for these smaller blocks. The
-// inner value is 2px tighter so the frame reads as an even border at the cuts.
-const PRIZE_CHAMFER_OUT =
-  'polygon(12px 0%, calc(100% - 12px) 0%, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0% calc(100% - 12px), 0% 12px)'
-const PRIZE_CHAMFER_IN =
-  'polygon(10px 0%, calc(100% - 10px) 0%, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0% calc(100% - 10px), 0% 10px)'
+// Chamfer matching the sponsor card. The blocks are double-framed, so each
+// nested layer needs its own corner cut: every layer's value is the one above it
+// minus that layer's padding, otherwise the cuts drift out of parallel and the
+// frames look uneven at the corners.
+const chamfer = (px: number) =>
+  `polygon(${px}px 0%, calc(100% - ${px}px) 0%, 100% ${px}px, 100% calc(100% - ${px}px), calc(100% - ${px}px) 100%, ${px}px 100%, 0% calc(100% - ${px}px), 0% ${px}px)`
 
 
 const PRIZE_RANKS: [string, string][] = [
@@ -332,24 +332,30 @@ export default function Home() {
           <div className="grid grid-cols-3 gap-2 sm:gap-4 items-end mb-4 sm:mb-6">
             {PRIZE_PODIUM.map((p) => {
               const t = PRIZE_TIER[p.tier]
-              // Chamfered frame wrapping a metal face, same two-layer build as the
-              // sponsor card: a plain CSS border would be cut away by clip-path.
+              // Outer frame -> dark gap -> inner frame -> metal face. Each layer is
+              // clipped rather than bordered, since clip-path cuts a plain CSS
+              // border away at the corners.
               return (
                 <div
                   key={p.place}
                   className="prize-metal p-[2px]"
-                  style={{ clipPath: PRIZE_CHAMFER_OUT, background: t.border }}
+                  style={{ clipPath: chamfer(14), background: t.border }}
                 >
-                  <div
-                    className={`prize-metal relative px-1 text-center ${t.pad}`}
-                    style={{ clipPath: PRIZE_CHAMFER_IN, background: t.bg, boxShadow: t.inset }}
-                  >
-                    <span className="relative block font-black uppercase leading-none text-black text-xs sm:text-2xl [text-shadow:0_1px_0_rgba(255,255,255,0.45)]">
-                      {p.place}
-                    </span>
-                    <span className="relative block font-black leading-none text-black text-lg sm:text-4xl mt-1 [text-shadow:0_1px_0_rgba(255,255,255,0.45)]">
-                      {p.amount}
-                    </span>
+                  {/* Dark gap separating the two metal frames */}
+                  <div className="p-[3px]" style={{ clipPath: chamfer(12), background: '#0a0812' }}>
+                    <div className="prize-metal p-[2px]" style={{ clipPath: chamfer(9), background: t.border }}>
+                      <div
+                        className={`prize-metal relative px-1 text-center ${t.pad}`}
+                        style={{ clipPath: chamfer(7), background: t.bg, boxShadow: t.inset }}
+                      >
+                        <span className="relative block font-black uppercase leading-none text-black text-xs sm:text-2xl [text-shadow:0_1px_0_rgba(255,255,255,0.45)]">
+                          {p.place}
+                        </span>
+                        <span className="relative block font-black leading-none text-black text-lg sm:text-4xl mt-1 [text-shadow:0_1px_0_rgba(255,255,255,0.45)]">
+                          {p.amount}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )

@@ -346,10 +346,10 @@ export default function Home() {
 
           {/* Podium — items-end keeps the three blocks on one baseline while 1st stands taller */}
           <div className="grid grid-cols-[1fr_1.25fr_1fr] gap-2 sm:gap-4 items-end mb-4 sm:mb-6 max-w-3xl mx-auto">
-            {PRIZE_PODIUM.map((p) => {
+            {PRIZE_PODIUM.map((p, i) => {
               const t = PRIZE_TIER[p.tier]
               return (
-                <div key={p.place} className="relative aspect-square">
+                <div key={p.place} className={`relative aspect-square prize-float prize-float-${i + 1}`}>
                   {/* Black backing behind the frame's transparent opening. Inset
                       11% — slightly wider than the 13% opening — so its square
                       corners tuck under the ornament instead of poking out. */}

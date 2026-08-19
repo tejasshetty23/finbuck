@@ -1333,9 +1333,8 @@ export default function VsChatPage() {
   const [chatSlot, setChatSlot] = useState('')
 
 
-  // Winner is declared with the button on each card; click the same side again
-  // to clear it (and undo that round's point). Switching sides corrects the
-  // previous point rather than double-counting.
+  // Winner is declared with the button on each card. Declaring scores the point
+  // and clears the board for the next battle in one action; Undo walks it back.
   const [outcome, setOutcome] = useState<'chat' | 'house' | null>(null)
 
   // Running score, persisted so it survives a refresh. Starts at 0-0 on the
@@ -1359,37 +1358,65 @@ export default function VsChatPage() {
     }
   }, [score])
 
-  function declareWinner(side: 'house' | 'chat') {
-    if (outcome === side) {
-      // Same side clicked again — undo the declaration and its point.
-      setOutcome(null)
-      setScore((s) => ({ ...s, [side]: Math.max(0, s[side] - 1) }))
-    } else if (outcome) {
-      // Switching sides mid-round: correct the earlier point instead of
-      // letting both sides end up with one.
-      const prev = outcome
-      setScore((s) => ({ ...s, [prev]: Math.max(0, s[prev] - 1), [side]: s[side] + 1 }))
-      setOutcome(side)
-    } else {
-      setScore((s) => ({ ...s, [side]: s[side] + 1 }))
-      setOutcome(side)
+  // Declared rounds, newest last, so Undo can put a point back and restore the
+  // slots that were in play. Stored under its own key rather than folded into
+  // the score, so scores saved by an earlier version still load. Persisted for
+  // the same reason the score is: a refresh mid-stream shouldn't cost you the
+  // ability to correct a misclick.
+  const HISTORY_KEY = 'vschat-history'
+  const HISTORY_MAX = 50
+  type Round = { side: 'house' | 'chat'; houseSlot: string; chatSlot: string }
+  const [history, setHistory] = useState<Round[]>([])
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(HISTORY_KEY)
+      if (saved) setHistory(JSON.parse(saved))
+    } catch {
+      /* ignore */
     }
-  }
+  }, [])
+  useEffect(() => {
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history))
+    } catch {
+      /* ignore */
+    }
+  }, [history])
 
-  // Resets the picker (and clears any declared winner) for the next battle —
-  // the running score is untouched, so it's still there after a refresh too.
-  function resetRound() {
+  // Declaring scores the point and immediately clears the board for the next
+  // battle. The winner banner is left showing until the next roll, so you can
+  // still see who took the round after the slots have gone.
+  function declareWinner(side: 'house' | 'chat') {
+    setScore((s) => ({ ...s, [side]: s[side] + 1 }))
+    setHistory((h) => [...h, { side, houseSlot, chatSlot }].slice(-HISTORY_MAX))
     if (timerRef.current) clearTimeout(timerRef.current)
     setRolling(false)
     setDisplay('Ready to roll')
     setLanded('')
-    setOutcome(null)
     setHouseSlot('')
     setChatSlot('')
+    setOutcome(side)
+  }
+
+  // Walks back the last declaration: takes the point off, restores that round's
+  // two slots, and clears the banner.
+  function undoLastRound() {
+    const last = history[history.length - 1]
+    if (!last) return
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setRolling(false)
+    setDisplay('Ready to roll')
+    setLanded('')
+    setScore((s) => ({ ...s, [last.side]: Math.max(0, s[last.side] - 1) }))
+    setHouseSlot(last.houseSlot)
+    setChatSlot(last.chatSlot)
+    setHistory((h) => h.slice(0, -1))
+    setOutcome(null)
   }
 
   function resetScore() {
     setScore({ house: 0, chat: 0 })
+    setHistory([])
     setOutcome(null)
   }
 
@@ -1409,6 +1436,8 @@ export default function VsChatPage() {
     if (rolling || pool.length < 2) return
     setRolling(true)
     setLanded('')
+    // Clear the previous round's winner banner as the next roll starts.
+    setOutcome(null)
     const winner = pool[Math.floor(Math.random() * pool.length)]
     const total = 26
     let i = 0
@@ -1527,11 +1556,20 @@ export default function VsChatPage() {
                 {rolling ? 'Rolling…' : 'Randomize'}
               </button>
               <button
-                onClick={resetRound}
-                title="Clear the picker and any declared winner — score is kept"
-                className="border border-purple-500/50 text-purple-300 hover:bg-purple-500/10 hover:text-white font-bold py-3 px-5 rounded-xl uppercase tracking-widest text-sm transition-all"
+                onClick={undoLastRound}
+                disabled={history.length === 0}
+                title={
+                  history.length
+                    ? 'Undo the last declared winner — takes the point back and restores that round’s slots'
+                    : 'Nothing to undo yet'
+                }
+                className="inline-flex items-center gap-1.5 border border-purple-500/50 text-purple-300 hover:bg-purple-500/10 hover:text-white font-bold py-3 px-5 rounded-xl uppercase tracking-widest text-sm transition-all disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-purple-300 disabled:cursor-not-allowed"
               >
-                Reset
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 14L4 9l5-5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 9h11a5 5 0 010 10h-3" />
+                </svg>
+                Undo
               </button>
               {landed && !rolling && (
                 <>

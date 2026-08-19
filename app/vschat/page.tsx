@@ -91,10 +91,10 @@ const DEFAULT_POOL: string[] = Array.from(new Set(
   Big Bass Bonanza 1000
   Big Bass Bonanza 3 Reeler
   Big Bass Bonanza Megaways
-  Big Bass Bonanza â€“ Reel Action
+  Big Bass Bonanza – Reel Action
   Big Bass Boxing Bonus Round
   Big Bass Christmas Bash
-  Big Bass Christmas â€“ Frozen Lake
+  Big Bass Christmas – Frozen Lake
   Big Bass Day at the Races
   Big Bass Floats My Boat
   Big Bass Football Bonanza
@@ -391,7 +391,7 @@ const DEFAULT_POOL: string[] = Array.from(new Set(
   Floating Dragon Megaways
   Floating Dragon New Year Festival Ultra Megaways Hold & Spin
   Floating Dragon Wild Horses
-  Floating Dragon â€“ Year of the Snake
+  Floating Dragon – Year of the Snake
   Folsom Prison
   Fonzo's Feline Fortunes
   Forest Fortune
@@ -551,7 +551,7 @@ const DEFAULT_POOL: string[] = Array.from(new Set(
   Joker's Jewels Hold & Spin
   Joker's Jewels Wild
   Joker's Revenge
-  Jokerâ€™s Jewels Hot
+  Joker’s Jewels Hot
   Journey to the West
   Juicy Fruits
   Juicy Fruits Multihold
@@ -620,7 +620,7 @@ const DEFAULT_POOL: string[] = Array.from(new Set(
   Lucky Tiger
   Lucky Tiger 1000
   Lucky Tiger Gold
-  Luckyâ€™s Wild Pub
+  Lucky’s Wild Pub
   Lucy Luck and the Quest for Coins
   Lucy Luck and the Temple of Mysteries
   Luxor of Cleopatra
@@ -964,7 +964,7 @@ const DEFAULT_POOL: string[] = Array.from(new Set(
   The Dog House Megaways
   The Dog House Megaways 1000
   The Dog House Multihold
-  The Dog House â€“ Muttley Crew
+  The Dog House – Muttley Crew
   The Great Chicken Escape
   The Great Stick-Up
   The Hand of Midas
@@ -995,7 +995,7 @@ const DEFAULT_POOL: string[] = Array.from(new Set(
   Tombstone Begins
   Tombstone No Mercy
   Tombstone R.I.P.
-  Tombstone Slaughter: El Gordoâ€™s Revenge
+  Tombstone Slaughter: El Gordo’s Revenge
   Toshi Video Club
   Toshi Ways Club
   Towering Fortunes
@@ -1018,7 +1018,7 @@ const DEFAULT_POOL: string[] = Array.from(new Set(
   True Kult
   Truth
   Tsar Wars
-  Tundraâ€™s Fortune
+  Tundra’s Fortune
   Tut's Treasure Tower
   Twilight Princess
   Twisted Lab
@@ -1093,7 +1093,7 @@ const DEFAULT_POOL: string[] = Array.from(new Set(
   Yum Yum Powerways
   Ze Zeus
   Zeus vs Hades - Gods of War
-  Zeus vs Hades â€“ Gods of War 250
+  Zeus vs Hades – Gods of War 250
   Zeus vs Typhon
   Zeus Ze Zecond
   Zombie Carnival

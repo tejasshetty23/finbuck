@@ -345,7 +345,7 @@ export default function Home() {
           </div>
 
           {/* Podium — items-end keeps the three blocks on one baseline while 1st stands taller */}
-          <div className="grid grid-cols-[1fr_1.25fr_1fr] gap-2 sm:gap-4 items-end mb-4 sm:mb-6 max-w-3xl mx-auto">
+          <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-3 sm:gap-6 items-end mb-6 sm:mb-8">
             {PRIZE_PODIUM.map((p, i) => {
               const t = PRIZE_TIER[p.tier]
               return (

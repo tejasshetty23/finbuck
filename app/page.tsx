@@ -56,24 +56,43 @@ const PRIZE_PODIUM = [
   { place: '3rd', amount: '$1,000', tier: 'bronze' as const },
 ]
 
-// Metallic faces for the podium blocks. 1st is taller as well as brighter.
+// Metallic faces for the podium blocks. Polished metal isn't a simple light-to-
+// dark ramp — it has a dark reflection band across the middle with brightness
+// returning below it, so each `bg` runs light -> mid -> dark at 50% -> light
+// again. `sheen` lays a diagonal specular sweep over that, and the inset
+// shadows light the top edge and darken the base to give the block depth.
+const PRIZE_SHEEN =
+  'linear-gradient(105deg, transparent 24%, rgba(255,255,255,0.55) 42%, rgba(255,255,255,0.12) 51%, transparent 68%)'
+
 const PRIZE_TIER = {
   gold: {
-    bg: 'linear-gradient(180deg, #ffe27a 0%, #f4bc35 45%, #c98a06 100%)',
-    glow: '0 0 45px rgba(244,188,53,0.45)',
+    // Frame gradient, read diagonally so the chamfered edge catches light.
+    border: 'linear-gradient(135deg, #fff3b0, #f4bc35, #8a5e05, #ffe486, #f4bc35)',
+    bg: 'linear-gradient(180deg, #fff8d4 0%, #ffe486 15%, #f6c53c 33%, #a97708 50%, #f6c53c 63%, #ffdd76 82%, #c48c0a 100%)',
+    inset: 'inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -8px 14px rgba(0,0,0,0.35)',
     pad: 'py-5 sm:py-9',
   },
   silver: {
-    bg: 'linear-gradient(180deg, #f4f4f5 0%, #cbd0d6 45%, #98a0a8 100%)',
-    glow: '0 0 30px rgba(203,208,214,0.25)',
+    border: 'linear-gradient(135deg, #ffffff, #cbd0d6, #6b747e, #f2f5f8, #cbd0d6)',
+    bg: 'linear-gradient(180deg, #ffffff 0%, #eaeef2 15%, #c3cad2 33%, #78828d 50%, #c3cad2 63%, #eef1f4 82%, #99a2ac 100%)',
+    inset: 'inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -8px 14px rgba(0,0,0,0.32)',
     pad: 'py-3.5 sm:py-6',
   },
   bronze: {
-    bg: 'linear-gradient(180deg, #e89b5f 0%, #c4713b 45%, #8d481d 100%)',
-    glow: '0 0 30px rgba(196,113,59,0.28)',
+    border: 'linear-gradient(135deg, #ffd7b0, #c4713b, #6d3714, #e79b62, #c4713b)',
+    bg: 'linear-gradient(180deg, #ffd7b0 0%, #e79b62 15%, #c9743c 33%, #7c3f18 50%, #c9743c 63%, #e9a26c 82%, #8e4a1d 100%)',
+    inset: 'inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -8px 14px rgba(0,0,0,0.34)',
     pad: 'py-3.5 sm:py-6',
   },
 }
+
+// Chamfer matching the sponsor card, sized down for these smaller blocks. The
+// inner value is 2px tighter so the frame reads as an even border at the cuts.
+const PRIZE_CHAMFER_OUT =
+  'polygon(12px 0%, calc(100% - 12px) 0%, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0% calc(100% - 12px), 0% 12px)'
+const PRIZE_CHAMFER_IN =
+  'polygon(10px 0%, calc(100% - 10px) 0%, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0% calc(100% - 10px), 0% 10px)'
+
 
 const PRIZE_RANKS: [string, string][] = [
   ['4th', '$550'], ['5th', '$500'], ['6th', '$450'], ['7th', '$400'],
@@ -317,18 +336,27 @@ export default function Home() {
           <div className="grid grid-cols-3 gap-2 sm:gap-4 items-end mb-4 sm:mb-6">
             {PRIZE_PODIUM.map((p) => {
               const t = PRIZE_TIER[p.tier]
+              // Chamfered frame wrapping a metal face, same two-layer build as the
+              // sponsor card: a plain CSS border would be cut away by clip-path.
               return (
-                <div
-                  key={p.place}
-                  className={`rounded-t-lg px-1 text-center ${t.pad}`}
-                  style={{ background: t.bg, boxShadow: t.glow }}
-                >
-                  <span className="block font-black uppercase leading-none text-black text-xs sm:text-2xl">
-                    {p.place}
-                  </span>
-                  <span className="block font-black leading-none text-black text-lg sm:text-4xl mt-1">
-                    {p.amount}
-                  </span>
+                <div key={p.place} className="p-[2px]" style={{ clipPath: PRIZE_CHAMFER_OUT, background: t.border }}>
+                  <div
+                    className={`relative px-1 text-center ${t.pad}`}
+                    style={{ clipPath: PRIZE_CHAMFER_IN, background: t.bg, boxShadow: t.inset }}
+                  >
+                    {/* Specular sweep, above the metal but below the text */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0"
+                      style={{ background: PRIZE_SHEEN }}
+                    />
+                    <span className="relative block font-black uppercase leading-none text-black text-xs sm:text-2xl [text-shadow:0_1px_0_rgba(255,255,255,0.45)]">
+                      {p.place}
+                    </span>
+                    <span className="relative block font-black leading-none text-black text-lg sm:text-4xl mt-1 [text-shadow:0_1px_0_rgba(255,255,255,0.45)]">
+                      {p.amount}
+                    </span>
+                  </div>
                 </div>
               )
             })}

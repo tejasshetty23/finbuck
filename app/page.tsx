@@ -66,17 +66,20 @@ const PRIZE_TIER = {
     frame: '/frame-gold.webp',
     tint: '#ffd75e',
     glow: '0 0 18px rgba(255,215,94,0.75)',
-  },
+    metal: 'linear-gradient(140deg, #fff1a8 0%, #e6b325 40%, #9c7414 65%, #ffe58a 100%)',
+    },
   silver: {
     frame: '/frame-silver.webp',
     tint: '#e8edf3',
     glow: '0 0 18px rgba(232,237,243,0.6)',
-  },
+    metal: 'linear-gradient(140deg, #ffffff 0%, #cfcfcf 40%, #6f6f6f 65%, #f2f2f2 100%)',
+    },
   bronze: {
     frame: '/frame-bronze.webp',
     tint: '#eda36c',
     glow: '0 0 18px rgba(237,163,108,0.65)',
-  },
+    metal: 'linear-gradient(140deg, #f7cfa6 0%, #cd7f32 40%, #7a4010 65%, #f0b070 100%)',
+    },
 }
 
 const PRIZE_RANKS: [string, string][] = [
@@ -330,6 +333,10 @@ export default function Home() {
               const t = PRIZE_TIER[p.tier]
               return (
                 <div key={p.place} className="relative aspect-square">
+                  {/* Black backing behind the frame's transparent opening. Inset
+                      11% — slightly wider than the 13% opening — so its square
+                      corners tuck under the ornament instead of poking out. */}
+                  <div className="absolute inset-[11%] rounded-[6%] bg-black" />
                   <Image
                     src={t.frame}
                     alt=""
@@ -354,8 +361,17 @@ export default function Home() {
                     >
                       {p.place}
                     </span>
+                    {/* background-clip:text needs a transparent fill, which kills
+                        text-shadow, so the glow is a drop-shadow filter instead. */}
                     <span
-                      className="mt-0.5 block font-black leading-none text-white text-xs sm:text-2xl [text-shadow:0_0_16px_rgba(255,255,255,0.5)]"
+                      className="mt-0.5 block font-black leading-none text-xs sm:text-2xl"
+                      style={{
+                        background: t.metal,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                        filter: `drop-shadow(${t.glow})`,
+                      }}
                     >
                       {p.amount}
                     </span>

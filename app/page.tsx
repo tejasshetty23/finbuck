@@ -323,11 +323,16 @@ export default function Home() {
       <section className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
-            <p className="text-white font-black uppercase tracking-[0.25em] text-xs sm:text-lg mb-2">
+            <p className="text-white font-black uppercase tracking-[0.25em] text-xs sm:text-lg mb-2 [text-shadow:0_0_18px_rgba(255,255,255,0.45)]">
               Monthly Leaderboard
             </p>
             <h2 className="font-black uppercase leading-none text-4xl sm:text-6xl md:text-7xl">
-              <span className="text-[#00ff87]">{PRIZE_TOTAL}</span> <span className="text-white">Prize Pool</span>
+              <span className="text-[#00ff87] [text-shadow:0_0_22px_rgba(0,255,135,0.85),0_0_55px_rgba(0,255,135,0.4)]">
+                {PRIZE_TOTAL}
+              </span>{' '}
+              <span className="text-white [text-shadow:0_0_22px_rgba(255,255,255,0.55),0_0_55px_rgba(255,255,255,0.22)]">
+                Prize Pool
+              </span>
             </h2>
           </div>
 
@@ -364,10 +369,10 @@ export default function Home() {
                             className="h-full w-full rounded-full object-cover"
                           />
                         </div>
-                        <span className="relative block font-black uppercase leading-none text-black text-xs sm:text-2xl [text-shadow:0_1px_0_rgba(255,255,255,0.45)]">
+                        <span className="relative block font-black uppercase leading-none text-black text-xs sm:text-2xl [text-shadow:0_1px_0_rgba(255,255,255,0.75),0_-1px_0_rgba(0,0,0,0.25)]">
                           {p.place}
                         </span>
-                        <span className="relative block font-black leading-none text-black text-lg sm:text-4xl mt-1 [text-shadow:0_1px_0_rgba(255,255,255,0.45)]">
+                        <span className="relative block font-black leading-none text-black text-lg sm:text-4xl mt-1 [text-shadow:0_1px_0_rgba(255,255,255,0.75),0_-1px_0_rgba(0,0,0,0.25)]">
                           {p.amount}
                         </span>
                       </div>
@@ -385,12 +390,16 @@ export default function Home() {
               return (
                 <div
                   key={place}
-                  className={`flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-[#0e0d14] px-3 py-2.5 sm:px-4 sm:py-3 ${
+                  className={`flex items-center justify-between gap-2 rounded-lg border border-white/20 bg-[#12111a] px-3 py-2.5 sm:px-4 sm:py-3 ${
                     last ? 'col-span-2 sm:col-start-2' : ''
                   }`}
                 >
-                  <span className="font-black uppercase text-white text-xs sm:text-sm">{place}</span>
-                  <span className="font-black text-[#00ff87] text-xs sm:text-base">{amount}</span>
+                  <span className="font-black uppercase text-white text-xs sm:text-sm [text-shadow:0_0_12px_rgba(255,255,255,0.35)]">
+                    {place}
+                  </span>
+                  <span className="font-black text-[#00ff87] text-xs sm:text-base [text-shadow:0_0_14px_rgba(0,255,135,0.8)]">
+                    {amount}
+                  </span>
                 </div>
               )
             })}
@@ -400,10 +409,10 @@ export default function Home() {
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
             <Image src="/gamba-logo.png" alt="Gamba" width={170} height={59} className="object-contain" />
             <div className="text-center sm:text-right">
-              <p className="text-white font-black uppercase tracking-[0.25em] text-[11px] sm:text-sm">
+              <p className="text-white font-black uppercase tracking-[0.25em] text-[11px] sm:text-sm [text-shadow:0_0_14px_rgba(255,255,255,0.4)]">
                 Play with code
               </p>
-              <p className="text-[#00ff87] font-black uppercase leading-none text-3xl sm:text-5xl mt-1">
+              <p className="text-[#00ff87] font-black uppercase leading-none text-3xl sm:text-5xl mt-1 [text-shadow:0_0_20px_rgba(0,255,135,0.85),0_0_50px_rgba(0,255,135,0.35)]">
                 FinBuck
               </p>
             </div>

@@ -118,12 +118,12 @@ const PRIZE_RANKS: [string, string][] = [
 // speed so the group never drifts in unison. The smaller ones are hidden below
 // sm, where there is no spare width beside the text.
 const HERO_DECOR = [
-  { src: '/gem.webp',  top: '14%', left: '7%',  w: 'w-16 sm:w-24', rot: '-14deg', dur: '6.4s', delay: '0s',    op: 0.85, hide: false },
-  { src: '/coin.webp', top: '26%', left: '84%', w: 'w-14 sm:w-20', rot: '12deg',  dur: '7.1s', delay: '-2.2s', op: 0.8,  hide: false },
-  { src: '/coin.webp', top: '62%', left: '11%', w: 'w-12 sm:w-16', rot: '18deg',  dur: '5.8s', delay: '-3.4s', op: 0.7,  hide: true },
-  { src: '/gem.webp',  top: '70%', left: '86%', w: 'w-14 sm:w-20', rot: '-9deg',  dur: '6.9s', delay: '-1.1s', op: 0.8,  hide: false },
-  { src: '/gem.webp',  top: '40%', left: '92%', w: 'w-9 sm:w-12',  rot: '22deg',  dur: '8.2s', delay: '-4.6s', op: 0.55, hide: true },
-  { src: '/coin.webp', top: '48%', left: '3%',  w: 'w-9 sm:w-12',  rot: '-20deg', dur: '7.6s', delay: '-5.3s', op: 0.55, hide: true },
+  { src: '/gem.webp',  top: '-30%', left: '-3%',   w: 'w-16 sm:w-24', rot: '-14deg', dur: '6.4s', delay: '0s',    op: 0.85, hide: false },
+  { src: '/coin.webp', top: '-36%', left: '89%',  w: 'w-14 sm:w-20', rot: '12deg',  dur: '7.1s', delay: '-2.2s', op: 0.8,  hide: false },
+  { src: '/coin.webp', top: '55%',  left: '-11%',  w: 'w-12 sm:w-16', rot: '18deg',  dur: '5.8s', delay: '-3.4s', op: 0.75, hide: false },
+  { src: '/gem.webp',  top: '60%',  left: '94%',  w: 'w-14 sm:w-20', rot: '-9deg',  dur: '6.9s', delay: '-1.1s', op: 0.8,  hide: false },
+  { src: '/gem.webp',  top: '14%',  left: '-18%', w: 'w-9 sm:w-12',  rot: '22deg',  dur: '8.2s', delay: '-4.6s', op: 0.55, hide: true },
+  { src: '/coin.webp', top: '6%',   left: '105%', w: 'w-9 sm:w-12',  rot: '-20deg', dur: '7.6s', delay: '-5.3s', op: 0.55, hide: true },
 ]
 
 export default function Home() {
@@ -149,38 +149,44 @@ export default function Home() {
           <div className="absolute top-1/3 left-1/3 w-[400px] h-[400px] bg-green-400/5 rounded-full blur-3xl" />
         </div>
 
-        {/* Floating gems and chips. z-[5] puts them above the background but
-            behind the z-10 content, so they never sit over the headline, and
-            pointer-events-none keeps them from swallowing clicks on the CTAs. */}
-        <div className="absolute inset-0 z-[5] pointer-events-none select-none" aria-hidden>
-          {HERO_DECOR.map((g, i) => (
-            <Image
-              key={i}
-              src={g.src}
-              alt=""
-              width={320}
-              height={320}
-              className={`gem-float absolute h-auto ${g.w} ${g.hide ? 'hidden sm:block' : ''}`}
-              style={{
-                top: g.top,
-                left: g.left,
-                opacity: g.op,
-                animationDelay: g.delay,
-                ['--gem-rot' as string]: g.rot,
-                ['--gem-dur' as string]: g.dur,
-              }}
-            />
-          ))}
-        </div>
 
         {/* Content */}
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto top-8">
-          <div className="mb-4">
-            <p className="text-gray-400 text-xs md:text-sm font-semibold uppercase tracking-[0.4em] mb-2">Welcome to</p>
-            <h1 className="font-black uppercase tracking-tight leading-tight animated-gradient-text">
-              <span className="block text-5xl sm:text-6xl md:text-8xl">FinBucks</span>
-              <span className="block text-3xl sm:text-4xl md:text-5xl">Rewards</span>
-            </h1>
+          <div className="relative mb-4 -mx-4 sm:-mx-12 lg:-mx-24">
+            {/* Gems and chips ring the headline. Offsets are percentages of this
+                block, so they stay tucked around the text at any breakpoint
+                instead of drifting off toward the viewport edges. Negative
+                values sit them just outside it. pointer-events-none keeps them
+                from swallowing clicks. */}
+            <div className="absolute inset-0 pointer-events-none select-none" aria-hidden>
+              {HERO_DECOR.map((g, i) => (
+                <Image
+                  key={i}
+                  src={g.src}
+                  alt=""
+                  width={320}
+                  height={320}
+                  className={`gem-float absolute h-auto ${g.w} ${g.hide ? 'hidden sm:block' : ''}`}
+                  style={{
+                    top: g.top,
+                    left: g.left,
+                    opacity: g.op,
+                    animationDelay: g.delay,
+                    ['--gem-rot' as string]: g.rot,
+                    ['--gem-dur' as string]: g.dur,
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Above the decor, so a gem can never wash over the wordmark */}
+            <div className="relative z-10">
+              <p className="text-gray-400 text-xs md:text-sm font-semibold uppercase tracking-[0.4em] mb-2">Welcome to</p>
+              <h1 className="font-black uppercase tracking-tight leading-tight animated-gradient-text">
+                <span className="block text-5xl sm:text-6xl md:text-8xl">FinBucks</span>
+                <span className="block text-3xl sm:text-4xl md:text-5xl">Rewards</span>
+              </h1>
+            </div>
           </div>
 
           <div className="flex flex-col items-center justify-center gap-4 mt-16 w-full max-w-[260px] mx-auto relative top-8">

@@ -387,14 +387,14 @@ export default function Home() {
       <section className="relative z-10 py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
-            <p className="text-white font-black uppercase tracking-[0.25em] text-xs sm:text-lg mb-2 [text-shadow:0_0_18px_rgba(255,255,255,0.45)]">
+            <p className="text-white font-black uppercase tracking-[0.25em] text-xs sm:text-lg mb-2 [text-shadow:0_0_12px_rgba(255,255,255,0.25)]">
               Monthly Leaderboard
             </p>
             <h2 className="font-black uppercase leading-none text-4xl sm:text-6xl md:text-7xl">
-              <span className="text-[#00ff87] [text-shadow:0_0_22px_rgba(0,255,135,0.85),0_0_55px_rgba(0,255,135,0.4)]">
+              <span className="text-[#00ff87] [text-shadow:0_0_14px_rgba(0,255,135,0.45),0_0_32px_rgba(0,255,135,0.16)]">
                 {PRIZE_TOTAL}
               </span>{' '}
-              <span className="text-white [text-shadow:0_0_22px_rgba(255,255,255,0.55),0_0_55px_rgba(255,255,255,0.22)]">
+              <span className="text-white [text-shadow:0_0_14px_rgba(255,255,255,0.28),0_0_32px_rgba(255,255,255,0.1)]">
                 Prize Pool
               </span>
             </h2>

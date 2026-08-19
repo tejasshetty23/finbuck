@@ -217,3 +217,17 @@ body {
   height: 2px;
   background: rgba(0, 255, 135, 0.35);
 }
+
+/* Podium metal — the fill drifts so the blocks read as polished rather than
+   printed. Reuses gradient-shift, which sweeps background-position across X, so
+   the gradients it animates must be diagonal for the movement to show. */
+.prize-metal {
+  background-size: 220% 220%;
+  animation: gradient-shift 9s ease infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prize-metal {
+    animation: none;
+  }
+}

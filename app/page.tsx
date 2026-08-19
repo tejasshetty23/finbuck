@@ -58,30 +58,26 @@ const PRIZE_PODIUM = [
 
 // Metallic faces for the podium blocks. Polished metal isn't a simple light-to-
 // dark ramp — it has a dark reflection band across the middle with brightness
-// returning below it, so each `bg` runs light -> mid -> dark at 50% -> light
-// again. `sheen` lays a diagonal specular sweep over that, and the inset
-// shadows light the top edge and darken the base to give the block depth.
-const PRIZE_SHEEN =
-  'linear-gradient(105deg, transparent 24%, rgba(255,255,255,0.55) 42%, rgba(255,255,255,0.12) 51%, transparent 68%)'
-
+// returning below it, so each fill runs light -> mid -> dark at 50% -> light
+// again. Diagonal (135deg) so .prize-metal's drift is visible.
 const PRIZE_TIER = {
   gold: {
     // Frame gradient, read diagonally so the chamfered edge catches light.
     border: 'linear-gradient(135deg, #fff3b0, #f4bc35, #8a5e05, #ffe486, #f4bc35)',
-    bg: 'linear-gradient(180deg, #fff8d4 0%, #ffe486 15%, #f6c53c 33%, #a97708 50%, #f6c53c 63%, #ffdd76 82%, #c48c0a 100%)',
-    inset: 'inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -8px 14px rgba(0,0,0,0.35)',
+    bg: 'linear-gradient(135deg, #fff8d4 0%, #ffe486 15%, #f6c53c 33%, #a97708 50%, #f6c53c 63%, #ffdd76 82%, #c48c0a 100%)',
+    inset: 'inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -8px 14px rgba(0,0,0,0.35)',
     pad: 'py-5 sm:py-9',
   },
   silver: {
     border: 'linear-gradient(135deg, #ffffff, #cbd0d6, #6b747e, #f2f5f8, #cbd0d6)',
-    bg: 'linear-gradient(180deg, #ffffff 0%, #eaeef2 15%, #c3cad2 33%, #78828d 50%, #c3cad2 63%, #eef1f4 82%, #99a2ac 100%)',
-    inset: 'inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -8px 14px rgba(0,0,0,0.32)',
+    bg: 'linear-gradient(135deg, #ffffff 0%, #eaeef2 15%, #c3cad2 33%, #78828d 50%, #c3cad2 63%, #eef1f4 82%, #99a2ac 100%)',
+    inset: 'inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -8px 14px rgba(0,0,0,0.32)',
     pad: 'py-3.5 sm:py-6',
   },
   bronze: {
     border: 'linear-gradient(135deg, #ffd7b0, #c4713b, #6d3714, #e79b62, #c4713b)',
-    bg: 'linear-gradient(180deg, #ffd7b0 0%, #e79b62 15%, #c9743c 33%, #7c3f18 50%, #c9743c 63%, #e9a26c 82%, #8e4a1d 100%)',
-    inset: 'inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -8px 14px rgba(0,0,0,0.34)',
+    bg: 'linear-gradient(135deg, #ffd7b0 0%, #e79b62 15%, #c9743c 33%, #7c3f18 50%, #c9743c 63%, #e9a26c 82%, #8e4a1d 100%)',
+    inset: 'inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -8px 14px rgba(0,0,0,0.34)',
     pad: 'py-3.5 sm:py-6',
   },
 }
@@ -339,17 +335,15 @@ export default function Home() {
               // Chamfered frame wrapping a metal face, same two-layer build as the
               // sponsor card: a plain CSS border would be cut away by clip-path.
               return (
-                <div key={p.place} className="p-[2px]" style={{ clipPath: PRIZE_CHAMFER_OUT, background: t.border }}>
+                <div
+                  key={p.place}
+                  className="prize-metal p-[2px]"
+                  style={{ clipPath: PRIZE_CHAMFER_OUT, background: t.border }}
+                >
                   <div
-                    className={`relative px-1 text-center ${t.pad}`}
+                    className={`prize-metal relative px-1 text-center ${t.pad}`}
                     style={{ clipPath: PRIZE_CHAMFER_IN, background: t.bg, boxShadow: t.inset }}
                   >
-                    {/* Specular sweep, above the metal but below the text */}
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0"
-                      style={{ background: PRIZE_SHEEN }}
-                    />
                     <span className="relative block font-black uppercase leading-none text-black text-xs sm:text-2xl [text-shadow:0_1px_0_rgba(255,255,255,0.45)]">
                       {p.place}
                     </span>

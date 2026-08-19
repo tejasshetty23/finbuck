@@ -46,6 +46,43 @@ const socials = [
   },
 ]
 
+// Gamba monthly leaderboard prize pool. The twenty places total $10,000 — keep
+// PRIZE_TOTAL in step with the amounts below if they ever change.
+const PRIZE_TOTAL = '$10,000'
+
+const PRIZE_PODIUM = [
+  { place: '2nd', amount: '$1,500', tier: 'silver' as const },
+  { place: '1st', amount: '$3,000', tier: 'gold' as const },
+  { place: '3rd', amount: '$1,000', tier: 'bronze' as const },
+]
+
+// Metallic faces for the podium blocks. 1st is taller as well as brighter.
+const PRIZE_TIER = {
+  gold: {
+    bg: 'linear-gradient(180deg, #ffe27a 0%, #f4bc35 45%, #c98a06 100%)',
+    glow: '0 0 45px rgba(244,188,53,0.45)',
+    pad: 'py-5 sm:py-9',
+  },
+  silver: {
+    bg: 'linear-gradient(180deg, #f4f4f5 0%, #cbd0d6 45%, #98a0a8 100%)',
+    glow: '0 0 30px rgba(203,208,214,0.25)',
+    pad: 'py-3.5 sm:py-6',
+  },
+  bronze: {
+    bg: 'linear-gradient(180deg, #e89b5f 0%, #c4713b 45%, #8d481d 100%)',
+    glow: '0 0 30px rgba(196,113,59,0.28)',
+    pad: 'py-3.5 sm:py-6',
+  },
+}
+
+const PRIZE_RANKS: [string, string][] = [
+  ['4th', '$550'], ['5th', '$500'], ['6th', '$450'], ['7th', '$400'],
+  ['8th', '$350'], ['9th', '$325'], ['10th', '$300'], ['11th', '$275'],
+  ['12th', '$250'], ['13th', '$225'], ['14th', '$200'], ['15th', '$175'],
+  ['16th', '$150'], ['17th', '$125'], ['18th', '$100'], ['19th', '$75'],
+  ['20th', '$50'],
+]
+
 export default function Home() {
   return (
     <>
@@ -260,6 +297,72 @@ export default function Home() {
             </div>
           </div>
           </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── GAMBA PRIZE POOL ── */}
+      <section className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-white font-black uppercase tracking-[0.25em] text-xs sm:text-lg mb-2">
+              Monthly Leaderboard
+            </p>
+            <h2 className="font-black uppercase leading-none text-4xl sm:text-6xl md:text-7xl">
+              <span className="text-[#00ff87]">{PRIZE_TOTAL}</span> <span className="text-white">Prize Pool</span>
+            </h2>
+          </div>
+
+          {/* Podium — items-end keeps the three blocks on one baseline while 1st stands taller */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 items-end mb-4 sm:mb-6">
+            {PRIZE_PODIUM.map((p) => {
+              const t = PRIZE_TIER[p.tier]
+              return (
+                <div
+                  key={p.place}
+                  className={`rounded-t-lg px-1 text-center ${t.pad}`}
+                  style={{ background: t.bg, boxShadow: t.glow }}
+                >
+                  <span className="block font-black uppercase leading-none text-black text-xs sm:text-2xl">
+                    {p.place}
+                  </span>
+                  <span className="block font-black leading-none text-black text-lg sm:text-4xl mt-1">
+                    {p.amount}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* 4th - 20th. 20th is the odd one out, so it spans the middle to stay centred. */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+            {PRIZE_RANKS.map(([place, amount], i) => {
+              const last = i === PRIZE_RANKS.length - 1
+              return (
+                <div
+                  key={place}
+                  className={`flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-[#0e0d14] px-3 py-2.5 sm:px-4 sm:py-3 ${
+                    last ? 'col-span-2 sm:col-start-2' : ''
+                  }`}
+                >
+                  <span className="font-black uppercase text-white text-xs sm:text-sm">{place}</span>
+                  <span className="font-black text-[#00ff87] text-xs sm:text-base">{amount}</span>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Sponsor lockup */}
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <Image src="/gamba-logo.png" alt="Gamba" width={170} height={59} className="object-contain" />
+            <div className="text-center sm:text-right">
+              <p className="text-white font-black uppercase tracking-[0.25em] text-[11px] sm:text-sm">
+                Play with code
+              </p>
+              <p className="text-[#00ff87] font-black uppercase leading-none text-3xl sm:text-5xl mt-1">
+                FinBuck
+              </p>
+            </div>
           </div>
         </div>
       </section>

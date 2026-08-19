@@ -82,6 +82,23 @@ const PRIZE_TIER = {
     },
 }
 
+// Columns alternate purple/green. Index parity gives that directly: in the
+// four-wide grid it lands purple/green/purple/green, and when it drops to two
+// columns on mobile the same rule still puts purple in column one and green in
+// column two.
+const RANK_ACCENT = {
+  purple: {
+    cls: 'border-[#a855f7]/45 bg-[#120a1f]',
+    text: 'text-[#c084fc]',
+    glow: '0 0 14px rgba(192,132,252,0.75)',
+  },
+  green: {
+    cls: 'border-[#00ff87]/35 bg-[#07150f]',
+    text: 'text-[#00ff87]',
+    glow: '0 0 14px rgba(0,255,135,0.8)',
+  },
+}
+
 const PRIZE_RANKS: [string, string][] = [
   ['4th', '$550'], ['5th', '$500'], ['6th', '$450'], ['7th', '$400'],
   ['8th', '$350'], ['9th', '$325'], ['10th', '$300'], ['11th', '$275'],
@@ -385,17 +402,21 @@ export default function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             {PRIZE_RANKS.map(([place, amount], i) => {
               const last = i === PRIZE_RANKS.length - 1
+              const a = RANK_ACCENT[i % 2 === 0 ? 'purple' : 'green']
               return (
                 <div
                   key={place}
-                  className={`flex items-center justify-between gap-2 rounded-lg border border-white/20 bg-[#12111a] px-3 py-2.5 sm:px-4 sm:py-3 ${
+                  className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2.5 sm:px-4 sm:py-3 ${a.cls} ${
                     last ? 'col-span-2 sm:col-start-2' : ''
                   }`}
                 >
                   <span className="font-black uppercase text-white text-xs sm:text-sm [text-shadow:0_0_12px_rgba(255,255,255,0.35)]">
                     {place}
                   </span>
-                  <span className="font-black text-[#00ff87] text-xs sm:text-base [text-shadow:0_0_14px_rgba(0,255,135,0.8)]">
+                  <span
+                    className={`font-black text-xs sm:text-base ${a.text}`}
+                    style={{ textShadow: a.glow }}
+                  >
                     {amount}
                   </span>
                 </div>

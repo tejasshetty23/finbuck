@@ -67,18 +67,24 @@ const PRIZE_TIER = {
     tint: '#ffd75e',
     glow: '0 0 18px rgba(255,215,94,0.75)',
     metal: 'linear-gradient(140deg, #fff1a8 0%, #e6b325 40%, #9c7414 65%, #ffe58a 100%)',
+    panel: 'radial-gradient(125% 125% at 50% 0%, #6d5009 0%, #2f2205 45%, #0d0901 100%)',
+    ring: 'linear-gradient(135deg, #fff3b0, #f4bc35, #8a5e05, #ffe486, #f4bc35)',
     },
   silver: {
     frame: '/frame-silver.webp',
     tint: '#e8edf3',
     glow: '0 0 18px rgba(232,237,243,0.6)',
     metal: 'linear-gradient(140deg, #ffffff 0%, #cfcfcf 40%, #6f6f6f 65%, #f2f2f2 100%)',
+    panel: 'radial-gradient(125% 125% at 50% 0%, #575d64 0%, #24272b 45%, #08090a 100%)',
+    ring: 'linear-gradient(135deg, #ffffff, #cbd0d6, #6b747e, #f2f5f8, #cbd0d6)',
     },
   bronze: {
     frame: '/frame-bronze.webp',
     tint: '#eda36c',
     glow: '0 0 18px rgba(237,163,108,0.65)',
     metal: 'linear-gradient(140deg, #f7cfa6 0%, #cd7f32 40%, #7a4010 65%, #f0b070 100%)',
+    panel: 'radial-gradient(125% 125% at 50% 0%, #6b3d19 0%, #2d190a 45%, #0c0603 100%)',
+    ring: 'linear-gradient(135deg, #ffd7b0, #c4713b, #6d3714, #e79b62, #c4713b)',
     },
 }
 
@@ -350,10 +356,16 @@ export default function Home() {
               const t = PRIZE_TIER[p.tier]
               return (
                 <div key={p.place} className={`relative aspect-square prize-float prize-float-${i + 1}`}>
-                  {/* Black backing behind the frame's transparent opening. Inset
-                      11% — slightly wider than the 13% opening — so its square
-                      corners tuck under the ornament instead of poking out. */}
-                  <div className="absolute inset-[11%] rounded-[6%] bg-black" />
+                  {/* Backing behind the frame's transparent opening, tinted to the
+                      tier. Inset 11% — slightly wider than the 13% opening — so its
+                      square corners tuck under the ornament instead of poking out.
+                      Lit from the top and dark at the base, which keeps it clearly
+                      gold/silver/bronze while staying dark enough for the metallic
+                      amount text to read against it. */}
+                  <div
+                    className="absolute inset-[11%] rounded-[6%]"
+                    style={{ background: t.panel }}
+                  />
                   <Image
                     src={t.frame}
                     alt=""
@@ -363,14 +375,22 @@ export default function Home() {
                   />
                   {/* Largest centred box that clears the frame's inward spikes */}
                   <div className="absolute inset-[20.5%] flex flex-col items-center justify-center text-center">
-                    <div className="w-[54%] aspect-square overflow-hidden rounded-full">
-                      <Image
-                        src="/deer.webp"
-                        alt=""
-                        width={620}
-                        height={620}
-                        className="h-full w-full object-cover"
-                      />
+                    {/* Avatar in a metal ring matching its frame. Padding is a
+                        percentage so the ring scales with the podium rather than
+                        thinning out as the card grows. */}
+                    <div
+                      className="w-[54%] aspect-square rounded-full p-[3.5%]"
+                      style={{ background: t.ring }}
+                    >
+                      <div className="h-full w-full overflow-hidden rounded-full">
+                        <Image
+                          src="/deer.webp"
+                          alt=""
+                          width={620}
+                          height={620}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
                     </div>
                     <span
                       className="mt-1.5 block font-black uppercase leading-none text-[9px] sm:text-sm"

@@ -407,7 +407,10 @@ export default function Home() {
                 <div
                   key={place}
                   className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2.5 sm:px-4 sm:py-3 ${a.cls} ${
-                    last ? 'col-span-2 sm:col-start-2' : ''
+                    // Spans two columns because a four-wide grid has no true
+                    // middle column; max-w + mx-auto then narrows the tile
+                    // itself without losing that centring.
+                    last ? 'col-span-2 sm:col-start-2 sm:max-w-[60%] sm:mx-auto sm:w-full' : ''
                   }`}
                 >
                   <span className="font-black uppercase text-white text-xs sm:text-sm [text-shadow:0_0_12px_rgba(255,255,255,0.35)]">

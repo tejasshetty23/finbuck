@@ -1389,6 +1389,21 @@ export default function VsChatPage() {
   // battle. The winner banner is left showing until the next roll, so you can
   // still see who took the round after the slots have gone.
   function declareWinner(side: 'house' | 'chat') {
+    // Already declared for this side — pressing again must not score twice.
+    // Reset ends the round before the next point can be awarded.
+    if (outcome === side) return
+
+    if (outcome) {
+      // Switching sides before Reset reads as correcting a misclick, so move
+      // the point across rather than awarding a second one. The last history
+      // entry is rewritten in place so Undo still walks back a single round.
+      const prev = outcome
+      setScore((s) => ({ ...s, [prev]: Math.max(0, s[prev] - 1), [side]: s[side] + 1 }))
+      setHistory((h) => (h.length ? [...h.slice(0, -1), { ...h[h.length - 1], side }] : h))
+      setOutcome(side)
+      return
+    }
+
     setScore((s) => ({ ...s, [side]: s[side] + 1 }))
     setHistory((h) => [...h, { side, houseSlot, chatSlot }].slice(-HISTORY_MAX))
     if (timerRef.current) clearTimeout(timerRef.current)

@@ -1334,9 +1334,17 @@ export default function VsChatPage() {
   const [chatSlot, setChatSlot] = useState('')
 
 
-  // Winner is declared with the button on each card. Declaring scores the point
-  // and clears the board for the next battle in one action; Undo walks it back.
+  // Two separate pieces of state, because the card button and the banner want
+  // different lifetimes. `outcome` persists so the banner keeps showing who took
+  // the round. `flash` is transient and drives the button: it clears itself a
+  // moment after each declaration so the button returns to "Declare winner" and
+  // visibly responds the next time it is pressed — otherwise a side winning
+  // twice in a row gets no feedback on the second press, since the button was
+  // already stuck reading "Winner".
   const [outcome, setOutcome] = useState<'chat' | 'house' | null>(null)
+  const [flash, setFlash] = useState<'chat' | 'house' | null>(null)
+  const flashRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => { if (flashRef.current) clearTimeout(flashRef.current) }, [])
 
   // Running score, persisted so it survives a refresh. Starts at 0-0 on the
   // server/first paint, then loads whatever was saved once the page mounts —
@@ -1397,6 +1405,11 @@ export default function VsChatPage() {
     setHouseSlot('')
     setChatSlot('')
     setOutcome(side)
+    // Restart the flash even if one is already running, so a repeat win on the
+    // same side still reads as a fresh press.
+    if (flashRef.current) clearTimeout(flashRef.current)
+    setFlash(side)
+    flashRef.current = setTimeout(() => setFlash(null), 1100)
   }
 
   // Walks back the last declaration: takes the point off, restores that round's
@@ -1413,12 +1426,16 @@ export default function VsChatPage() {
     setChatSlot(last.chatSlot)
     setHistory((h) => h.slice(0, -1))
     setOutcome(null)
+    if (flashRef.current) clearTimeout(flashRef.current)
+    setFlash(null)
   }
 
   function resetScore() {
     setScore({ house: 0, chat: 0 })
     setHistory([])
     setOutcome(null)
+    if (flashRef.current) clearTimeout(flashRef.current)
+    setFlash(null)
   }
 
   const house: Fighter = { role: 'The House', color: '#00ff87', gradient: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)', img: houseImg, setImg: setHouseImg, name: houseName, setName: setHouseName, slot: houseSlot, setSlot: setHouseSlot }
@@ -1590,7 +1607,7 @@ export default function VsChatPage() {
       <div className="max-w-5xl mx-auto mb-16">
         <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
           <div className="w-full md:flex-1 max-w-[320px]">
-            <FighterCard f={house} frameSrc="/frame2-green.webp" fillSrc="/frame2-green-fill.webp" region={REGION_GREEN} winner={outcome ? outcome === 'house' : null} onWin={() => declareWinner('house')} />
+            <FighterCard f={house} frameSrc="/frame2-green.webp" fillSrc="/frame2-green-fill.webp" region={REGION_GREEN} winner={flash ? flash === 'house' : null} onWin={() => declareWinner('house')} />
           </div>
 
           {/* VS emblem — floats gently */}
@@ -1604,7 +1621,7 @@ export default function VsChatPage() {
           </div>
 
           <div className="w-full md:flex-1 max-w-[320px]">
-            <FighterCard f={chat} frameSrc="/frame2-purple.webp" fillSrc="/frame2-purple-fill.webp" region={REGION_PURPLE} winner={outcome ? outcome === 'chat' : null} onWin={() => declareWinner('chat')} />
+            <FighterCard f={chat} frameSrc="/frame2-purple.webp" fillSrc="/frame2-purple-fill.webp" region={REGION_PURPLE} winner={flash ? flash === 'chat' : null} onWin={() => declareWinner('chat')} />
           </div>
         </div>
 

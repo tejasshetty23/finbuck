@@ -1337,8 +1337,8 @@ export default function VsChatPage() {
   // Two separate pieces of state, because the card button and the banner want
   // different lifetimes. `outcome` persists so the banner keeps showing who took
   // the round. `flash` is transient and drives the button: it clears itself a
-  // moment after each declaration so the button returns to "Declare winner" and
-  // visibly responds the next time it is pressed — otherwise a side winning
+  // few seconds after each declaration so the button returns to "Declare winner"
+  // and visibly responds the next time it is pressed — otherwise a side winning
   // twice in a row gets no feedback on the second press, since the button was
   // already stuck reading "Winner".
   const [outcome, setOutcome] = useState<'chat' | 'house' | null>(null)
@@ -1409,7 +1409,7 @@ export default function VsChatPage() {
     // same side still reads as a fresh press.
     if (flashRef.current) clearTimeout(flashRef.current)
     setFlash(side)
-    flashRef.current = setTimeout(() => setFlash(null), 1100)
+    flashRef.current = setTimeout(() => setFlash(null), 8000)
   }
 
   // Walks back the last declaration: takes the point off, restores that round's

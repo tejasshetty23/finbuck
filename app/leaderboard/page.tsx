@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import FloatingDecor from '../../components/FloatingDecor'
 import Reveal from '../../components/Reveal'
 import fs from 'fs'
 import path from 'path'
@@ -300,8 +301,9 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
 
       {/* Header */}
       <Reveal>
-      <div className="max-w-4xl mx-auto mb-12 text-center">
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
+      <div className="relative max-w-4xl mx-auto mb-12 text-center">
+        <FloatingDecor height="h-[280px] sm:h-[340px]" className="!top-[26%]" />
+        <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
           Watchtime<br />
           <span className="animated-gradient-text">Leaderboard</span>
         </h1>

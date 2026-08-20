@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import FloatingDecor from '../../components/FloatingDecor'
 import Reveal from '../../components/Reveal'
 
 interface ShopItem {
@@ -131,7 +132,8 @@ export default function ShopPage() {
 
       {/* Header */}
       <Reveal>
-      <div className="max-w-4xl mx-auto mt-6 mb-8 text-center">
+      <div className="relative max-w-4xl mx-auto mt-6 mb-8 text-center">
+        <FloatingDecor height="h-[260px] sm:h-[320px]" className="!top-[46%]" />
         <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-purple-400">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12A1.125 1.125 0 0119.75 21.75H4.25a1.125 1.125 0 01-1.119-1.243l1.263-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
@@ -139,7 +141,7 @@ export default function ShopPage() {
           <span className="text-purple-400 text-sm font-semibold tracking-widest uppercase">Points Shop</span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white">
+        <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white">
           The <span className="animated-gradient-text">Shop</span>
         </h1>
       </div>

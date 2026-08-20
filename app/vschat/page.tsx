@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import FloatingDecor from '../../components/FloatingDecor'
 import Reveal from '../../components/Reveal'
 
 // One slot per line. Duplicates are dropped so the randomiser stays fair —
@@ -1499,12 +1500,13 @@ export default function VsChatPage() {
 
       {/* Header */}
       <Reveal>
-      <div className="max-w-4xl mx-auto mb-10 text-center">
+      <div className="relative max-w-4xl mx-auto mb-10 text-center">
+        <FloatingDecor height="h-[280px] sm:h-[340px]" className="!top-[40%]" />
         <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
           <span className="text-purple-400 text-sm font-semibold tracking-widest uppercase">Live Slot Duel</span>
         </div>
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight mb-4 whitespace-nowrap">
+        <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight mb-4 whitespace-nowrap">
           <span className="animated-gradient-text">Slot</span> <span className="animated-gradient-text-purple">Battles</span>
         </h1>
         <p className="text-gray-500 text-base max-w-lg mx-auto mb-6">

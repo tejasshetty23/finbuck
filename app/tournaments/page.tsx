@@ -154,8 +154,11 @@ export default function TournamentsPage() {
 
       {/* Setup screen */}
       {!rounds && (
-        <div className="max-w-md mx-auto">
-          <div className="rounded-2xl border border-purple-900/40 bg-[#0d0a1a]/70 backdrop-blur-sm p-8">
+        <div className="max-w-lg mx-auto">
+          {/* Frame sits on its own element so its border-image can't fight the
+              card's own border/background. */}
+          <div className="tourney-frame">
+            <div className="rounded-2xl border border-purple-900/40 bg-[#0d0a1a]/70 backdrop-blur-sm p-6 sm:p-8">
             <label className="block text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
               Number of Entrants
             </label>
@@ -209,6 +212,7 @@ export default function TournamentsPage() {
             <p className="text-gray-600 text-xs text-center mt-3">
               2–32 players · byes are added automatically
             </p>
+            </div>
           </div>
         </div>
       )}

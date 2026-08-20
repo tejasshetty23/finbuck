@@ -281,3 +281,23 @@ html {
     scroll-behavior: auto;
   }
 }
+
+/* Ornate frame for the tournament setup card. border-image rather than a
+   stretched background: the card is wider than it is tall, and stretching a
+   square frame to fit would flatten the corner ornaments. This way only the
+   edge strips scale, and the corners stay true.
+
+   Slice 155 matches where the artwork's inward spikes reach in the 720px asset,
+   so each corner slice carries its whole ornament. The rendered border is much
+   thinner than the slice, which just scales the ornament down. */
+.tourney-frame {
+  border: 30px solid transparent;
+  border-image: url('/tourney-frame.webp') 155 / 30px / 0 stretch;
+}
+
+@media (min-width: 640px) {
+  .tourney-frame {
+    border-width: 46px;
+    border-image-width: 46px;
+  }
+}

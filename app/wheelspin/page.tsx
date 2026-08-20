@@ -1,5 +1,6 @@
 import SpinWheel from '../../components/SpinWheel'
 import LiveSubscriberWheel from '../../components/LiveSubscriberWheel'
+import FloatingDecor from '../../components/FloatingDecor'
 import Reveal from '../../components/Reveal'
 
 const PRIZE_DEFAULTS = ['10$', '50$ Buy In', '20$', '10$ Buy In', '50$', '20$ Buy In']
@@ -52,7 +53,8 @@ export default function WheelSpinPage() {
 
       {/* Header */}
       <Reveal>
-      <div className="max-w-4xl mx-auto mb-12 text-center">
+      <div className="relative max-w-4xl mx-auto mb-12 text-center">
+        <FloatingDecor height="h-[280px] sm:h-[340px]" className="!top-[42%]" />
         <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-purple-400">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zM12 3v9l6 3" />
@@ -60,7 +62,7 @@ export default function WheelSpinPage() {
           <span className="text-purple-400 text-sm font-semibold tracking-widest uppercase">Viewer Giveaway</span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
+        <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
           Spin the <span className="animated-gradient-text">Wheel</span>
         </h1>
         <p className="text-gray-500 text-base max-w-md mx-auto">

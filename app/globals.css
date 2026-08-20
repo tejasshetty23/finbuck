@@ -287,20 +287,36 @@ html {
    square frame to fit would flatten the corner ornaments. This way only the
    edge strips scale and the corners stay true.
 
-   Slice 155 is where the artwork's inward spikes reach in the 720px asset, so
-   each corner slice carries its whole ornament. But the solid ring is only 89px
-   of that, so border-image-width has to be set larger than border-width — at
-   155/89 of it — or the ring renders too thin and the rest of the slice paints
-   as a transparent gap between frame and card. The surplus makes the spikes
-   overhang inward across the card edge, which is how the artwork is meant to
-   sit. */
+   Painted on ::after rather than the element's own border, because a border
+   belongs to the parent's border layer and child content paints on top of it —
+   the card would cover the spikes that are meant to overhang it. ::after
+   generates after the children, so the frame lands above the card.
+
+   Slice 155 is where the spikes reach in the 720px asset, but the solid ring is
+   only 89px of that, so border-image-width is set at 155/89 of border-width or
+   the ring renders too thin and the rest paints as a transparent gap. */
 .tourney-frame {
+  position: relative;
+  border: 30px solid transparent;
+}
+
+.tourney-frame::after {
+  content: '';
+  position: absolute;
+  /* Out to the border box, which the reserved transparent border holds open. */
+  inset: -30px;
+  pointer-events: none;
   border: 30px solid transparent;
   border-image: url('/tourney-frame.webp') 155 / 52px / 0 stretch;
 }
 
 @media (min-width: 640px) {
   .tourney-frame {
+    border-width: 46px;
+  }
+
+  .tourney-frame::after {
+    inset: -46px;
     border-width: 46px;
     border-image-width: 80px;
   }

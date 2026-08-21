@@ -19,9 +19,14 @@ node_modules/
 # debug
 npm-debug.log*
 
-# local env files
+# local env files. The trailing-* forms matter: `.env*.local` alone does not
+# cover `.env.local.bak`, and this file carries the never-pick list on a public
+# repo.
 .env*.local
 .env
+.env.*
+*.env
+.env*
 
 # vercel
 .vercel

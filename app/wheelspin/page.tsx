@@ -75,6 +75,18 @@ export default function WheelSpinPage() {
       {/* Control bar + two wheels side by side */}
       <div className="w-[90%] mx-auto">
         <LiveSubscriberWheel
+          numberPicker={
+            <div className="w-full max-w-md mx-auto">
+              <div className="rounded-2xl border border-[#00ff87]/20 bg-[#0d0a1a]/40 p-5">
+                <div className="mb-4 text-center">
+                  <h3 className="text-xl sm:text-2xl font-black uppercase leading-tight">
+                    <span className="animated-gradient-text">Number Roller</span>
+                  </h3>
+                </div>
+                <NumberRoller min={1} max={20} />
+              </div>
+            </div>
+          }
           prizeWheel={
             <div className="relative rounded-2xl border border-[#00ff87]/20 bg-[#0d0a1a]/40 p-6">
               <div className="mb-8 text-center">
@@ -99,22 +111,6 @@ export default function WheelSpinPage() {
         <p className="text-center text-gray-600 text-xs mt-8">
           Spin the giveaway wheel to pick a winner, then spin the prize wheel for their reward.
         </p>
-
-        {/* Number roller — independent of the two wheels, for anything that
-            needs a straight 1-20 draw on stream. */}
-        <Reveal>
-        <div className="max-w-md mx-auto mt-16">
-          <div className="rounded-2xl border border-[#00ff87]/20 bg-[#0d0a1a]/40 p-6">
-            <div className="mb-6 text-center">
-              <h3 className="text-3xl sm:text-4xl font-black uppercase leading-tight">
-                <span className="animated-gradient-text">Number Roller</span>
-              </h3>
-              <p className="text-gray-500 text-sm mt-2">Draws a number from 1 to 20.</p>
-            </div>
-            <NumberRoller min={1} max={20} />
-          </div>
-        </div>
-        </Reveal>
 
         {/* How to claim — below the wheels */}
         <Reveal>

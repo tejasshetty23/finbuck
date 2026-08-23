@@ -21,7 +21,7 @@ interface ChatBadge {
   count?: number
 }
 
-export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: ReactNode }) {
+export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { prizeWheel?: ReactNode; numberPicker?: ReactNode }) {
   const [keyword, setKeyword] = useState('buck')
   const [subsOnly, setSubsOnly] = useState(false)
   // Subluck: when subs-only is off, subscribers get 2x entries on the roller.
@@ -234,8 +234,13 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
 
   return (
     <div>
-      {/* Open control bar — above both wheel boxes */}
-      <div className="w-full max-w-md mx-auto mb-10">
+      {/* Open control bar — above both wheel boxes. Two columns from md up:
+          number picker on the left, chat controls on the right. Stacks below
+          that, where side-by-side would squeeze both. */}
+      <div className="w-full max-w-4xl mx-auto mb-10 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+        {numberPicker ? <div className="order-2 md:order-1">{numberPicker}</div> : null}
+
+        <div className={`w-full max-w-md mx-auto ${numberPicker ? 'order-1 md:order-2' : 'md:col-span-2'}`}>
         {/* Keyword input */}
         <div className="text-left">
           <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Keyword</label>
@@ -308,6 +313,7 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
 
         {error && <p className="text-red-400/80 text-xs leading-relaxed text-center mt-2">{error}</p>}
         {verifyWarning && <p className="text-amber-400/90 text-xs leading-relaxed text-center mt-2">⚠ {verifyWarning}</p>}
+        </div>
       </div>
 
       {/* Stacked: Step 1 (roller) above Step 2 (prize wheel) */}

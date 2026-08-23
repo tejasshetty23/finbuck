@@ -54,7 +54,7 @@ export default function WheelSpinPage() {
 
       {/* Header */}
       <Reveal>
-      <div className="relative max-w-4xl mx-auto mb-12 text-center">
+      <div className="relative max-w-4xl mx-auto mb-24 text-center">
         <FloatingDecor height="h-[280px] sm:h-[340px]" className="!top-[42%]" />
         <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-purple-400">
@@ -63,7 +63,7 @@ export default function WheelSpinPage() {
           <span className="text-purple-400 text-sm font-semibold tracking-widest uppercase">Viewer Giveaway</span>
         </div>
 
-        <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
+        <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white">
           Spin the <span className="animated-gradient-text">Wheel</span>
         </h1>
       </div>

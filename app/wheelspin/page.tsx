@@ -66,9 +66,6 @@ export default function WheelSpinPage() {
         <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
           Spin the <span className="animated-gradient-text">Wheel</span>
         </h1>
-        <p className="text-gray-500 text-base max-w-md mx-auto">
-          First wheel picks a viewer, second wheel picks their prize.
-        </p>
       </div>
       </Reveal>
 

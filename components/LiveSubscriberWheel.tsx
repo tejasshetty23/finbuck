@@ -253,6 +253,20 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
 
   return (
     <div>
+
+      {/* Active picker's title, at the same scale as other pages' headings */}
+      <div className="text-center mb-8">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight leading-tight">
+          {view === 'prize' ? (
+            <span className="animated-gradient-text-purple">Prize Picker</span>
+          ) : view === 'number' ? (
+            <span className="animated-gradient-text">Number Roller</span>
+          ) : (
+            <span className="animated-gradient-text">Giveaway Picker</span>
+          )}
+        </h1>
+      </div>
+
       {/* Chat controls belong to the giveaway picker only — the prize wheel and
           number roller draw from nothing chat-related. Hidden rather than
           unmounted so the typed keyword survives switching away and back. */}
@@ -329,19 +343,6 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
 
         {error && <p className="text-red-400/80 text-xs leading-relaxed text-center mt-2">{error}</p>}
         {verifyWarning && <p className="text-amber-400/90 text-xs leading-relaxed text-center mt-2">⚠ {verifyWarning}</p>}
-      </div>
-
-      {/* Active picker's title, at the same scale as other pages' headings */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight leading-tight">
-          {view === 'prize' ? (
-            <span className="animated-gradient-text-purple">Prize Picker</span>
-          ) : view === 'number' ? (
-            <span className="animated-gradient-text">Number Roller</span>
-          ) : (
-            <span className="animated-gradient-text">Giveaway Picker</span>
-          )}
-        </h1>
       </div>
 
       {/* All three stay mounted; only the selected one is shown */}

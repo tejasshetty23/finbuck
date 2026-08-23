@@ -24,6 +24,27 @@ const swordsIcon = (
   </svg>
 )
 
+const ticketIcon = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5h14a2 2 0 012 2v3a2 2 0 000 4v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 000-4V7a2 2 0 012-2z" />
+  </svg>
+)
+
+const giftIcon = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13a4 4 0 10-4-4 4 4 0 004 4zm0 0a4 4 0 114-4 4 4 0 01-4 4zM4 12h16M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+  </svg>
+)
+
+const diceIcon = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
+    <rect x="3" y="3" width="18" height="18" rx="3" />
+    <circle cx="8.5" cy="8.5" r="1.1" fill="currentColor" stroke="none" />
+    <circle cx="15.5" cy="15.5" r="1.1" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none" />
+  </svg>
+)
+
 const NAV_ITEMS: NavItem[] = [
   { href: '/', label: 'Home' },
   { href: '/leaderboard', label: 'Watchtime' },
@@ -34,7 +55,14 @@ const NAV_ITEMS: NavItem[] = [
       { href: '/vschat', label: 'Slot Battles', icon: swordsIcon },
     ],
   },
-  { href: '/wheelspin', label: 'Giveaways' },
+  {
+    label: 'Giveaways',
+    children: [
+      { href: '/wheelspin#giveaway', label: 'Giveaway Picker', icon: ticketIcon },
+      { href: '/wheelspin#prize', label: 'Prize Picker', icon: giftIcon },
+      { href: '/wheelspin#number', label: 'Number Roller', icon: diceIcon },
+    ],
+  },
   { href: '/shop', label: 'Shop' },
 ]
 
@@ -44,6 +72,16 @@ export default function Navbar() {
   const [openGroup, setOpenGroup] = useState<string | null>(null)
   const pathname = usePathname()
   const groupRef = useRef<HTMLDivElement | null>(null)
+
+  // usePathname() drops the hash, but the giveaway entries differ only by it,
+  // so the current hash is tracked separately to mark the right one active.
+  const [hash, setHash] = useState('')
+  useEffect(() => {
+    const read = () => setHash(window.location.hash)
+    read()
+    window.addEventListener('hashchange', read)
+    return () => window.removeEventListener('hashchange', read)
+  }, [pathname])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -120,7 +158,7 @@ export default function Navbar() {
             }
 
             // A group counts as active while any of its pages is the current one.
-            const active = item.children.some((c) => c.href === pathname)
+            const active = item.children.some((c) => c.href.split('#')[0] === pathname)
             const open = openGroup === item.label
 
             return (
@@ -150,7 +188,7 @@ export default function Navbar() {
                     className="absolute left-1/2 -translate-x-1/2 top-full mt-4 w-56 rounded-2xl border border-purple-900/50 bg-[#0d0a1a]/95 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.65)] p-2"
                   >
                     {item.children.map((c) => {
-                      const on = pathname === c.href
+                      const on = c.href === `${pathname}${hash}`
                       return (
                         <Link
                           key={c.href}

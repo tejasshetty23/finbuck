@@ -229,37 +229,26 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
 
   // Green checkbox (green outline → fills green when checked) instead of the
   // browser's default white box.
-  // Which picker is on screen. All three stay mounted (the inactive ones are
-  // display:none rather than unmounted), so switching away and back does not
-  // reset a roller mid-giveaway or lose a winner that was just drawn.
+  // Which picker is on screen. Driven by the URL hash so the header dropdown
+  // can select it: /wheelspin#prize etc. All three stay mounted (the inactive
+  // ones are display:none rather than unmounted), so switching away and back
+  // does not reset a roller mid-giveaway or lose a winner that was just drawn.
   type PickerId = 'giveaway' | 'prize' | 'number'
-  const PICKERS: { id: PickerId; label: string; color: string }[] = [
-    { id: 'giveaway', label: 'Giveaway Picker', color: '#00ff87' },
-    { id: 'prize', label: 'Prize Picker', color: '#c084fc' },
-    { id: 'number', label: 'Number Roller', color: '#00ff87' },
-  ]
+  const PICKER_IDS: PickerId[] = ['giveaway', 'prize', 'number']
   const [view, setView] = useState<PickerId>('giveaway')
-  const [pickerOpen, setPickerOpen] = useState(false)
-  const pickerRef = useRef<HTMLDivElement | null>(null)
 
-  // Dismiss on outside click or Escape, same as the nav dropdown.
   useEffect(() => {
-    if (!pickerOpen) return
-    const onDown = (e: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) setPickerOpen(false)
+    const fromHash = () => {
+      const h = window.location.hash.replace('#', '') as PickerId
+      if (PICKER_IDS.includes(h)) setView(h)
     }
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setPickerOpen(false)
-    }
-    document.addEventListener('mousedown', onDown)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener('mousedown', onDown)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [pickerOpen])
-
-  const activePicker = PICKERS.find((x) => x.id === view) ?? PICKERS[0]
+    // Read on mount (arriving from another page) and on every hash change
+    // (switching while already here — next/link fires hashchange for those).
+    fromHash()
+    window.addEventListener('hashchange', fromHash)
+    return () => window.removeEventListener('hashchange', fromHash)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const checkboxClass =
     'appearance-none w-4 h-4 rounded-[3px] border-2 border-[#00ff87] bg-transparent checked:bg-[#00ff87] cursor-pointer transition-colors disabled:opacity-50 shrink-0'
@@ -340,63 +329,6 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
 
         {error && <p className="text-red-400/80 text-xs leading-relaxed text-center mt-2">{error}</p>}
         {verifyWarning && <p className="text-amber-400/90 text-xs leading-relaxed text-center mt-2">⚠ {verifyWarning}</p>}
-      </div>
-
-      {/* Picker selector — same interaction as the nav's Games dropdown */}
-      <div className="flex justify-center mb-8">
-        <div ref={pickerRef} className="relative">
-          <button
-            type="button"
-            onClick={() => setPickerOpen((o) => !o)}
-            aria-expanded={pickerOpen}
-            aria-haspopup="menu"
-            className="inline-flex items-center gap-2.5 rounded-xl border border-purple-500/40 bg-[#0d0a1a]/70 px-5 py-3 font-black uppercase tracking-widest text-sm transition-colors hover:border-purple-400"
-            style={{ color: activePicker.color }}
-          >
-            {activePicker.label}
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.5}
-              className={`w-3.5 h-3.5 transition-transform duration-200 ${pickerOpen ? 'rotate-180' : ''}`}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-
-          {pickerOpen && (
-            <div
-              role="menu"
-              className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-60 rounded-2xl border border-purple-900/50 bg-[#0d0a1a]/95 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.65)] p-2 z-30"
-            >
-              {PICKERS.map((pk) => {
-                const on = pk.id === view
-                return (
-                  <button
-                    key={pk.id}
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setView(pk.id)
-                      setPickerOpen(false)
-                    }}
-                    className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold transition-colors ${
-                      on ? 'bg-white/5' : 'text-gray-300 hover:text-white hover:bg-white/5'
-                    }`}
-                    style={on ? { color: pk.color } : undefined}
-                  >
-                    <span
-                      className="w-1.5 h-1.5 rounded-full shrink-0"
-                      style={{ background: on ? pk.color : '#4b5563' }}
-                    />
-                    {pk.label}
-                  </button>
-                )
-              })}
-            </div>
-          )}
-        </div>
       </div>
 
       {/* All three stay mounted; only the selected one is shown */}

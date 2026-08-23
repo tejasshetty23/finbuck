@@ -61,7 +61,10 @@ export default function WheelSpinPage() {
               {/* Ornate frame on the outer panel — .tourney-frame paints it on
                   ::after so it sits above the card rather than under it. */}
               <div className="tourney-frame">
-                <div className="rounded-2xl border border-[#00ff87]/20 bg-[#0d0a1a]/40 p-6">
+                {/* Padding has to clear the frame's inward overhang, or the
+                    spikes sit on top of the reel and button: border-image-width
+                    exceeds border-width by 22px below sm and 34px above it. */}
+                <div className="rounded-2xl border border-[#00ff87]/20 bg-[#0d0a1a]/40 p-8 sm:p-12">
                   <NumberRoller min={1} max={20} />
                 </div>
               </div>

@@ -79,21 +79,21 @@ export default function NumberRoller({ min = 1, max = 20 }: { min?: number; max?
   }
 
   return (
-    <div className="flex flex-col items-center gap-5">
+    <div className="flex flex-col items-center gap-3">
       {/* Reel window */}
       <div
-        className="relative w-full max-w-[240px] overflow-hidden rounded-2xl p-[2px]"
+        className="relative w-full max-w-[160px] overflow-hidden rounded-xl p-[2px]"
         style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a, #00ff87)' }}
       >
-        <div className="rounded-[14px] bg-[#050409] px-6 py-8 text-center">
+        <div className="rounded-[10px] bg-[#050409] px-4 py-5 text-center">
           <span
             className="block font-black leading-none tabular-nums transition-transform"
             style={{
-              fontSize: 'clamp(52px, 12vw, 84px)',
+              fontSize: 'clamp(34px, 7vw, 52px)',
               color: landed !== null ? '#00ff87' : '#e6ffe9',
               textShadow:
                 landed !== null
-                  ? '0 0 22px rgba(0,255,135,0.85), 0 0 55px rgba(0,255,135,0.35)'
+                  ? '0 0 16px rgba(0,255,135,0.85), 0 0 38px rgba(0,255,135,0.32)'
                   : '0 0 14px rgba(255,255,255,0.28)',
               // A touch of scale on the landed value so the stop reads as an
               // event rather than the flicker simply ceasing.
@@ -105,14 +105,14 @@ export default function NumberRoller({ min = 1, max = 20 }: { min?: number; max?
         </div>
       </div>
 
-      <p className="text-gray-600 text-xs uppercase tracking-[0.25em] font-bold">
+      <p className="text-gray-600 text-[10px] uppercase tracking-[0.25em] font-bold">
         {rolling ? 'Rolling…' : landed !== null ? 'Locked in' : `${min}–${max}`}
       </p>
 
       <button
         onClick={roll}
         disabled={rolling}
-        className="text-black font-black py-3 px-8 rounded-xl uppercase tracking-widest text-sm transition-transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+        className="text-black font-black py-2 px-6 rounded-lg uppercase tracking-widest text-xs transition-transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
         style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)' }}
       >
         {rolling ? 'Rolling…' : landed !== null ? 'Roll again' : 'Roll'}

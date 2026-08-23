@@ -332,7 +332,6 @@ export default function LiveSubscriberWheel({ prizeWheel }: { prizeWheel?: React
             View Entrants ({entries.length})
           </button>
           <div className="mb-8 text-center">
-            <span className="inline-block text-sm font-black uppercase tracking-[0.3em] text-[#00ff87] mb-2">Step 1</span>
             <h3 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase leading-tight"><span className="animated-gradient-text">Giveaway Picker</span></h3>
           </div>
           <div className="w-full flex items-center justify-center">

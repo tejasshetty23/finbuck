@@ -235,12 +235,12 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
   return (
     <div>
       {/* Open control bar — above both wheel boxes. Two columns from md up:
-          number picker on the left, chat controls on the right. Stacks below
-          that, where side-by-side would squeeze both. */}
+          chat controls on the left, number picker on the right. Stacks below
+          that, where side-by-side would squeeze both — and since the controls
+          come first in source order, they also lead when stacked, which is the
+          right priority on mobile. */}
       <div className="w-full max-w-4xl mx-auto mb-10 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-        {numberPicker ? <div className="order-2 md:order-1">{numberPicker}</div> : null}
-
-        <div className={`w-full max-w-md mx-auto ${numberPicker ? 'order-1 md:order-2' : 'md:col-span-2'}`}>
+        <div className={`w-full max-w-md mx-auto ${numberPicker ? '' : 'md:col-span-2'}`}>
         {/* Keyword input */}
         <div className="text-left">
           <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Keyword</label>
@@ -314,6 +314,8 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
         {error && <p className="text-red-400/80 text-xs leading-relaxed text-center mt-2">{error}</p>}
         {verifyWarning && <p className="text-amber-400/90 text-xs leading-relaxed text-center mt-2">⚠ {verifyWarning}</p>}
         </div>
+
+        {numberPicker ?? null}
       </div>
 
       {/* Stacked: Step 1 (roller) above Step 2 (prize wheel) */}

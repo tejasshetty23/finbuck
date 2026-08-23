@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect, type ReactNode } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Roller from './Roller'
 
 // Public Kick Pusher app key (same one Kick's own site uses for live chat).
@@ -229,34 +230,33 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
 
   // Green checkbox (green outline → fills green when checked) instead of the
   // browser's default white box.
-  // Which picker is on screen. Driven by the URL hash so the header dropdown
-  // can select it: /wheelspin#prize etc. All three stay mounted (the inactive
-  // ones are display:none rather than unmounted), so switching away and back
-  // does not reset a roller mid-giveaway or lose a winner that was just drawn.
+  // Which picker is on screen, chosen by the header dropdown via the query
+  // string: /wheelspin?picker=prize etc.
+  //
+  // This deliberately does NOT use the URL hash. next/link navigates with
+  // history.pushState, and pushState does not fire a hashchange event — so a
+  // hash listener never runs when switching between two entries on this same
+  // page. useSearchParams re-renders on client navigation, which is what makes
+  // switching work.
+  //
+  // All three pickers stay mounted (the inactive ones are display:none rather
+  // than unmounted), so switching away and back cannot reset a roller
+  // mid-giveaway or lose a winner that was just drawn.
   type PickerId = 'giveaway' | 'prize' | 'number'
   const PICKER_IDS: PickerId[] = ['giveaway', 'prize', 'number']
-  const [view, setView] = useState<PickerId>('giveaway')
-
-  useEffect(() => {
-    const fromHash = () => {
-      const h = window.location.hash.replace('#', '') as PickerId
-      if (PICKER_IDS.includes(h)) setView(h)
-    }
-    // Read on mount (arriving from another page) and on every hash change
-    // (switching while already here — next/link fires hashchange for those).
-    fromHash()
-    window.addEventListener('hashchange', fromHash)
-    return () => window.removeEventListener('hashchange', fromHash)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const searchParams = useSearchParams()
+  const requested = searchParams.get('picker') as PickerId | null
+  const view: PickerId = requested && PICKER_IDS.includes(requested) ? requested : 'giveaway'
 
   const checkboxClass =
     'appearance-none w-4 h-4 rounded-[3px] border-2 border-[#00ff87] bg-transparent checked:bg-[#00ff87] cursor-pointer transition-colors disabled:opacity-50 shrink-0'
 
   return (
     <div>
-      {/* Open control bar — above the picker */}
-      <div className="w-full max-w-md mx-auto mb-8">
+      {/* Chat controls belong to the giveaway picker only — the prize wheel and
+          number roller draw from nothing chat-related. Hidden rather than
+          unmounted so the typed keyword survives switching away and back. */}
+      <div className={`w-full max-w-md mx-auto mb-8 ${view === 'giveaway' ? '' : 'hidden'}`}>
         {/* Keyword input */}
         <div className="text-left">
           <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Keyword</label>
@@ -331,10 +331,23 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
         {verifyWarning && <p className="text-amber-400/90 text-xs leading-relaxed text-center mt-2">⚠ {verifyWarning}</p>}
       </div>
 
+      {/* Active picker's title, at the same scale as other pages' headings */}
+      <div className="text-center mb-8">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight leading-tight">
+          {view === 'prize' ? (
+            <span className="animated-gradient-text-purple">Prize Picker</span>
+          ) : view === 'number' ? (
+            <span className="animated-gradient-text">Number Roller</span>
+          ) : (
+            <span className="animated-gradient-text">Giveaway Picker</span>
+          )}
+        </h1>
+      </div>
+
       {/* All three stay mounted; only the selected one is shown */}
       <div className="flex flex-col gap-8">
         {/* Giveaway wheel */}
-        <div className={`relative rounded-2xl border border-purple-900/40 bg-[#0d0a1a]/40 p-6 ${view === 'giveaway' ? '' : 'hidden'}`}>
+        <div className={`relative rounded-2xl border border-purple-900/40 bg-[#0d0a1a]/40 p-6 pt-16 ${view === 'giveaway' ? '' : 'hidden'}`}>
           {/* Status — top-left corner */}
           <div className="absolute top-5 left-5 z-20 inline-flex items-center gap-2 text-xs">
             <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#00ff87] animate-pulse' : status === 'error' ? 'bg-red-500' : 'bg-gray-600'}`} />
@@ -352,9 +365,6 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
             </svg>
             View Entrants ({entries.length})
           </button>
-          <div className="mb-8 text-center">
-            <h3 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase leading-tight"><span className="animated-gradient-text">Giveaway Picker</span></h3>
-          </div>
           <div className="w-full flex items-center justify-center">
             <Roller items={rollerItems} winWord="Congrats!" onWatch={watchWinner} winnerMessages={winnerMessages} onPick={removeEntrant} />
           </div>

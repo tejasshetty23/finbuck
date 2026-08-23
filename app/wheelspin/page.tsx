@@ -1,6 +1,6 @@
+import { Suspense } from 'react'
 import SpinWheel from '../../components/SpinWheel'
 import LiveSubscriberWheel from '../../components/LiveSubscriberWheel'
-import FloatingDecor from '../../components/FloatingDecor'
 import NumberRoller from '../../components/NumberRoller'
 import Reveal from '../../components/Reveal'
 
@@ -52,43 +52,19 @@ export default function WheelSpinPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#07050f]/70 via-[#07050f]/50 to-[#07050f]" />
       </div>
 
-      {/* Header */}
-      <Reveal>
-      <div className="relative max-w-4xl mx-auto mb-24 text-center">
-        <FloatingDecor height="h-[280px] sm:h-[340px]" className="!top-[42%]" />
-        <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-purple-400">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zM12 3v9l6 3" />
-          </svg>
-          <span className="text-purple-400 text-sm font-semibold tracking-widest uppercase">Viewer Giveaway</span>
-        </div>
-
-        <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white">
-          Spin the <span className="animated-gradient-text">Wheel</span>
-        </h1>
-      </div>
-      </Reveal>
-
       {/* Control bar + two wheels side by side */}
       <div className="w-[90%] mx-auto">
+        <Suspense fallback={null}>
         <LiveSubscriberWheel
           numberPicker={
             <div className="w-full max-w-md mx-auto">
               <div className="rounded-2xl border border-[#00ff87]/20 bg-[#0d0a1a]/40 p-5">
-                <div className="mb-4 text-center">
-                  <h3 className="text-xl sm:text-2xl font-black uppercase leading-tight">
-                    <span className="animated-gradient-text">Number Roller</span>
-                  </h3>
-                </div>
                 <NumberRoller min={1} max={20} />
               </div>
             </div>
           }
           prizeWheel={
             <div className="relative rounded-2xl border border-[#00ff87]/20 bg-[#0d0a1a]/40 p-6">
-              <div className="mb-8 text-center">
-                <h3 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase leading-tight"><span className="animated-gradient-text-purple">Prize Picker</span></h3>
-              </div>
               <div className="w-full flex items-center justify-center">
                 <div className="w-full max-w-[460px]">
                   <SpinWheel
@@ -104,6 +80,7 @@ export default function WheelSpinPage() {
             </div>
           }
         />
+        </Suspense>
 
         <p className="text-center text-gray-600 text-xs mt-8">
           Spin the giveaway wheel to pick a winner, then spin the prize wheel for their reward.

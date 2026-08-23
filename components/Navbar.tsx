@@ -58,9 +58,9 @@ const NAV_ITEMS: NavItem[] = [
   {
     label: 'Giveaways',
     children: [
-      { href: '/wheelspin#giveaway', label: 'Giveaway Picker', icon: ticketIcon },
-      { href: '/wheelspin#prize', label: 'Prize Picker', icon: giftIcon },
-      { href: '/wheelspin#number', label: 'Number Roller', icon: diceIcon },
+      { href: '/wheelspin?picker=giveaway', label: 'Giveaway Picker', icon: ticketIcon },
+      { href: '/wheelspin?picker=prize', label: 'Prize Picker', icon: giftIcon },
+      { href: '/wheelspin?picker=number', label: 'Number Roller', icon: diceIcon },
     ],
   },
   { href: '/shop', label: 'Shop' },
@@ -72,16 +72,6 @@ export default function Navbar() {
   const [openGroup, setOpenGroup] = useState<string | null>(null)
   const pathname = usePathname()
   const groupRef = useRef<HTMLDivElement | null>(null)
-
-  // usePathname() drops the hash, but the giveaway entries differ only by it,
-  // so the current hash is tracked separately to mark the right one active.
-  const [hash, setHash] = useState('')
-  useEffect(() => {
-    const read = () => setHash(window.location.hash)
-    read()
-    window.addEventListener('hashchange', read)
-    return () => window.removeEventListener('hashchange', read)
-  }, [pathname])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -158,7 +148,7 @@ export default function Navbar() {
             }
 
             // A group counts as active while any of its pages is the current one.
-            const active = item.children.some((c) => c.href.split('#')[0] === pathname)
+            const active = item.children.some((c) => c.href.split('?')[0] === pathname)
             const open = openGroup === item.label
 
             return (
@@ -188,7 +178,7 @@ export default function Navbar() {
                     className="absolute left-1/2 -translate-x-1/2 top-full mt-4 w-56 rounded-2xl border border-purple-900/50 bg-[#0d0a1a]/95 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.65)] p-2"
                   >
                     {item.children.map((c) => {
-                      const on = c.href === `${pathname}${hash}`
+                      const on = pathname === c.href
                       return (
                         <Link
                           key={c.href}

@@ -58,8 +58,12 @@ export default function WheelSpinPage() {
         <LiveSubscriberWheel
           numberPicker={
             <div className="w-full max-w-md mx-auto">
-              <div className="rounded-2xl border border-[#00ff87]/20 bg-[#0d0a1a]/40 p-5">
-                <NumberRoller min={1} max={20} />
+              {/* Ornate frame on the outer panel — .tourney-frame paints it on
+                  ::after so it sits above the card rather than under it. */}
+              <div className="tourney-frame">
+                <div className="rounded-2xl border border-[#00ff87]/20 bg-[#0d0a1a]/40 p-6">
+                  <NumberRoller min={1} max={20} />
+                </div>
               </div>
             </div>
           }

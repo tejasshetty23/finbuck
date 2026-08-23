@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
 /**
@@ -81,32 +80,20 @@ export default function NumberRoller({ min = 1, max = 20 }: { min?: number; max?
 
   return (
     <div className="flex flex-col items-center gap-3">
-      {/* Reel window, inside the ornate frame */}
-      <div className="relative aspect-square w-full max-w-[220px]">
-        {/* Black backing behind the frame's transparent opening. Inset 11% —
-            slightly wider than the 13% opening — so its square corners tuck
-            under the ornament instead of poking past it. */}
-        <div className="absolute inset-[11%] rounded-[6%] bg-black" />
-
-        <Image
-          src="/frame-gold.webp"
-          alt=""
-          fill
-          sizes="220px"
-          className="pointer-events-none select-none object-contain"
-        />
-
-        {/* 20.5% is the largest centred box clearing the ornament's inward
-            spikes — measured off the artwork's alpha, not guessed. */}
-        <div className="absolute inset-[20.5%] flex items-center justify-center">
+      {/* Reel window */}
+      <div
+        className="relative w-full max-w-[160px] overflow-hidden rounded-xl p-[2px]"
+        style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a, #00ff87)' }}
+      >
+        <div className="rounded-[10px] bg-[#050409] px-4 py-5 text-center">
           <span
             className="block font-black leading-none tabular-nums transition-transform"
             style={{
-              fontSize: 'clamp(30px, 6vw, 46px)',
-              color: landed !== null ? '#ffd75e' : '#f3f5f8',
+              fontSize: 'clamp(34px, 7vw, 52px)',
+              color: landed !== null ? '#00ff87' : '#e6ffe9',
               textShadow:
                 landed !== null
-                  ? '0 0 16px rgba(255,215,94,0.85), 0 0 38px rgba(255,215,94,0.32)'
+                  ? '0 0 16px rgba(0,255,135,0.85), 0 0 38px rgba(0,255,135,0.32)'
                   : '0 0 14px rgba(255,255,255,0.28)',
               // A touch of scale on the landed value so the stop reads as an
               // event rather than the flicker simply ceasing.

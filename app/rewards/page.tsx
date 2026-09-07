@@ -130,16 +130,32 @@ export default function RewardsPage() {
               <stop offset="100%" stopColor="#00ff87" />
             </linearGradient>
           </defs>
-          <path
-            d="M42,50 C42,100 58,100 58,150 C58,200 42,200 42,250 C42,300 58,300 58,350 C58,400 42,400 42,450 C42,500 58,500 58,550 C58,600 42,600 42,650 C42,700 58,700 58,750"
-            fill="none"
-            stroke="url(#trail)"
-            strokeWidth={3}
-            strokeLinecap="round"
-            strokeDasharray="10 12"
-            vectorEffect="non-scaling-stroke"
-            opacity={0.55}
-          />
+          {/* One segment per gap rather than a single path, so the trail breaks
+              at every stop instead of running behind the heading. Each row is
+              100 viewBox units; a segment spans from 32 units below one stop's
+              centre to 22 above the next — the clear space between them. */}
+          {STOPS.slice(0, -1).map((_, i) => {
+            const x0 = i % 2 === 0 ? 22 : 78
+            const x1 = i % 2 === 0 ? 78 : 22
+            const y0 = 50 + i * 100 + 22
+            const y1 = 50 + (i + 1) * 100 - 22
+            // Overshooting half the span pulls the curve into a fuller S; at
+            // exactly half it reads as a straight diagonal.
+            const dy = (y1 - y0) * 0.62
+            return (
+              <path
+                key={i}
+                d={`M${x0},${y0} C${x0},${y0 + dy} ${x1},${y1 - dy} ${x1},${y1}`}
+                fill="none"
+                stroke="url(#trail)"
+                strokeWidth={3}
+                strokeLinecap="round"
+                strokeDasharray="10 12"
+                vectorEffect="non-scaling-stroke"
+                opacity={0.55}
+              />
+            )
+          })}
         </svg>
 
         {/* Gems and chips along the way */}
@@ -167,28 +183,6 @@ export default function RewardsPage() {
         {/* Stops. Equal-height rows so the eight path segments line up with the
             eight nodes as the SVG stretches. */}
         <div className="relative">
-          {/* One marker per stop, sitting on the path. These are DOM elements
-              rather than SVG circles: the path stretches with
-              preserveAspectRatio="none", which would squash a circle into an
-              ellipse. */}
-          <div className="pointer-events-none absolute inset-0 hidden sm:block" aria-hidden>
-            {STOPS.map((s, i) => {
-              const accent = s.kind === 'end' ? '#ff4d6d' : i % 2 === 1 ? '#a855f7' : '#00ff87'
-              return (
-                <span
-                  key={s.title}
-                  className="absolute w-3 h-3 rounded-full -translate-x-1/2 -translate-y-1/2"
-                  style={{
-                    left: i % 2 === 1 ? '58%' : '42%',
-                    top: `${((i + 0.5) / STOPS.length) * 100}%`,
-                    background: accent,
-                    boxShadow: `0 0 12px ${accent}`,
-                  }}
-                />
-              )
-            })}
-          </div>
-
           {STOPS.map((s, i) => {
             const right = i % 2 === 1
             const isEnd = s.kind === 'end'
@@ -198,13 +192,11 @@ export default function RewardsPage() {
             return (
               <div
                 key={s.title}
-                className={`relative flex min-h-[190px] sm:min-h-[200px] items-center ${
-                  right ? 'justify-end' : 'justify-start'
-                }`}
+                className="relative flex min-h-[300px] sm:min-h-[400px] items-center justify-center"
               >
-                {/* 40% wide, so the two columns leave a clear 40-60% channel down
-                    the middle for the trail to weave through untouched. */}
-                <Reveal className="w-full sm:w-[40%]">
+                {/* Centred on the page. The trail sways out around it and
+                    breaks either side, so nothing is pushed aside for it. */}
+                <Reveal className="w-full max-w-lg">
                   <div className="flex flex-col items-center text-center gap-2.5">
                     {/* Marker — the X for the final stop, emoji otherwise. No
                         container: the stops float on the background. */}

@@ -12,6 +12,7 @@ export default function Footer() {
           <Link href="/tournaments" className="hover:text-[#00ff87] transition-colors">Tournaments</Link>
           <Link href="/wheelspin" className="hover:text-[#00ff87] transition-colors">Giveaways</Link>
           <Link href="/vschat" className="hover:text-[#00ff87] transition-colors">Slot Battles</Link>
+          <Link href="/rewards" className="hover:text-[#00ff87] transition-colors">Rewards</Link>
           <Link href="/shop" className="hover:text-[#00ff87] transition-colors">Shop</Link>
           <a href="https://kick.com/finbuck" target="_blank" rel="noopener noreferrer" className="hover:text-[#00ff87] transition-colors">Watch Live</a>
         </div>

@@ -63,6 +63,7 @@ const NAV_ITEMS: NavItem[] = [
       { href: '/wheelspin?picker=number', label: 'Number Roller', icon: diceIcon },
     ],
   },
+  { href: '/rewards', label: 'Rewards' },
   { href: '/shop', label: 'Shop' },
 ]
 

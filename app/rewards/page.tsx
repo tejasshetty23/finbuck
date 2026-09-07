@@ -56,12 +56,30 @@ const STOPS: Stop[] = [
 // Below sm the cards go full width and nothing is clear, so the pieces sit
 // behind them as faint texture; the smaller ones drop out entirely.
 const TRAIL_DECOR = [
-  { src: '/gem.webp', top: '6%', left: '78%', w: 'w-12 sm:w-16', rot: '-14deg', dur: '6.4s', delay: '0s', op: 0.7, hide: false },
-  { src: '/coin.webp', top: '19%', left: '8%', w: 'w-10 sm:w-14', rot: '12deg', dur: '7.1s', delay: '-2.2s', op: 0.65, hide: true },
-  { src: '/coin.webp', top: '31%', left: '80%', w: 'w-11 sm:w-14', rot: '18deg', dur: '5.8s', delay: '-3.4s', op: 0.6, hide: false },
-  { src: '/gem.webp', top: '44%', left: '7%', w: 'w-10 sm:w-14', rot: '-9deg', dur: '6.9s', delay: '-1.1s', op: 0.65, hide: true },
-  { src: '/gem.webp', top: '69%', left: '9%', w: 'w-11 sm:w-14', rot: '22deg', dur: '8.2s', delay: '-4.6s', op: 0.6, hide: false },
-  { src: '/coin.webp', top: '81%', left: '79%', w: 'w-10 sm:w-12', rot: '-20deg', dur: '7.6s', delay: '-5.3s', op: 0.6, hide: true },
+  // Row 0 — card left, so the right column is free
+  { src: '/gem.webp', top: '4%', left: '60%', w: 'w-12 sm:w-16', rot: '-14deg', dur: '6.4s', delay: '0s', op: 0.7, hide: false },
+  { src: '/coin.webp', top: '9%', left: '86%', w: 'w-9 sm:w-12', rot: '9deg', dur: '7.8s', delay: '-3.1s', op: 0.5, hide: true },
+  // Row 1 — card right
+  { src: '/coin.webp', top: '16%', left: '6%', w: 'w-10 sm:w-14', rot: '12deg', dur: '7.1s', delay: '-2.2s', op: 0.65, hide: false },
+  { src: '/gem.webp', top: '22%', left: '30%', w: 'w-8 sm:w-11', rot: '-24deg', dur: '8.6s', delay: '-5.9s', op: 0.5, hide: true },
+  // Row 2 — card left
+  { src: '/coin.webp', top: '29%', left: '80%', w: 'w-11 sm:w-14', rot: '18deg', dur: '5.8s', delay: '-3.4s', op: 0.6, hide: false },
+  { src: '/gem.webp', top: '34%', left: '58%', w: 'w-8 sm:w-10', rot: '-7deg', dur: '9.1s', delay: '-1.7s', op: 0.45, hide: true },
+  // Row 3 — card right
+  { src: '/gem.webp', top: '41%', left: '5%', w: 'w-10 sm:w-14', rot: '-9deg', dur: '6.9s', delay: '-1.1s', op: 0.65, hide: false },
+  { src: '/coin.webp', top: '47%', left: '28%', w: 'w-8 sm:w-11', rot: '26deg', dur: '8.0s', delay: '-4.3s', op: 0.5, hide: true },
+  // Row 4 — card left
+  { src: '/gem.webp', top: '54%', left: '82%', w: 'w-11 sm:w-14', rot: '15deg', dur: '6.2s', delay: '-2.8s', op: 0.6, hide: false },
+  { src: '/coin.webp', top: '59%', left: '60%', w: 'w-8 sm:w-10', rot: '-18deg', dur: '9.4s', delay: '-6.2s', op: 0.45, hide: true },
+  // Row 5 — card right
+  { src: '/coin.webp', top: '66%', left: '8%', w: 'w-11 sm:w-14', rot: '22deg', dur: '8.2s', delay: '-4.6s', op: 0.6, hide: false },
+  { src: '/gem.webp', top: '72%', left: '31%', w: 'w-8 sm:w-11', rot: '-12deg', dur: '7.3s', delay: '-0.6s', op: 0.5, hide: true },
+  // Row 6 — card left
+  { src: '/gem.webp', top: '79%', left: '79%', w: 'w-10 sm:w-13', rot: '-20deg', dur: '7.6s', delay: '-5.3s', op: 0.6, hide: false },
+  { src: '/coin.webp', top: '84%', left: '59%', w: 'w-8 sm:w-10', rot: '11deg', dur: '8.9s', delay: '-2.4s', op: 0.45, hide: true },
+  // Row 7 — card right
+  { src: '/coin.webp', top: '91%', left: '7%', w: 'w-10 sm:w-13', rot: '17deg', dur: '6.7s', delay: '-3.8s', op: 0.6, hide: false },
+  { src: '/gem.webp', top: '96%', left: '29%', w: 'w-8 sm:w-11', rot: '-26deg', dur: '9.7s', delay: '-7.1s', op: 0.5, hide: true },
 ]
 
 export default function RewardsPage() {

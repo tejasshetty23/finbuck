@@ -131,7 +131,7 @@ export default function RewardsPage() {
             </linearGradient>
           </defs>
           <path
-            d="M22,50 C22,100 78,100 78,150 C78,200 22,200 22,250 C22,300 78,300 78,350 C78,400 22,400 22,450 C22,500 78,500 78,550 C78,600 22,600 22,650 C22,700 78,700 78,750"
+            d="M42,50 C42,100 58,100 58,150 C58,200 42,200 42,250 C42,300 58,300 58,350 C58,400 42,400 42,450 C42,500 58,500 58,550 C58,600 42,600 42,650 C42,700 58,700 58,750"
             fill="none"
             stroke="url(#trail)"
             strokeWidth={3}
@@ -167,6 +167,28 @@ export default function RewardsPage() {
         {/* Stops. Equal-height rows so the eight path segments line up with the
             eight nodes as the SVG stretches. */}
         <div className="relative">
+          {/* One marker per stop, sitting on the path. These are DOM elements
+              rather than SVG circles: the path stretches with
+              preserveAspectRatio="none", which would squash a circle into an
+              ellipse. */}
+          <div className="pointer-events-none absolute inset-0 hidden sm:block" aria-hidden>
+            {STOPS.map((s, i) => {
+              const accent = s.kind === 'end' ? '#ff4d6d' : i % 2 === 1 ? '#a855f7' : '#00ff87'
+              return (
+                <span
+                  key={s.title}
+                  className="absolute w-3 h-3 rounded-full -translate-x-1/2 -translate-y-1/2"
+                  style={{
+                    left: i % 2 === 1 ? '58%' : '42%',
+                    top: `${((i + 0.5) / STOPS.length) * 100}%`,
+                    background: accent,
+                    boxShadow: `0 0 12px ${accent}`,
+                  }}
+                />
+              )
+            })}
+          </div>
+
           {STOPS.map((s, i) => {
             const right = i % 2 === 1
             const isEnd = s.kind === 'end'
@@ -180,73 +202,79 @@ export default function RewardsPage() {
                   right ? 'justify-end' : 'justify-start'
                 }`}
               >
-                <Reveal className="w-full sm:w-[54%]">
-                  <div
-                    className="relative rounded-2xl border bg-[#0d0a1a]/80 backdrop-blur-sm p-5 sm:p-6"
-                    style={{
-                      borderColor: `${accent}55`,
-                      boxShadow: `0 0 26px ${accent}22`,
-                    }}
-                  >
-                    <div className="flex flex-col items-center text-center gap-3">
-                      {/* Medallion — the X for the final stop, emoji otherwise */}
-                      <div
-                        className="shrink-0 grid place-items-center rounded-xl border w-12 h-12 sm:w-14 sm:h-14"
+                {/* 40% wide, so the two columns leave a clear 40-60% channel down
+                    the middle for the trail to weave through untouched. */}
+                <Reveal className="w-full sm:w-[40%]">
+                  <div className="flex flex-col items-center text-center gap-2.5">
+                    {/* Marker — the X for the final stop, emoji otherwise. No
+                        container: the stops float on the background. */}
+                    {isEnd ? (
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="w-11 h-11 sm:w-12 sm:h-12"
+                        fill="none"
+                        stroke={accent}
+                        strokeWidth={3.4}
+                        strokeLinecap="round"
+                        style={{ filter: `drop-shadow(0 0 12px ${accent})` }}
+                      >
+                        <path d="M5 5l14 14M19 5L5 19" />
+                      </svg>
+                    ) : (
+                      <span
+                        className="text-4xl sm:text-5xl leading-none"
+                        style={{ filter: `drop-shadow(0 0 14px ${accent}aa)` }}
+                      >
+                        {s.icon}
+                      </span>
+                    )}
+
+                    {(isStart || isEnd) && (
+                      <span
+                        className="block text-[10px] font-black uppercase tracking-[0.3em]"
+                        style={{ color: accent, textShadow: `0 0 14px ${accent}88` }}
+                      >
+                        {isStart ? 'Start Here' : 'X Marks the Spot'}
+                      </span>
+                    )}
+
+                    <h2
+                      className={`font-black uppercase leading-tight text-white ${
+                        isStart || isEnd ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'
+                      }`}
+                      style={{ textShadow: '0 2px 18px rgba(0,0,0,0.95), 0 0 30px rgba(0,0,0,0.8)' }}
+                    >
+                      {s.title}
+                    </h2>
+
+                    {s.desc && (
+                      <p
+                        className="text-gray-400 text-sm leading-relaxed"
+                        style={{ textShadow: '0 2px 14px rgba(0,0,0,0.95)' }}
+                      >
+                        {s.desc}
+                      </p>
+                    )}
+
+                    {s.href && s.cta && (
+                      <a
+                        href={s.href}
+                        target="_blank"
+                        rel="noopener noreferrer sponsored"
+                        className="mt-2 inline-flex items-center gap-2 font-black uppercase tracking-widest text-xs px-5 py-2.5 rounded-lg transition-transform hover:scale-105"
                         style={{
-                          borderColor: `${accent}66`,
-                          background: `linear-gradient(160deg, ${accent}1f 0%, #07050a 75%)`,
+                          background: isEnd
+                            ? 'linear-gradient(135deg, #ff8fa3, #ff4d6d, #d92044)'
+                            : 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)',
+                          color: '#07050a',
                         }}
                       >
-                        {isEnd ? (
-                          <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke={accent} strokeWidth={3.4} strokeLinecap="round">
-                            <path d="M5 5l14 14M19 5L5 19" />
-                          </svg>
-                        ) : (
-                          <span className="text-2xl sm:text-3xl leading-none">{s.icon}</span>
-                        )}
-                      </div>
-
-                      <div className="min-w-0 w-full">
-                        {(isStart || isEnd) && (
-                          <span
-                            className="block text-[10px] font-black uppercase tracking-[0.3em] mb-1"
-                            style={{ color: accent }}
-                          >
-                            {isStart ? 'Start Here' : 'X Marks the Spot'}
-                          </span>
-                        )}
-                        <h2
-                          className={`font-black uppercase leading-tight ${
-                            isStart || isEnd ? 'text-xl sm:text-2xl' : 'text-base sm:text-lg'
-                          } text-white`}
-                        >
-                          {s.title}
-                        </h2>
-                        {s.desc && (
-                          <p className="text-gray-400 text-sm leading-relaxed mt-1.5">{s.desc}</p>
-                        )}
-
-                        {s.href && s.cta && (
-                          <a
-                            href={s.href}
-                            target="_blank"
-                            rel="noopener noreferrer sponsored"
-                            className="mt-4 inline-flex items-center gap-2 font-black uppercase tracking-widest text-xs px-5 py-2.5 rounded-lg transition-transform hover:scale-105"
-                            style={{
-                              background: isEnd
-                                ? 'linear-gradient(135deg, #ff8fa3, #ff4d6d, #d92044)'
-                                : 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)',
-                              color: '#07050a',
-                            }}
-                          >
-                            {s.cta}
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                            </svg>
-                          </a>
-                        )}
-                      </div>
-                    </div>
+                        {s.cta}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                        </svg>
+                      </a>
+                    )}
                   </div>
                 </Reveal>
               </div>

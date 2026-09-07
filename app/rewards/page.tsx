@@ -188,7 +188,7 @@ export default function RewardsPage() {
                       boxShadow: `0 0 26px ${accent}22`,
                     }}
                   >
-                    <div className="flex items-start gap-4">
+                    <div className="flex flex-col items-center text-center gap-3">
                       {/* Medallion — the X for the final stop, emoji otherwise */}
                       <div
                         className="shrink-0 grid place-items-center rounded-xl border w-12 h-12 sm:w-14 sm:h-14"
@@ -206,7 +206,7 @@ export default function RewardsPage() {
                         )}
                       </div>
 
-                      <div className="min-w-0">
+                      <div className="min-w-0 w-full">
                         {(isStart || isEnd) && (
                           <span
                             className="block text-[10px] font-black uppercase tracking-[0.3em] mb-1"

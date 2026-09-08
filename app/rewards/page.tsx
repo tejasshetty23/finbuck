@@ -17,7 +17,7 @@ const PERKS: Perk[] = [
   { lead: '15%', title: 'Affiliate Commission' },
   { lead: '50%', title: 'Rank Up Bonus Boost' },
   { lead: 'Exclusive', title: 'Stream Giveaways' },
-  { lead: 'Code', title: 'Exclusive Drops' },
+  { lead: 'Exclusive', title: 'Code Drops' },
   { lead: 'Discord', title: 'Affiliate Access' },
   {
     lead: 'VIP',

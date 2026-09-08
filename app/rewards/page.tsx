@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Reveal from '../../components/Reveal'
+import TiltCard from '../../components/TiltCard'
 
 type Perk = {
   /** The hook, set large in the frame's gradient. Numbers mostly. */
@@ -37,6 +38,13 @@ const PURPLE = '/frame-purple-neon.webp'
  * own background — no separate panel needed. Content sits at a 16% inset, which
  * is the largest centred box that clears the frame's inward corner notches,
  * measured off the artwork rather than guessed.
+ *
+ * The layers are spread along Z so TiltCard's rotation parallaxes them against
+ * each other: the frame stands proud of the wash behind it and the text sits
+ * just off that wash, which is what lets you look around the border rather than
+ * only at it. Depths are small — at a 1000px perspective, +26px is under 3%
+ * of apparent size, enough to separate the planes without the frame visibly
+ * outgrowing its square.
  */
 function FramedCard({
   frame,
@@ -71,47 +79,57 @@ function FramedCard({
         ]
 
   return (
-    <div className={`relative aspect-square ${className}`}>
-      {/* Faint wash in the frame's own colour, run out to 8% so its edge tucks
-          under the frame border rather than stopping short of it — at 12% three
-          quarters of that edge sat in the open interior as a visible boundary.
-          Square corners, so the opening fills all the way into them. Painted
-          before the frame so the border sits on top. */}
-      <div
-        className="absolute inset-[8%]"
-        style={{
-          background: `radial-gradient(115% 115% at 50% 0%, ${accent}24 0%, ${accent}14 45%, ${accent}08 100%)`,
-        }}
-      />
+    <TiltCard className={className}>
+      <div className="relative aspect-square" style={{ transformStyle: 'preserve-3d' }}>
+        {/* Faint wash in the frame's own colour, run out to 8% so its edge
+            tucks under the frame border rather than stopping short of it — at
+            12% three quarters of that edge sat in the open interior as a
+            visible boundary. Square corners, so the opening fills all the way
+            into them. Painted before the frame so the border sits on top, and
+            pushed back along Z so the border stands off it. */}
+        <div
+          className="absolute inset-[8%]"
+          style={{
+            background: `radial-gradient(115% 115% at 50% 0%, ${accent}24 0%, ${accent}14 45%, ${accent}08 100%)`,
+            transform: 'translateZ(-22px)',
+          }}
+        />
 
-      <Image
-        src={frame}
-        alt=""
-        fill
-        sizes="(max-width: 640px) 90vw, 380px"
-        className="pointer-events-none select-none object-fill"
-      />
+        <Image
+          src={frame}
+          alt=""
+          fill
+          sizes="(max-width: 640px) 90vw, 380px"
+          className="pointer-events-none select-none object-fill"
+          style={{ transform: 'translateZ(26px)' }}
+        />
 
-      <div className="pointer-events-none select-none absolute inset-[14%]" aria-hidden>
-        {decor.map((g, i) => (
-          <Image
-            key={i}
-            src={g.src}
-            alt=""
-            width={320}
-            height={320}
-            className={`absolute w-7 sm:w-9 h-auto ${g.at}`}
-            style={{ transform: `rotate(${g.rot})`, opacity: 0.85 }}
-          />
-        ))}
+        {/* Furthest forward, so the pieces swing widest as the card turns. */}
+        <div
+          className="pointer-events-none select-none absolute inset-[14%]"
+          style={{ transform: 'translateZ(46px)' }}
+          aria-hidden
+        >
+          {decor.map((g, i) => (
+            <Image
+              key={i}
+              src={g.src}
+              alt=""
+              width={320}
+              height={320}
+              className={`absolute w-7 sm:w-9 h-auto ${g.at}`}
+              style={{ transform: `rotate(${g.rot})`, opacity: 0.85 }}
+            />
+          ))}
+        </div>
+        <div
+          className="absolute inset-[16%] flex flex-col items-center justify-center text-center gap-2"
+          style={{ ['--accent' as string]: accent, transform: 'translateZ(8px)' }}
+        >
+          {children}
+        </div>
       </div>
-      <div
-        className="absolute inset-[16%] flex flex-col items-center justify-center text-center gap-2"
-        style={{ ['--accent' as string]: accent }}
-      >
-        {children}
-      </div>
-    </div>
+    </TiltCard>
   )
 }
 

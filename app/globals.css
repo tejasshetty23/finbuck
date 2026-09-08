@@ -161,6 +161,16 @@ body {
   filter: drop-shadow(0 0 40px rgba(168,85,247,0.4)) drop-shadow(0 0 80px rgba(124,58,237,0.2));
 }
 
+.animated-gradient-text-gold {
+  background: linear-gradient(270deg, #c8951a, #f5c518, #fff3b0, #f5c518, #c8951a);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 12s ease infinite;
+  filter: drop-shadow(0 0 40px rgba(245,197,24,0.4)) drop-shadow(0 0 80px rgba(200,149,26,0.2));
+}
+
 /* ── Divine god-rays (winner popup) ── */
 @keyframes godray-spin {
   from { transform: translate(-50%, -50%) rotate(0deg); }

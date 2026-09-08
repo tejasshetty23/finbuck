@@ -217,8 +217,36 @@ export default function RewardsPage() {
         </div>
       </Reveal>
 
-      {/* The rest, alternating frames */}
-      <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      {/* Scroll hint. The hero row is a tall square, so on most screens the
+          perks start below the fold with nothing visible to say so. In the flow
+          rather than fixed, so it scrolls away once it has been taken, and a
+          plain anchor rather than a handler — html already carries
+          scroll-behavior: smooth. */}
+      <div className="flex justify-center -mt-4 mb-10">
+        <a
+          href="#perks"
+          aria-label="Skip to the rest of the rewards"
+          className="flex flex-col items-center gap-1.5 text-gray-600 hover:text-[#00ff87] transition-colors"
+        >
+          <span className="text-[9px] font-bold uppercase tracking-[0.3em]">More</span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2.5}
+            className="scroll-nudge w-5 h-5"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+      </div>
+
+      {/* The rest, alternating frames. scroll-mt clears the fixed navbar, which
+          would otherwise sit over the first row after the jump. */}
+      <div
+        id="perks"
+        className="scroll-mt-28 max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+      >
         {PERKS.map((p, i) => {
           const green = i % 2 === 0
           const accent = green ? '#00ff87' : '#c084fc'

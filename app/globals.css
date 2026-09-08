@@ -295,6 +295,19 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Scroll hint. Ambient motion, so it sits behind the same reduced-motion guard
+   as .reveal — without it the arrow still points down, it just stops nudging. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes scroll-nudge {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(5px); }
+  }
+
+  .scroll-nudge {
+    animation: scroll-nudge 2.1s ease-in-out infinite;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

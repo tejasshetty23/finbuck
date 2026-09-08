@@ -3,7 +3,6 @@ import FloatingDecor from '../../components/FloatingDecor'
 import Reveal from '../../components/Reveal'
 
 type Perk = {
-  icon: string
   title: string
   desc?: string
   href?: string
@@ -13,13 +12,12 @@ type Perk = {
 // Sign-up is deliberately not in here — it gets its own full-width call to
 // action at the bottom, since it's the one thing every other perk depends on.
 const PERKS: Perk[] = [
-  { icon: '💎', title: '15% Affiliate Commission' },
-  { icon: '💰', title: '50% Rank Up Bonus Boost' },
-  { icon: '🎁', title: 'Exclusive Stream Giveaways' },
-  { icon: '💸', title: 'Exclusive Code Drops' },
-  { icon: '🔐', title: 'Affiliate Discord Access' },
+  { title: '15% Affiliate Commission' },
+  { title: '50% Rank Up Bonus Boost' },
+  { title: 'Exclusive Stream Giveaways' },
+  { title: 'Exclusive Code Drops' },
+  { title: 'Affiliate Discord Access' },
   {
-    icon: '🏦',
     title: 'Gamba VIP Rewards',
     desc: '10–20% lossback once losses exceed $1,000.',
     href: 'https://gamba.com/vip-program',
@@ -95,9 +93,14 @@ export default function RewardsPage() {
       <Reveal>
         <div className="max-w-md mx-auto mb-14">
           <FramedCard frame={GREEN} accent="#00ff87">
-            <span className="text-4xl sm:text-5xl leading-none" style={{ filter: 'drop-shadow(0 0 16px #00ff87aa)' }}>
-              🏆
-            </span>
+            <Image
+              src="/gem.webp"
+              alt=""
+              width={320}
+              height={320}
+              className="w-12 sm:w-16 h-auto"
+              style={{ filter: 'drop-shadow(0 0 16px #00ff87aa)' }}
+            />
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00ff87]">
               Headline Prize
             </span>
@@ -131,9 +134,14 @@ export default function RewardsPage() {
           return (
             <Reveal key={p.title} delay={(i % 3) * 80}>
               <FramedCard frame={green ? GREEN : PURPLE} accent={accent}>
-                <span className="text-3xl sm:text-4xl leading-none" style={{ filter: `drop-shadow(0 0 14px ${accent}aa)` }}>
-                  {p.icon}
-                </span>
+                <Image
+                  src={green ? '/gem.webp' : '/coin.webp'}
+                  alt=""
+                  width={320}
+                  height={320}
+                  className="w-10 sm:w-14 h-auto"
+                  style={{ filter: `drop-shadow(0 0 14px ${accent}aa)` }}
+                />
                 <h3 className="text-sm sm:text-base font-black uppercase leading-tight text-white px-1">
                   {p.title}
                 </h3>

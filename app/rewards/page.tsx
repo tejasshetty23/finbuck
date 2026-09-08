@@ -125,48 +125,77 @@ export default function RewardsPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#07050f]/70 via-[#07050f]/50 to-[#07050f]" />
       </div>
 
-      {/* Headline prize — its own row, larger than the rest */}
+      {/* The two calls to action share a row: sign-up on the left, the
+          headline prize on the right. They were bookending the perk grid, one
+          at each end of the page. */}
       <Reveal>
-        <div className="max-w-md mx-auto mb-14">
-          <FramedCard frame={GREEN} accent="#00ff87">
-            <span className="font-display text-[9px] font-bold uppercase tracking-[0.24em] text-[#00ff87]">
-              Headline Prize
-            </span>
-            <span
-              className="font-display block font-black leading-none tracking-tight animated-gradient-text"
-              style={{ fontSize: 'clamp(32px, 6.4vw, 50px)' }}
-            >
-              $10,000
-            </span>
-            <span
-              className="block w-12 h-px my-0.5"
-              style={{ background: 'linear-gradient(90deg, transparent, #00ff87, transparent)' }}
-            />
-            <h2
-              className="font-display text-[11px] sm:text-xs font-bold uppercase leading-snug text-white/90 tracking-[0.14em]"
-              style={{ textShadow: '0 0 12px #00ff8744' }}
-            >
-              Monthly Leaderboard
+        <div className="max-w-5xl mx-auto mb-14 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+          {/* Left half. Ordered under the frame on mobile, where a single
+              column makes the frame the better thing to lead with. */}
+          <div className="order-2 md:order-1 text-center">
+            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
+              Ready to <span className="animated-gradient-text">Start</span>?
             </h2>
-            <p
-              className="text-gray-300 text-xs sm:text-sm leading-relaxed"
-              style={{ textShadow: '0 1px 12px rgba(0,0,0,0.95), 0 0 22px rgba(0,0,0,0.75)' }}
-            >
-              Wager under code FINBUCK and climb the board.
+            <p className="text-gray-500 text-sm mt-3">
+              Sign up under code <span className="text-[#00ff87] font-bold">FINBUCK</span> to unlock all of it.
             </p>
             <a
-              href="https://gamba.com/promotions/exclusive-leaderboards/18090"
+              href="https://gamba.com/?c=finbuck"
               target="_blank"
               rel="noopener noreferrer sponsored"
-              className="mt-1 inline-flex items-center gap-2 font-black uppercase tracking-widest text-[11px] px-4 py-2 rounded-lg transition-transform hover:scale-105"
+              className="mt-6 inline-flex items-center gap-2 font-black uppercase tracking-widest text-sm px-8 py-3.5 rounded-xl transition-transform hover:scale-105"
               style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)', color: '#07050a' }}
             >
-              View Leaderboard
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3">
+              Sign Up on Gamba
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
               </svg>
             </a>
-          </FramedCard>
+          </div>
+
+          {/* Right half. Capped so the square does not grow past the frame art
+              on a wide screen. */}
+          <div className="order-1 md:order-2 w-full max-w-md mx-auto">
+            <FramedCard frame={GREEN} accent="#00ff87">
+              <span className="font-display text-[9px] font-bold uppercase tracking-[0.24em] text-[#00ff87]">
+                Headline Prize
+              </span>
+              <span
+                className="font-display block font-black leading-none tracking-tight animated-gradient-text"
+                style={{ fontSize: 'clamp(32px, 6.4vw, 50px)' }}
+              >
+                $10,000
+              </span>
+              <span
+                className="block w-12 h-px my-0.5"
+                style={{ background: 'linear-gradient(90deg, transparent, #00ff87, transparent)' }}
+              />
+              <h2
+                className="font-display text-[11px] sm:text-xs font-bold uppercase leading-snug text-white/90 tracking-[0.14em]"
+                style={{ textShadow: '0 0 12px #00ff8744' }}
+              >
+                Monthly Leaderboard
+              </h2>
+              <p
+                className="text-gray-300 text-xs sm:text-sm leading-relaxed"
+                style={{ textShadow: '0 1px 12px rgba(0,0,0,0.95), 0 0 22px rgba(0,0,0,0.75)' }}
+              >
+                Wager under code FINBUCK and climb the board.
+              </p>
+              <a
+                href="https://gamba.com/promotions/exclusive-leaderboards/18090"
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                className="mt-1 inline-flex items-center gap-2 font-black uppercase tracking-widest text-[11px] px-4 py-2 rounded-lg transition-transform hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)', color: '#07050a' }}
+              >
+                View Leaderboard
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                </svg>
+              </a>
+            </FramedCard>
+          </div>
         </div>
       </Reveal>
 
@@ -226,30 +255,6 @@ export default function RewardsPage() {
           )
         })}
       </div>
-
-      {/* Sign up */}
-      <Reveal>
-        <div className="max-w-2xl mx-auto mt-16 text-center">
-          <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
-            Ready to <span className="animated-gradient-text">Start</span>?
-          </h2>
-          <p className="text-gray-500 text-sm mt-3">
-            Sign up under code <span className="text-[#00ff87] font-bold">FINBUCK</span> to unlock all of it.
-          </p>
-          <a
-            href="https://gamba.com/?c=finbuck"
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            className="mt-6 inline-flex items-center gap-2 font-black uppercase tracking-widest text-sm px-8 py-3.5 rounded-xl transition-transform hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)', color: '#07050a' }}
-          >
-            Sign Up on Gamba
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-            </svg>
-          </a>
-        </div>
-      </Reveal>
     </div>
   )
 }

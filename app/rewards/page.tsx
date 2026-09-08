@@ -16,7 +16,7 @@ type Perk = {
 const PERKS: Perk[] = [
   { lead: '15%', title: 'Affiliate Commission' },
   { lead: '50%', title: 'Rank Up Bonus Boost' },
-  { lead: 'Stream', title: 'Exclusive Giveaways' },
+  { lead: 'Exclusive', title: 'Stream Giveaways' },
   { lead: 'Code', title: 'Exclusive Drops' },
   { lead: 'Discord', title: 'Affiliate Access' },
   {
@@ -27,6 +27,18 @@ const PERKS: Perk[] = [
     cta: 'VIP Program',
   },
 ]
+
+/**
+ * Font size for a perk's lead.
+ *
+ * Orbitron is a wide face and the leads sit in a box only 68% of the card
+ * across, so a long word overruns the frame's opening at the size the short
+ * ones want. "Exclusive" at nine characters is the only lead that reaches the
+ * ceiling; "Discord" at seven still clears it.
+ */
+function leadSize(lead: string) {
+  return lead.length > 7 ? 'clamp(19px, 3.2vw, 28px)' : 'clamp(26px, 4.6vw, 40px)'
+}
 
 const GREEN = '/frame-green-neon.webp'
 const PURPLE = '/frame-purple-neon.webp'
@@ -258,7 +270,7 @@ export default function RewardsPage() {
                     className={`font-display block font-black leading-none tracking-tight ${
                       green ? 'animated-gradient-text' : 'animated-gradient-text-purple'
                     }`}
-                    style={{ fontSize: 'clamp(26px, 4.6vw, 40px)' }}
+                    style={{ fontSize: leadSize(p.lead) }}
                   >
                     {p.lead}
                   </span>

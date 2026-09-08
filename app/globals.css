@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* Squared display face for headings that sit inside the neon frames. Loaded
+   the same way as Inter rather than via next/font, which fetches at build time
+   — a font download failing on the VPS would take the whole deploy with it. */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
 
 :root {
   --green-gem: #00ff87;
@@ -320,4 +324,10 @@ html {
     border-width: 46px;
     border-image-width: 80px;
   }
+}
+
+/* Orbitron falls back to Inter, so a blocked font request degrades to the
+   site's normal face rather than a serif default. */
+.font-display {
+  font-family: 'Orbitron', 'Inter', system-ui, sans-serif;
 }

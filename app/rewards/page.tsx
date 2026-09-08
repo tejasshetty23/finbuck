@@ -3,6 +3,8 @@ import FloatingDecor from '../../components/FloatingDecor'
 import Reveal from '../../components/Reveal'
 
 type Perk = {
+  /** The hook, set large in the frame's gradient. Numbers mostly. */
+  lead?: string
   title: string
   desc?: string
   href?: string
@@ -12,13 +14,14 @@ type Perk = {
 // Sign-up is deliberately not in here — it gets its own full-width call to
 // action at the bottom, since it's the one thing every other perk depends on.
 const PERKS: Perk[] = [
-  { title: '15% Affiliate Commission' },
-  { title: '50% Rank Up Bonus Boost' },
-  { title: 'Exclusive Stream Giveaways' },
-  { title: 'Exclusive Code Drops' },
-  { title: 'Affiliate Discord Access' },
+  { lead: '15%', title: 'Affiliate Commission' },
+  { lead: '50%', title: 'Rank Up Bonus Boost' },
+  { lead: 'Stream', title: 'Exclusive Giveaways' },
+  { lead: 'Code', title: 'Exclusive Drops' },
+  { lead: 'Discord', title: 'Affiliate Access' },
   {
-    title: 'Gamba VIP Rewards',
+    lead: 'VIP',
+    title: 'Gamba Rewards',
     desc: '10–20% lossback once losses exceed $1,000.',
     href: 'https://gamba.com/vip-program',
     cta: 'VIP Program',
@@ -127,13 +130,29 @@ export default function RewardsPage() {
       <Reveal>
         <div className="max-w-md mx-auto mb-14">
           <FramedCard frame={GREEN} accent="#00ff87">
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00ff87]">
+            <span className="font-display text-[9px] font-bold uppercase tracking-[0.24em] text-[#00ff87]">
               Headline Prize
             </span>
-            <h2 className="text-xl sm:text-2xl font-black uppercase leading-tight text-white">
-              $10,000 Monthly Leaderboard
+            <span
+              className="font-display block font-black leading-none tracking-tight animated-gradient-text"
+              style={{ fontSize: 'clamp(32px, 6.4vw, 50px)' }}
+            >
+              $10,000
+            </span>
+            <span
+              className="block w-12 h-px my-0.5"
+              style={{ background: 'linear-gradient(90deg, transparent, #00ff87, transparent)' }}
+            />
+            <h2
+              className="font-display text-[11px] sm:text-xs font-bold uppercase leading-snug text-white/90 tracking-[0.14em]"
+              style={{ textShadow: '0 0 12px #00ff8744' }}
+            >
+              Monthly Leaderboard
             </h2>
-            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
+            <p
+              className="text-gray-300 text-xs sm:text-sm leading-relaxed"
+              style={{ textShadow: '0 1px 12px rgba(0,0,0,0.95), 0 0 22px rgba(0,0,0,0.75)' }}
+            >
               Wager under code FINBUCK and climb the board.
             </p>
             <a
@@ -160,10 +179,35 @@ export default function RewardsPage() {
           return (
             <Reveal key={p.title} delay={(i % 3) * 80}>
               <FramedCard frame={green ? GREEN : PURPLE} accent={accent} variant={i}>
-                <h3 className="text-sm sm:text-base font-black uppercase leading-tight text-white px-1">
+                {p.lead && (
+                  <span
+                    className={`font-display block font-black leading-none tracking-tight ${
+                      green ? 'animated-gradient-text' : 'animated-gradient-text-purple'
+                    }`}
+                    style={{ fontSize: 'clamp(26px, 4.6vw, 40px)' }}
+                  >
+                    {p.lead}
+                  </span>
+                )}
+                {/* Hairline in the frame's colour, tying the two halves together */}
+                <span
+                  className="block w-8 h-px my-0.5"
+                  style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+                />
+                <h3
+                  className="font-display text-[10px] sm:text-[11px] font-bold uppercase leading-snug text-white/90 px-1 tracking-[0.12em]"
+                  style={{ textShadow: `0 0 10px ${accent}44` }}
+                >
                   {p.title}
                 </h3>
-                {p.desc && <p className="text-gray-400 text-[11px] leading-relaxed px-1">{p.desc}</p>}
+                {p.desc && (
+                  <p
+                    className="text-gray-300 text-[11px] leading-relaxed px-1"
+                    style={{ textShadow: '0 1px 12px rgba(0,0,0,0.95), 0 0 22px rgba(0,0,0,0.75)' }}
+                  >
+                    {p.desc}
+                  </p>
+                )}
                 {p.href && p.cta && (
                   <a
                     href={p.href}

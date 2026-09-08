@@ -72,6 +72,17 @@ function FramedCard({
 
   return (
     <div className={`relative aspect-square ${className}`}>
+      {/* Faint wash in the frame's own colour. Inset 12% because the frame's
+          inner edge measures 9.7% — any further out and the tint's square
+          corners show through the knocked-out corner notches. Painted before
+          the frame so the border sits on top of it. */}
+      <div
+        className="absolute inset-[12%] rounded-lg"
+        style={{
+          background: `radial-gradient(115% 115% at 50% 0%, ${accent}24 0%, ${accent}14 45%, ${accent}08 100%)`,
+        }}
+      />
+
       <Image
         src={frame}
         alt=""

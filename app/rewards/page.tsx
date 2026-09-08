@@ -42,7 +42,6 @@ function FramedCard({
   frame,
   accent,
   variant = 0,
-  topOnly = false,
   children,
   className = '',
 }: {
@@ -50,36 +49,26 @@ function FramedCard({
   accent: string
   /** Swaps gem and chip between the corners, so adjacent cards differ. */
   variant?: number
-  /** Keeps only the top pair of pieces. The small cards carry more text for
-   *  their size, so the lower corners are the ones that get crowded. */
-  topOnly?: boolean
   children: React.ReactNode
   className?: string
 }) {
-  // One piece per corner, ordered top-left, top-right, bottom-left,
-  // bottom-right — so `topOnly` is just the first half. Content occupies the
-  // middle (16-84%), so the interior corners between the frame border and the
-  // text are the only free space.
+  // A piece in each of the two upper corners. Content occupies the middle
+  // (16-84%), so the interior corners are the only free space, and the lower
+  // pair read as crowding the text where the upper pair frame it.
   // Anchored to the corners of a box inset inside the frame's opening, so each
   // piece sits in its corner whatever size it renders at. Fixed percentages left
   // them short of the edge, since the offset ignored the piece's own width.
-  // Widening that inset walks all four inward along their diagonals at once.
+  // Widening that inset walks both inward along their diagonals at once.
   const decor =
     variant % 2 === 0
       ? [
           { src: '/gem.webp', at: 'top-0 left-0', rot: '-16deg' },
           { src: '/coin.webp', at: 'top-0 right-0', rot: '18deg' },
-          { src: '/coin.webp', at: 'bottom-0 left-0', rot: '-12deg' },
-          { src: '/gem.webp', at: 'bottom-0 right-0', rot: '14deg' },
         ]
       : [
           { src: '/coin.webp', at: 'top-0 left-0', rot: '13deg' },
           { src: '/gem.webp', at: 'top-0 right-0', rot: '-19deg' },
-          { src: '/gem.webp', at: 'bottom-0 left-0', rot: '17deg' },
-          { src: '/coin.webp', at: 'bottom-0 right-0', rot: '-15deg' },
         ]
-
-  const pieces = topOnly ? decor.slice(0, 2) : decor
 
   return (
     <div className={`relative aspect-square ${className}`}>
@@ -104,7 +93,7 @@ function FramedCard({
       />
 
       <div className="pointer-events-none select-none absolute inset-[14%]" aria-hidden>
-        {pieces.map((g, i) => (
+        {decor.map((g, i) => (
           <Image
             key={i}
             src={g.src}
@@ -188,7 +177,7 @@ export default function RewardsPage() {
           const accent = green ? '#00ff87' : '#c084fc'
           return (
             <Reveal key={p.title} delay={(i % 3) * 80}>
-              <FramedCard frame={green ? GREEN : PURPLE} accent={accent} variant={i} topOnly>
+              <FramedCard frame={green ? GREEN : PURPLE} accent={accent} variant={i}>
                 {p.lead && (
                   <span
                     className={`font-display block font-black leading-none tracking-tight ${

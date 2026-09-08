@@ -517,7 +517,7 @@ export default function Home() {
         </Reveal>
       </section>
 
-      {/* ── LEADERBOARD CTA ── */}
+      {/* ── REWARDS CTA ── */}
       <section className="py-20 px-6">
         <Reveal>
         <div className="max-w-3xl mx-auto text-center">
@@ -526,20 +526,20 @@ export default function Home() {
             <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl" />
 
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-12 h-12 text-purple-400 mx-auto mb-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13a4 4 0 10-4-4 4 4 0 004 4zm0 0a4 4 0 114-4 4 4 0 01-4 4zM4 12h16M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
             </svg>
 
             <h2 className="text-3xl md:text-4xl font-black uppercase text-white mb-3">
-              Monthly <span className="text-purple-400">Watchtime Leaderboard</span>
+              Rewards &amp; <span className="text-purple-400">Perks</span>
             </h2>
             <p className="text-gray-400 text-base mb-8 max-w-md mx-auto">
-              Who&apos;s the most loyal viewer this month? Check the watchtime leaderboard — top fans win recognition every month.
+              Affiliate commission, rank up boosts, exclusive giveaways and drops, and the $10,000 monthly leaderboard — everything you unlock playing under code FINBUCK.
             </p>
             <Link
-              href="/leaderboard"
+              href="/rewards"
               className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold px-8 py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(168,85,247,0.2)] hover:shadow-[0_0_40px_rgba(168,85,247,0.4)]"
             >
-              View Watchtime
+              View Rewards
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>

@@ -35,3 +35,10 @@ npm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 node_modules
+
+# Source art and scratch files dropped in the project root. The optimised
+# copies that the site actually loads live in public/ — these originals are
+# large, and this repo is public, so they stay on disk but out of git.
+/*.png
+/*.jpg
+/*.pdf

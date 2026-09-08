@@ -47,7 +47,7 @@ const diceIcon = (
 
 const NAV_ITEMS: NavItem[] = [
   { href: '/', label: 'Home' },
-  { href: '/leaderboard', label: 'Watchtime' },
+  { href: '/rewards', label: 'Rewards' },
   {
     label: 'Games',
     children: [
@@ -63,7 +63,6 @@ const NAV_ITEMS: NavItem[] = [
       { href: '/wheelspin?picker=number', label: 'Number Roller', icon: diceIcon },
     ],
   },
-  { href: '/rewards', label: 'Rewards' },
   { href: '/shop', label: 'Shop' },
 ]
 

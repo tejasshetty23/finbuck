@@ -8,7 +8,6 @@ export default function Footer() {
             text squeezed it enough to break labels mid-word ("Slot Battles"). */}
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500 whitespace-nowrap">
           <Link href="/" className="hover:text-[#00ff87] transition-colors">Home</Link>
-          <Link href="/leaderboard" className="hover:text-[#00ff87] transition-colors">Watchtime</Link>
           <Link href="/tournaments" className="hover:text-[#00ff87] transition-colors">Tournaments</Link>
           <Link href="/wheelspin" className="hover:text-[#00ff87] transition-colors">Giveaways</Link>
           <Link href="/vschat" className="hover:text-[#00ff87] transition-colors">Slot Battles</Link>

@@ -135,9 +135,16 @@ export default function RewardsPage() {
               100 viewBox units; a segment spans from 32 units below one stop's
               centre to 22 above the next — the clear space between them. */}
           {STOPS.slice(0, -1).map((_, i) => {
-            const x0 = i % 2 === 0 ? 22 : 78
-            const x1 = i % 2 === 0 ? 78 : 22
-            const y0 = 50 + i * 100 + 22
+            const last = i === STOPS.length - 2
+            // The trail leaves the first stop from under its centred button and
+            // arrives back at centre for the X, rather than starting and ending
+            // out at an edge with nothing above or below it. Everything between
+            // alternates as before.
+            const x0 = i === 0 ? 50 : i % 2 === 0 ? 22 : 78
+            const x1 = last ? 50 : i % 2 === 0 ? 78 : 22
+            // The first stop carries an eyebrow, description and button, so it
+            // runs taller than the rest and needs more clearance beneath it.
+            const y0 = 50 + i * 100 + (i === 0 ? 34 : 22)
             const y1 = 50 + (i + 1) * 100 - 22
             // Overshooting half the span pulls the curve into a fuller S; at
             // exactly half it reads as a straight diagonal.

@@ -55,29 +55,33 @@ function FramedCard({
 }) {
   // One piece per corner. Content occupies the middle (16-84%), so the interior
   // corners between the frame border and the text are the only free space.
+  // Anchored to the corners of a box inset to the frame's opening, so each piece
+  // actually sits in its corner whatever size it renders at. Fixed percentages
+  // left them short of the edge, since the offset ignored the piece's own width.
   const decor =
     variant % 2 === 0
       ? [
-          { src: '/gem.webp', top: '13%', left: '12%', rot: '-16deg' },
-          { src: '/coin.webp', top: '13%', left: '72%', rot: '18deg' },
-          { src: '/coin.webp', top: '71%', left: '12%', rot: '-12deg' },
-          { src: '/gem.webp', top: '71%', left: '72%', rot: '14deg' },
+          { src: '/gem.webp', at: 'top-0 left-0', rot: '-16deg' },
+          { src: '/coin.webp', at: 'top-0 right-0', rot: '18deg' },
+          { src: '/coin.webp', at: 'bottom-0 left-0', rot: '-12deg' },
+          { src: '/gem.webp', at: 'bottom-0 right-0', rot: '14deg' },
         ]
       : [
-          { src: '/coin.webp', top: '13%', left: '12%', rot: '13deg' },
-          { src: '/gem.webp', top: '13%', left: '72%', rot: '-19deg' },
-          { src: '/gem.webp', top: '71%', left: '12%', rot: '17deg' },
-          { src: '/coin.webp', top: '71%', left: '72%', rot: '-15deg' },
+          { src: '/coin.webp', at: 'top-0 left-0', rot: '13deg' },
+          { src: '/gem.webp', at: 'top-0 right-0', rot: '-19deg' },
+          { src: '/gem.webp', at: 'bottom-0 left-0', rot: '17deg' },
+          { src: '/coin.webp', at: 'bottom-0 right-0', rot: '-15deg' },
         ]
 
   return (
     <div className={`relative aspect-square ${className}`}>
-      {/* Faint wash in the frame's own colour. Inset 12% because the frame's
-          inner edge measures 9.7% — any further out and the tint's square
-          corners show through the knocked-out corner notches. Painted before
-          the frame so the border sits on top of it. */}
+      {/* Faint wash in the frame's own colour, run out to 8% so its edge tucks
+          under the frame border rather than stopping short of it — at 12% three
+          quarters of that edge sat in the open interior as a visible boundary.
+          Square corners, so the opening fills all the way into them. Painted
+          before the frame so the border sits on top. */}
       <div
-        className="absolute inset-[12%] rounded-lg"
+        className="absolute inset-[8%]"
         style={{
           background: `radial-gradient(115% 115% at 50% 0%, ${accent}24 0%, ${accent}14 45%, ${accent}08 100%)`,
         }}
@@ -91,7 +95,7 @@ function FramedCard({
         className="pointer-events-none select-none object-fill"
       />
 
-      <div className="pointer-events-none select-none absolute inset-0" aria-hidden>
+      <div className="pointer-events-none select-none absolute inset-[11%]" aria-hidden>
         {decor.map((g, i) => (
           <Image
             key={i}
@@ -99,8 +103,8 @@ function FramedCard({
             alt=""
             width={320}
             height={320}
-            className="absolute w-7 sm:w-9 h-auto"
-            style={{ top: g.top, left: g.left, transform: `rotate(${g.rot})`, opacity: 0.85 }}
+            className={`absolute w-7 sm:w-9 h-auto ${g.at}`}
+            style={{ transform: `rotate(${g.rot})`, opacity: 0.85 }}
           />
         ))}
       </div>

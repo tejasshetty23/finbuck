@@ -96,12 +96,6 @@ export default function RewardsPage() {
       <Reveal>
       <div className="relative max-w-4xl mx-auto mb-20 text-center">
         <FloatingDecor height="h-[280px] sm:h-[340px]" className="!top-[44%]" />
-        <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-purple-400">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-          </svg>
-          <span className="text-purple-400 text-sm font-semibold tracking-widest uppercase">Partner Perks</span>
-        </div>
 
         <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white">
           Rewards <span className="animated-gradient-text">Trail</span>

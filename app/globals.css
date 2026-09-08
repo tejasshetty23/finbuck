@@ -161,14 +161,19 @@ body {
   filter: drop-shadow(0 0 40px rgba(168,85,247,0.4)) drop-shadow(0 0 80px rgba(124,58,237,0.2));
 }
 
+/* Every stop sits at hue 46-50. The previous ramp bottomed out at #c8951a,
+   hue 42, which is where gold starts reading as orange — the fix is to keep
+   the dark end bright and yellow rather than letting it fall to brown, and to
+   hold the pale highlight narrow so it flashes as a specular band instead of
+   washing the middle out to champagne. */
 .animated-gradient-text-gold {
-  background: linear-gradient(270deg, #c8951a, #f5c518, #fff3b0, #f5c518, #c8951a);
+  background: linear-gradient(270deg, #d9a800, #ffe14d, #fffbe0, #ffe14d, #d9a800);
   background-size: 300% 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: gradient-shift 12s ease infinite;
-  filter: drop-shadow(0 0 40px rgba(245,197,24,0.4)) drop-shadow(0 0 80px rgba(200,149,26,0.2));
+  filter: drop-shadow(0 0 40px rgba(255,215,0,0.4)) drop-shadow(0 0 80px rgba(224,180,0,0.2));
 }
 
 /* ── Divine god-rays (winner popup) ── */

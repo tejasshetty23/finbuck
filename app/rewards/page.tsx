@@ -155,14 +155,14 @@ export default function RewardsPage() {
               Ready to <span className="animated-gradient-text-gold">Start</span>?
             </h2>
             <p className="text-gray-500 text-sm mt-3">
-              Sign up under code <span className="text-[#f5c518] font-bold">FINBUCK</span> to unlock all of it.
+              Sign up under code <span className="text-[#ffd700] font-bold">FINBUCK</span> to unlock all of it.
             </p>
             <a
               href="https://gamba.com/?c=finbuck"
               target="_blank"
               rel="noopener noreferrer sponsored"
               className="mt-6 inline-flex items-center gap-2 font-black uppercase tracking-widest text-sm px-8 py-3.5 rounded-xl transition-transform hover:scale-105"
-              style={{ background: 'linear-gradient(135deg, #ffd95e, #f5c518, #c8951a)', color: '#07050a' }}
+              style={{ background: 'linear-gradient(135deg, #e0b400 0%, #ffe14d 26%, #fffbe0 44%, #ffd400 62%, #d9a800 100%)', color: '#07050a' }}
             >
               Sign Up on Gamba
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">

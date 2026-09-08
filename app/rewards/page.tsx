@@ -55,9 +55,10 @@ function FramedCard({
 }) {
   // One piece per corner. Content occupies the middle (16-84%), so the interior
   // corners between the frame border and the text are the only free space.
-  // Anchored to the corners of a box inset to the frame's opening, so each piece
-  // actually sits in its corner whatever size it renders at. Fixed percentages
-  // left them short of the edge, since the offset ignored the piece's own width.
+  // Anchored to the corners of a box inset inside the frame's opening, so each
+  // piece sits in its corner whatever size it renders at. Fixed percentages left
+  // them short of the edge, since the offset ignored the piece's own width.
+  // Widening that inset walks all four inward along their diagonals at once.
   const decor =
     variant % 2 === 0
       ? [
@@ -95,7 +96,7 @@ function FramedCard({
         className="pointer-events-none select-none object-fill"
       />
 
-      <div className="pointer-events-none select-none absolute inset-[11%]" aria-hidden>
+      <div className="pointer-events-none select-none absolute inset-[14%]" aria-hidden>
         {decor.map((g, i) => (
           <Image
             key={i}

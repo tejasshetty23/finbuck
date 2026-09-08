@@ -165,7 +165,7 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
   // Preload the winner-popup face image on mount so it shows instantly on a win.
   useEffect(() => {
     const img = new window.Image()
-    img.src = '/finbuck-face.png'
+    img.src = '/finbuck-face.webp'
   }, [])
 
   // Build the idle strip whenever the order changes (and we're not rolling).
@@ -391,7 +391,7 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
               />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/finbuck-face.png"
+                src="/finbuck-face.webp"
                 alt="Winner"
                 className="relative max-h-36 w-auto object-contain"
                 style={{ filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.55)) drop-shadow(0 0 14px rgba(0,255,135,0.4))' }}

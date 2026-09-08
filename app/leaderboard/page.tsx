@@ -156,9 +156,9 @@ function LeaderboardTable({ data }: { data: DisplayEntry[] }) {
     src: string; badge: { x: number; y: number }
     accent: string; glow: string; reward: string; crown: boolean; gradient: string
   }> = {
-    1: { src: '/frame-2.png', badge: { x: 50.1, y: 11.6 }, accent: '#FFD700', glow: 'rgba(255,215,0,0.18)', reward: '$100', crown: true, gradient: 'linear-gradient(180deg, #fff3a0 0%, #ffd700 45%, #c8920a 100%)' },
-    2: { src: '/frame-silver.png', badge: { x: 50.1, y: 10.7 }, accent: '#C8C8C8', glow: 'rgba(200,200,200,0.16)', reward: '$50', crown: false, gradient: 'linear-gradient(180deg, #ffffff 0%, #c8c8c8 45%, #7a7a7a 100%)' },
-    3: { src: '/frame-bronze.png', badge: { x: 49.4, y: 10.8 }, accent: '#CD7F32', glow: 'rgba(205,127,50,0.16)', reward: '$25', crown: false, gradient: 'linear-gradient(180deg, #f0b070 0%, #cd7f32 45%, #7a4010 100%)' },
+    1: { src: '/podium-gold.webp', badge: { x: 50.1, y: 11.6 }, accent: '#FFD700', glow: 'rgba(255,215,0,0.18)', reward: '$100', crown: true, gradient: 'linear-gradient(180deg, #fff3a0 0%, #ffd700 45%, #c8920a 100%)' },
+    2: { src: '/podium-silver.webp', badge: { x: 50.1, y: 10.7 }, accent: '#C8C8C8', glow: 'rgba(200,200,200,0.16)', reward: '$50', crown: false, gradient: 'linear-gradient(180deg, #ffffff 0%, #c8c8c8 45%, #7a7a7a 100%)' },
+    3: { src: '/podium-bronze.webp', badge: { x: 49.4, y: 10.8 }, accent: '#CD7F32', glow: 'rgba(205,127,50,0.16)', reward: '$25', crown: false, gradient: 'linear-gradient(180deg, #f0b070 0%, #cd7f32 45%, #7a4010 100%)' },
   }
 
   // Info panel border matches each rank's metal.
@@ -295,7 +295,7 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
     <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 relative">
       <div className="fixed inset-0 -z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/background.png" alt="" className="w-full h-full object-cover object-center" style={{ filter: 'brightness(0.2) saturate(1.1)' }} />
+        <img src="/background.webp" alt="" className="w-full h-full object-cover object-center" style={{ filter: 'brightness(0.2) saturate(1.1)' }} />
         <div className="absolute inset-0 bg-gradient-to-b from-[#07050f]/70 via-[#07050f]/50 to-[#07050f]" />
       </div>
 
@@ -351,7 +351,7 @@ export default function LeaderboardPage({ searchParams }: { searchParams: Record
         >
           <div className="flex items-center gap-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/kick-logo.png" alt="Kick" className="w-10 h-9 object-contain" />
+            <img src="/kick-logo.webp" alt="Kick" className="w-10 h-9 object-contain" />
             <div>
               <p className="text-white font-bold text-sm">Join the Stream</p>
               <p className="text-gray-500 text-xs">Watch FinBuck live on Kick</p>

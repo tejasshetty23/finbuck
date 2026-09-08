@@ -14,7 +14,7 @@ const socials = [
     iconColor: 'text-green-400',
     icon: (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src="/kick-logo.png" alt="Kick" className="w-8 h-7 object-contain" />
+      <img src="/kick-logo.webp" alt="Kick" className="w-8 h-7 object-contain" />
     ),
     cta: 'Watch Live',
   },
@@ -128,7 +128,7 @@ export default function Home() {
         {/* Background image */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/background.png"
+            src="/background.webp"
             alt="FinBuck hero"
             fill
             priority
@@ -216,7 +216,7 @@ export default function Home() {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: 'url(/pattern2.png)',
+            backgroundImage: 'url(/pattern2.webp)',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'center',

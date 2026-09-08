@@ -54,7 +54,7 @@ export default function TournamentsPage() {
   // Preload the champion-popup image so it shows instantly on a win.
   useEffect(() => {
     const img = new window.Image()
-    img.src = '/finbuck-update.png'
+    img.src = '/finbuck-update.webp'
   }, [])
 
   function createBracket() {
@@ -128,7 +128,7 @@ export default function TournamentsPage() {
       {/* Background */}
       <div className="fixed inset-0 -z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/background.png" alt="" className="w-full h-full object-cover object-center" style={{ filter: 'brightness(0.2) saturate(1.1)' }} />
+        <img src="/background.webp" alt="" className="w-full h-full object-cover object-center" style={{ filter: 'brightness(0.2) saturate(1.1)' }} />
         <div className="absolute inset-0 bg-gradient-to-b from-[#07050f]/70 via-[#07050f]/50 to-[#07050f]" />
       </div>
 
@@ -362,7 +362,7 @@ export default function TournamentsPage() {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/finbuck-update.png"
+              src="/finbuck-update.webp"
               alt="Champion"
               className="mx-auto mb-4 max-h-40 w-auto object-contain"
               style={{ filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.55)) drop-shadow(0 0 22px rgba(255,215,0,0.35))' }}

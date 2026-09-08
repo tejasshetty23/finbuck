@@ -39,14 +39,30 @@ const PURPLE = '/frame-purple-neon.webp'
 function FramedCard({
   frame,
   accent,
+  variant = 0,
   children,
   className = '',
 }: {
   frame: string
   accent: string
+  /** Flips which diagonal the two decor pieces sit on. */
+  variant?: number
   children: React.ReactNode
   className?: string
 }) {
+  // Content occupies the middle (16-84%), so the free space is the interior
+  // corners between the frame border and the text.
+  const decor =
+    variant % 2 === 0
+      ? [
+          { src: '/gem.webp', top: '13%', left: '12%', rot: '-16deg' },
+          { src: '/coin.webp', top: '71%', left: '72%', rot: '14deg' },
+        ]
+      : [
+          { src: '/coin.webp', top: '13%', left: '72%', rot: '18deg' },
+          { src: '/gem.webp', top: '71%', left: '12%', rot: '-12deg' },
+        ]
+
   return (
     <div className={`relative aspect-square ${className}`}>
       <Image
@@ -56,6 +72,20 @@ function FramedCard({
         sizes="(max-width: 640px) 90vw, 380px"
         className="pointer-events-none select-none object-fill"
       />
+
+      <div className="pointer-events-none select-none absolute inset-0" aria-hidden>
+        {decor.map((g, i) => (
+          <Image
+            key={i}
+            src={g.src}
+            alt=""
+            width={320}
+            height={320}
+            className="absolute w-8 sm:w-11 h-auto"
+            style={{ top: g.top, left: g.left, transform: `rotate(${g.rot})`, opacity: 0.85 }}
+          />
+        ))}
+      </div>
       <div
         className="absolute inset-[16%] flex flex-col items-center justify-center text-center gap-2"
         style={{ ['--accent' as string]: accent }}
@@ -93,14 +123,6 @@ export default function RewardsPage() {
       <Reveal>
         <div className="max-w-md mx-auto mb-14">
           <FramedCard frame={GREEN} accent="#00ff87">
-            <Image
-              src="/gem.webp"
-              alt=""
-              width={320}
-              height={320}
-              className="w-12 sm:w-16 h-auto"
-              style={{ filter: 'drop-shadow(0 0 16px #00ff87aa)' }}
-            />
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00ff87]">
               Headline Prize
             </span>
@@ -133,15 +155,7 @@ export default function RewardsPage() {
           const accent = green ? '#00ff87' : '#c084fc'
           return (
             <Reveal key={p.title} delay={(i % 3) * 80}>
-              <FramedCard frame={green ? GREEN : PURPLE} accent={accent}>
-                <Image
-                  src={green ? '/gem.webp' : '/coin.webp'}
-                  alt=""
-                  width={320}
-                  height={320}
-                  className="w-10 sm:w-14 h-auto"
-                  style={{ filter: `drop-shadow(0 0 14px ${accent}aa)` }}
-                />
+              <FramedCard frame={green ? GREEN : PURPLE} accent={accent} variant={i}>
                 <h3 className="text-sm sm:text-base font-black uppercase leading-tight text-white px-1">
                   {p.title}
                 </h3>

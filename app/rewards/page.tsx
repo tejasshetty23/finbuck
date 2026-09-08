@@ -45,22 +45,26 @@ function FramedCard({
 }: {
   frame: string
   accent: string
-  /** Flips which diagonal the two decor pieces sit on. */
+  /** Swaps gem and chip between the corners, so adjacent cards differ. */
   variant?: number
   children: React.ReactNode
   className?: string
 }) {
-  // Content occupies the middle (16-84%), so the free space is the interior
-  // corners between the frame border and the text.
+  // One piece per corner. Content occupies the middle (16-84%), so the interior
+  // corners between the frame border and the text are the only free space.
   const decor =
     variant % 2 === 0
       ? [
           { src: '/gem.webp', top: '13%', left: '12%', rot: '-16deg' },
-          { src: '/coin.webp', top: '71%', left: '72%', rot: '14deg' },
+          { src: '/coin.webp', top: '13%', left: '72%', rot: '18deg' },
+          { src: '/coin.webp', top: '71%', left: '12%', rot: '-12deg' },
+          { src: '/gem.webp', top: '71%', left: '72%', rot: '14deg' },
         ]
       : [
-          { src: '/coin.webp', top: '13%', left: '72%', rot: '18deg' },
-          { src: '/gem.webp', top: '71%', left: '12%', rot: '-12deg' },
+          { src: '/coin.webp', top: '13%', left: '12%', rot: '13deg' },
+          { src: '/gem.webp', top: '13%', left: '72%', rot: '-19deg' },
+          { src: '/gem.webp', top: '71%', left: '12%', rot: '17deg' },
+          { src: '/coin.webp', top: '71%', left: '72%', rot: '-15deg' },
         ]
 
   return (
@@ -81,7 +85,7 @@ function FramedCard({
             alt=""
             width={320}
             height={320}
-            className="absolute w-8 sm:w-11 h-auto"
+            className="absolute w-7 sm:w-9 h-auto"
             style={{ top: g.top, left: g.left, transform: `rotate(${g.rot})`, opacity: 0.85 }}
           />
         ))}

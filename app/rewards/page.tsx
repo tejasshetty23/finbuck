@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import FloatingDecor from '../../components/FloatingDecor'
 import Reveal from '../../components/Reveal'
 
 type Stop = {
@@ -91,20 +90,6 @@ export default function RewardsPage() {
         <img src="/background.png" alt="" className="w-full h-full object-cover object-center" style={{ filter: 'brightness(0.2) saturate(1.1)' }} />
         <div className="absolute inset-0 bg-gradient-to-b from-[#07050f]/70 via-[#07050f]/50 to-[#07050f]" />
       </div>
-
-      {/* Header */}
-      <Reveal>
-      <div className="relative max-w-4xl mx-auto mb-20 text-center">
-        <FloatingDecor height="h-[280px] sm:h-[340px]" className="!top-[44%]" />
-
-        <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white">
-          Rewards <span className="animated-gradient-text">Trail</span>
-        </h1>
-        <p className="relative z-10 text-gray-500 text-base max-w-md mx-auto mt-4">
-          Follow the trail — every stop is a perk you unlock under code FINBUCK.
-        </p>
-      </div>
-      </Reveal>
 
       {/* ── The trail ── */}
       <div className="relative max-w-4xl mx-auto">

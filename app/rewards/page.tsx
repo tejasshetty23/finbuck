@@ -1,4 +1,72 @@
+import Image from 'next/image'
+import FloatingDecor from '../../components/FloatingDecor'
 import Reveal from '../../components/Reveal'
+
+type Perk = {
+  icon: string
+  title: string
+  desc?: string
+  href?: string
+  cta?: string
+}
+
+// Sign-up is deliberately not in here — it gets its own full-width call to
+// action at the bottom, since it's the one thing every other perk depends on.
+const PERKS: Perk[] = [
+  { icon: '💎', title: '15% Affiliate Commission' },
+  { icon: '💰', title: '50% Rank Up Bonus Boost' },
+  { icon: '🎁', title: 'Exclusive Stream Giveaways' },
+  { icon: '💸', title: 'Exclusive Code Drops' },
+  { icon: '🔐', title: 'Affiliate Discord Access' },
+  {
+    icon: '🏦',
+    title: 'Gamba VIP Rewards',
+    desc: '10–20% lossback once losses exceed $1,000.',
+    href: 'https://gamba.com/vip-program',
+    cta: 'VIP Program',
+  },
+]
+
+const GREEN = '/frame-green-neon.webp'
+const PURPLE = '/frame-purple-neon.webp'
+
+/**
+ * A perk sitting inside one of the neon frames.
+ *
+ * The frame art is square with a black interior, so it doubles as the card's
+ * own background — no separate panel needed. Content sits at a 16% inset, which
+ * is the largest centred box that clears the frame's inward corner notches,
+ * measured off the artwork rather than guessed.
+ */
+function FramedCard({
+  frame,
+  accent,
+  children,
+  className = '',
+}: {
+  frame: string
+  accent: string
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <div className={`relative aspect-square ${className}`}>
+      <Image
+        src={frame}
+        alt=""
+        fill
+        sizes="(max-width: 640px) 90vw, 380px"
+        className="pointer-events-none select-none object-fill"
+      />
+      <div
+        className="absolute inset-[16%] flex flex-col items-center justify-center text-center gap-2"
+        style={{ ['--accent' as string]: accent }}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
 
 export default function RewardsPage() {
   return (
@@ -12,10 +80,105 @@ export default function RewardsPage() {
 
       {/* Header */}
       <Reveal>
-        <div className="relative max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white">
+        <div className="relative max-w-4xl mx-auto mb-16 text-center">
+          <FloatingDecor height="h-[260px] sm:h-[320px]" className="!top-[46%]" />
+          <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white">
             Rewards <span className="animated-gradient-text">Trail</span>
           </h1>
+          <p className="relative z-10 text-gray-500 text-base max-w-md mx-auto mt-4">
+            Everything you unlock playing under code <span className="text-[#00ff87] font-bold">FINBUCK</span>.
+          </p>
+        </div>
+      </Reveal>
+
+      {/* Headline prize — its own row, larger than the rest */}
+      <Reveal>
+        <div className="max-w-md mx-auto mb-14">
+          <FramedCard frame={GREEN} accent="#00ff87">
+            <span className="text-4xl sm:text-5xl leading-none" style={{ filter: 'drop-shadow(0 0 16px #00ff87aa)' }}>
+              🏆
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00ff87]">
+              Headline Prize
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black uppercase leading-tight text-white">
+              $10,000 Monthly Leaderboard
+            </h2>
+            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
+              Wager under code FINBUCK and climb the board.
+            </p>
+            <a
+              href="https://gamba.com/promotions/exclusive-leaderboards/18090"
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="mt-1 inline-flex items-center gap-2 font-black uppercase tracking-widest text-[11px] px-4 py-2 rounded-lg transition-transform hover:scale-105"
+              style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)', color: '#07050a' }}
+            >
+              View Leaderboard
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+              </svg>
+            </a>
+          </FramedCard>
+        </div>
+      </Reveal>
+
+      {/* The rest, alternating frames */}
+      <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {PERKS.map((p, i) => {
+          const green = i % 2 === 0
+          const accent = green ? '#00ff87' : '#c084fc'
+          return (
+            <Reveal key={p.title} delay={(i % 3) * 80}>
+              <FramedCard frame={green ? GREEN : PURPLE} accent={accent}>
+                <span className="text-3xl sm:text-4xl leading-none" style={{ filter: `drop-shadow(0 0 14px ${accent}aa)` }}>
+                  {p.icon}
+                </span>
+                <h3 className="text-sm sm:text-base font-black uppercase leading-tight text-white px-1">
+                  {p.title}
+                </h3>
+                {p.desc && <p className="text-gray-400 text-[11px] leading-relaxed px-1">{p.desc}</p>}
+                {p.href && p.cta && (
+                  <a
+                    href={p.href}
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    className="mt-1 inline-flex items-center gap-1.5 font-black uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-md border transition-colors"
+                    style={{ borderColor: `${accent}66`, color: accent }}
+                  >
+                    {p.cta}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-2.5 h-2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                  </a>
+                )}
+              </FramedCard>
+            </Reveal>
+          )
+        })}
+      </div>
+
+      {/* Sign up */}
+      <Reveal>
+        <div className="max-w-2xl mx-auto mt-16 text-center">
+          <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
+            Ready to <span className="animated-gradient-text">Start</span>?
+          </h2>
+          <p className="text-gray-500 text-sm mt-3">
+            Sign up under code <span className="text-[#00ff87] font-bold">FINBUCK</span> to unlock all of it.
+          </p>
+          <a
+            href="https://gamba.com/?c=finbuck"
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="mt-6 inline-flex items-center gap-2 font-black uppercase tracking-widest text-sm px-8 py-3.5 rounded-xl transition-transform hover:scale-105"
+            style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)', color: '#07050a' }}
+          >
+            Sign Up on Gamba
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            </svg>
+          </a>
         </div>
       </Reveal>
     </div>

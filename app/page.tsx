@@ -296,8 +296,8 @@ export default function Home() {
               >
                 <span className="text-[#00ff87]/70 text-xs font-bold uppercase tracking-[0.3em]">Use Code</span>
                 <div className="flex items-center gap-3">
-                  <span className="text-[#00ff87] font-black text-4xl tracking-widest">FINBUCK</span>
-                  <CopyButton code="FINBUCK" />
+                  <span className="text-[#00ff87] font-black text-4xl tracking-widest">finbuck</span>
+                  <CopyButton code="finbuck" />
                 </div>
               </div>
             </div>
@@ -533,7 +533,7 @@ export default function Home() {
               Rewards &amp; <span className="text-purple-400">Perks</span>
             </h2>
             <p className="text-gray-400 text-base mb-8 max-w-md mx-auto">
-              Affiliate commission, rank up boosts, exclusive giveaways and drops, and the $10,000 monthly leaderboard — everything you unlock playing under code FINBUCK.
+              Affiliate commission, rank up boosts, exclusive giveaways and drops, and the $10,000 monthly leaderboard — everything you unlock playing under code finbuck.
             </p>
             <Link
               href="/rewards"

@@ -15,10 +15,20 @@ type Perk = {
 // action at the bottom, since it's the one thing every other perk depends on.
 const PERKS: Perk[] = [
   { lead: '15%', title: 'Affiliate Commission' },
-  { lead: '50%', title: 'Rank Up Bonus Boost' },
-  { lead: 'Exclusive', title: 'Stream Giveaways' },
+  { lead: '100%', title: 'Rank Up Bonus Boost' },
+  {
+    lead: 'Exclusive',
+    title: 'Stream Giveaways',
+    href: 'https://kick.com/finbuck',
+    cta: 'Watch Live',
+  },
   { lead: 'Exclusive', title: 'Code Drops' },
-  { lead: 'Discord', title: 'Channel Access' },
+  {
+    lead: 'Discord',
+    title: 'Channel Access',
+    href: 'https://discord.com/invite/finbuckers',
+    cta: 'Join Discord',
+  },
   {
     lead: 'VIP',
     title: 'Gamba Rewards',
@@ -167,7 +177,7 @@ export default function RewardsPage() {
               Ready to <span className="animated-gradient-text-gold">Start</span>?
             </h2>
             <p className="text-gray-500 text-sm mt-3">
-              Sign up under code <span className="text-[#ffd700] font-bold">FINBUCK</span> to unlock all of it.
+              Sign up under code <span className="text-[#ffd700] font-bold">finbuck</span> to unlock all of it.
             </p>
             <a
               href="https://gamba.com/?c=finbuck"
@@ -210,7 +220,7 @@ export default function RewardsPage() {
                 className="text-gray-300 text-xs sm:text-sm leading-relaxed"
                 style={{ textShadow: '0 1px 12px rgba(0,0,0,0.95), 0 0 22px rgba(0,0,0,0.75)' }}
               >
-                Wager under code FINBUCK and climb the board.
+                Wager under code finbuck and climb the board.
               </p>
               <a
                 href="https://gamba.com/promotions/exclusive-leaderboards/18090"
@@ -298,7 +308,11 @@ export default function RewardsPage() {
                   <a
                     href={p.href}
                     target="_blank"
-                    rel="noopener noreferrer sponsored"
+                    rel={
+                      p.href.includes('gamba.com')
+                        ? 'noopener noreferrer sponsored'
+                        : 'noopener noreferrer'
+                    }
                     className="mt-1 inline-flex items-center gap-1.5 font-black uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-md border transition-colors"
                     style={{ borderColor: `${accent}66`, color: accent }}
                   >

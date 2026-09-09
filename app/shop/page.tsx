@@ -26,7 +26,7 @@ const ITEMS: ShopItem[] = [
   {
     name: '$20 Bonus Buy',
     desc: 'Redeem a $20 bonus buy of your choice',
-    points: 5000,
+    points: 7500,
     command: '!BonusBuy',
     img: '/shop/bonus-20.webp',
     icon: '💸',

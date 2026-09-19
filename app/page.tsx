@@ -183,7 +183,7 @@ export default function Home() {
               </span>
             </a>
             <a
-              href="https://gamba.com/promotions/exclusive-leaderboards/18090"
+              href="https://gamba.com/promotions/exclusive-leaderboards/21352"
               target="_blank"
               rel="noopener noreferrer sponsored"
               className="group w-full p-[2px] transition-all duration-200 shadow-[0_0_20px_rgba(168,85,247,0.15)] hover:shadow-[0_0_40px_rgba(168,85,247,0.45)]"

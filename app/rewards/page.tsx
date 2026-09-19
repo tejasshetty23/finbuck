@@ -223,7 +223,7 @@ export default function RewardsPage() {
                 Wager under code finbuck and climb the board.
               </p>
               <a
-                href="https://gamba.com/promotions/exclusive-leaderboards/18090"
+                href="https://gamba.com/promotions/exclusive-leaderboards/21352"
                 target="_blank"
                 rel="noopener noreferrer sponsored"
                 className="mt-1 inline-flex items-center gap-2 font-black uppercase tracking-widest text-[11px] px-4 py-2 rounded-lg transition-transform hover:scale-105"

@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import Reveal from '../../components/Reveal'
 import TiltCard from '../../components/TiltCard'
-import FloatingDecor from '../../components/FloatingDecor'
 
 type Perk = {
   /** The hook, set large in the frame's gradient. Numbers mostly. */
@@ -174,18 +173,49 @@ export default function RewardsPage() {
           {/* Left half. Ordered under the frame on mobile, where a single
               column makes the frame the better thing to lead with. */}
           <div className="order-2 md:order-1 relative text-center">
-            {/* Sized to the column, not the page-header default (min(920px,92vw))
-                that FloatingDecor ships with, or the ring would bleed into the
-                frame beside it. Its 16/84%-style offsets assume the text is
-                narrower than this box — true on the other pages using this
-                component, where a short heading sits in a much wider hero.
-                Here the text was the same width as the box, so the left-side
-                pieces landed right on top of it (the right side only looked
-                fine by luck, since the text happened to fall short there).
-                The max-w-* wrapper below is what actually creates that margin;
-                the taller box just gives the vertical stack more room too. */}
-            <FloatingDecor width="w-full" height="h-[220px] sm:h-[260px]" />
-            <div className="relative z-10 max-w-[280px] sm:max-w-sm mx-auto">
+            {/* Hand-placed rather than FloatingDecor: that component centers
+                its ring on this block's own height and anchors each image by
+                its top-left corner, so its percentage offsets don't give a
+                predictable amount of real clearance on a column this narrow.
+                Pushed well clear of the text on both axes — this is the part
+                that was actually wrong before, not the pieces' size. */}
+            <Image
+              src="/gem.webp"
+              alt=""
+              width={320}
+              height={320}
+              className="pointer-events-none select-none absolute -top-8 -left-6 sm:-left-10 w-14 sm:w-20 h-auto"
+              style={{ transform: 'rotate(-15deg)', opacity: 0.85 }}
+              aria-hidden
+            />
+            <Image
+              src="/coin.webp"
+              alt=""
+              width={320}
+              height={320}
+              className="pointer-events-none select-none absolute -top-8 -right-6 sm:-right-10 w-12 sm:w-16 h-auto"
+              style={{ transform: 'rotate(16deg)', opacity: 0.85 }}
+              aria-hidden
+            />
+            <Image
+              src="/coin.webp"
+              alt=""
+              width={320}
+              height={320}
+              className="pointer-events-none select-none absolute -bottom-6 -left-4 sm:-left-8 w-10 sm:w-14 h-auto"
+              style={{ transform: 'rotate(-10deg)', opacity: 0.75 }}
+              aria-hidden
+            />
+            <Image
+              src="/gem.webp"
+              alt=""
+              width={320}
+              height={320}
+              className="pointer-events-none select-none absolute -bottom-6 -right-4 sm:-right-8 w-11 sm:w-16 h-auto"
+              style={{ transform: 'rotate(12deg)', opacity: 0.75 }}
+              aria-hidden
+            />
+            <div className="relative z-10">
               <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
                 Ready to <span className="animated-gradient-text-gold">Start</span>?
               </h2>

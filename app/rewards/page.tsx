@@ -184,8 +184,8 @@ export default function RewardsPage() {
               alt=""
               width={320}
               height={320}
-              className="pointer-events-none select-none absolute -top-8 -left-6 sm:-left-10 w-14 sm:w-20 h-auto"
-              style={{ transform: 'rotate(-15deg)', opacity: 0.85 }}
+              className="gem-float pointer-events-none select-none absolute -top-8 -left-6 sm:-left-10 w-14 sm:w-20 h-auto"
+              style={{ opacity: 0.85, ['--gem-rot' as string]: '-15deg', ['--gem-dur' as string]: '6.4s' }}
               aria-hidden
             />
             <Image
@@ -193,8 +193,8 @@ export default function RewardsPage() {
               alt=""
               width={320}
               height={320}
-              className="pointer-events-none select-none absolute -top-8 -right-6 sm:-right-10 w-12 sm:w-16 h-auto"
-              style={{ transform: 'rotate(16deg)', opacity: 0.85 }}
+              className="gem-float pointer-events-none select-none absolute -top-8 -right-6 sm:-right-10 w-12 sm:w-16 h-auto"
+              style={{ opacity: 0.85, ['--gem-rot' as string]: '16deg', ['--gem-dur' as string]: '7.1s', animationDelay: '-2.2s' }}
               aria-hidden
             />
             <Image
@@ -202,8 +202,8 @@ export default function RewardsPage() {
               alt=""
               width={320}
               height={320}
-              className="pointer-events-none select-none absolute -bottom-6 -left-4 sm:-left-8 w-10 sm:w-14 h-auto"
-              style={{ transform: 'rotate(-10deg)', opacity: 0.75 }}
+              className="gem-float pointer-events-none select-none absolute -bottom-6 -left-4 sm:-left-8 w-10 sm:w-14 h-auto"
+              style={{ opacity: 0.75, ['--gem-rot' as string]: '-10deg', ['--gem-dur' as string]: '5.8s', animationDelay: '-3.4s' }}
               aria-hidden
             />
             <Image
@@ -211,8 +211,8 @@ export default function RewardsPage() {
               alt=""
               width={320}
               height={320}
-              className="pointer-events-none select-none absolute -bottom-6 -right-4 sm:-right-8 w-11 sm:w-16 h-auto"
-              style={{ transform: 'rotate(12deg)', opacity: 0.75 }}
+              className="gem-float pointer-events-none select-none absolute -bottom-6 -right-4 sm:-right-8 w-11 sm:w-16 h-auto"
+              style={{ opacity: 0.75, ['--gem-rot' as string]: '12deg', ['--gem-dur' as string]: '6.9s', animationDelay: '-1.1s' }}
               aria-hidden
             />
             <div className="relative z-10">

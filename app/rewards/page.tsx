@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Reveal from '../../components/Reveal'
 import TiltCard from '../../components/TiltCard'
+import FloatingDecor from '../../components/FloatingDecor'
 
 type Perk = {
   /** The hook, set large in the frame's gradient. Numbers mostly. */
@@ -172,25 +173,31 @@ export default function RewardsPage() {
         <div className="max-w-5xl mx-auto mb-14 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Left half. Ordered under the frame on mobile, where a single
               column makes the frame the better thing to lead with. */}
-          <div className="order-2 md:order-1 text-center">
-            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
-              Ready to <span className="animated-gradient-text-gold">Start</span>?
-            </h2>
-            <p className="text-gray-500 text-sm mt-3">
-              Sign up under code <span className="text-[#ffd700] font-bold">finbuck</span> to unlock all of it.
-            </p>
-            <a
-              href="https://gamba.com/?c=finbuck"
-              target="_blank"
-              rel="noopener noreferrer sponsored"
-              className="mt-6 inline-flex items-center gap-2 font-black uppercase tracking-widest text-sm px-8 py-3.5 rounded-xl transition-transform hover:scale-105"
-              style={{ background: 'linear-gradient(135deg, #e0b400 0%, #ffe14d 26%, #fffbe0 44%, #ffd400 62%, #d9a800 100%)', color: '#07050a' }}
-            >
-              Sign Up on Gamba
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-              </svg>
-            </a>
+          <div className="order-2 md:order-1 relative text-center">
+            {/* Sized to the column, not the page-header default (min(920px,92vw))
+                that FloatingDecor ships with, or the ring would bleed into the
+                frame beside it. */}
+            <FloatingDecor width="w-full" height="h-[190px] sm:h-[230px]" />
+            <div className="relative z-10">
+              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
+                Ready to <span className="animated-gradient-text-gold">Start</span>?
+              </h2>
+              <p className="text-gray-500 text-sm mt-3">
+                Sign up under code <span className="text-[#ffd700] font-bold">finbuck</span> to unlock all of it.
+              </p>
+              <a
+                href="https://gamba.com/?c=finbuck"
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                className="mt-6 inline-flex items-center gap-2 font-black uppercase tracking-widest text-sm px-8 py-3.5 rounded-xl transition-transform hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, #e0b400 0%, #ffe14d 26%, #fffbe0 44%, #ffd400 62%, #d9a800 100%)', color: '#07050a' }}
+              >
+                Sign Up on Gamba
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                </svg>
+              </a>
+            </div>
           </div>
 
           {/* Right half. Capped so the square does not grow past the frame art

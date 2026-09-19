@@ -176,9 +176,16 @@ export default function RewardsPage() {
           <div className="order-2 md:order-1 relative text-center">
             {/* Sized to the column, not the page-header default (min(920px,92vw))
                 that FloatingDecor ships with, or the ring would bleed into the
-                frame beside it. */}
-            <FloatingDecor width="w-full" height="h-[190px] sm:h-[230px]" />
-            <div className="relative z-10">
+                frame beside it. Its 16/84%-style offsets assume the text is
+                narrower than this box — true on the other pages using this
+                component, where a short heading sits in a much wider hero.
+                Here the text was the same width as the box, so the left-side
+                pieces landed right on top of it (the right side only looked
+                fine by luck, since the text happened to fall short there).
+                The max-w-* wrapper below is what actually creates that margin;
+                the taller box just gives the vertical stack more room too. */}
+            <FloatingDecor width="w-full" height="h-[220px] sm:h-[260px]" />
+            <div className="relative z-10 max-w-[280px] sm:max-w-sm mx-auto">
               <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
                 Ready to <span className="animated-gradient-text-gold">Start</span>?
               </h2>

@@ -177,8 +177,9 @@ export default function RewardsPage() {
                 its ring on this block's own height and anchors each image by
                 its top-left corner, so its percentage offsets don't give a
                 predictable amount of real clearance on a column this narrow.
-                Pushed well clear of the text on both axes — this is the part
-                that was actually wrong before, not the pieces' size. */}
+                Pushed well clear of the text on both axes. Three per side —
+                top, middle (vertically centred on the block, level with the
+                widest line of text but far enough out to clear it), bottom. */}
             <Image
               src="/gem.webp"
               alt=""
@@ -193,8 +194,26 @@ export default function RewardsPage() {
               alt=""
               width={320}
               height={320}
+              className="gem-float pointer-events-none select-none absolute top-1/2 -translate-y-1/2 -left-7 sm:-left-12 w-10 sm:w-14 h-auto"
+              style={{ opacity: 0.8, ['--gem-rot' as string]: '20deg', ['--gem-dur' as string]: '6.6s', animationDelay: '-4.1s' }}
+              aria-hidden
+            />
+            <Image
+              src="/coin.webp"
+              alt=""
+              width={320}
+              height={320}
               className="gem-float pointer-events-none select-none absolute -top-8 -right-6 sm:-right-10 w-12 sm:w-16 h-auto"
               style={{ opacity: 0.85, ['--gem-rot' as string]: '16deg', ['--gem-dur' as string]: '7.1s', animationDelay: '-2.2s' }}
+              aria-hidden
+            />
+            <Image
+              src="/gem.webp"
+              alt=""
+              width={320}
+              height={320}
+              className="gem-float pointer-events-none select-none absolute top-1/2 -translate-y-1/2 -right-7 sm:-right-12 w-9 sm:w-12 h-auto"
+              style={{ opacity: 0.8, ['--gem-rot' as string]: '-18deg', ['--gem-dur' as string]: '6.1s', animationDelay: '-5.4s' }}
               aria-hidden
             />
             <Image

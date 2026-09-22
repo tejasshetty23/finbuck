@@ -50,6 +50,38 @@ function leadSize(lead: string) {
   return lead.length > 7 ? 'clamp(19px, 3.2vw, 28px)' : 'clamp(26px, 4.6vw, 40px)'
 }
 
+/**
+ * The gems and chips ringing the sign-up block, three down each side.
+ *
+ * Size carries the composition rather than being picked per piece: the large
+ * pair sits on one diagonal (top-left, bottom-right) and the medium pair on the
+ * other, so the group reads as arranged instead of scattered. The middles are
+ * the smallest and pushed furthest out, because the line they sit beside — the
+ * subtitle — is the widest in the block, so that is where clearance is tightest.
+ *
+ * Tops and bottoms are staggered against each other across the axis (the left
+ * column sits higher, the right lower) so the two sides don't read as a mirror.
+ *
+ * Both size and offset are responsive because the room to place them is: this
+ * is the left column of a centred max-w-5xl grid, so below ~1070px the grid
+ * fills the viewport and the column edge sits a bare 16-24px off the page,
+ * while at xl the cap kicks in and centring leaves ~128px of margin. Fixed
+ * values either clipped off the page edge at laptop widths or overlapped the
+ * subtitle, so the pieces grow and push out only once there is space for it.
+ *
+ * `at` anchors a top or bottom edge rather than centring: .gem-float animates
+ * `transform`, which would win over a `-translate-y-1/2` utility and silently
+ * drop it, so the middles use a tuned percentage instead.
+ */
+const SIGNUP_DECOR = [
+  { src: '/gem.webp',  at: '-top-10',    out: '-left-4 sm:-left-5 xl:-left-10',    w: 'w-10 sm:w-11 xl:w-20', rot: '-15deg', dur: '6.4s', delay: '0s',    op: 0.85 },
+  { src: '/coin.webp', at: 'top-[40%]',  out: '-left-4 sm:-left-5 xl:-left-14',    w: 'w-8 sm:w-9 xl:w-12',   rot: '20deg',  dur: '6.6s', delay: '-4.1s', op: 0.75 },
+  { src: '/coin.webp', at: '-bottom-7',  out: '-left-4 sm:-left-5 xl:-left-10',    w: 'w-9 sm:w-10 xl:w-16',  rot: '-10deg', dur: '5.8s', delay: '-3.4s', op: 0.8  },
+  { src: '/coin.webp', at: '-top-7',     out: '-right-4 sm:-right-5 xl:-right-10', w: 'w-9 sm:w-10 xl:w-16',  rot: '16deg',  dur: '7.1s', delay: '-2.2s', op: 0.8  },
+  { src: '/gem.webp',  at: 'top-[32%]',  out: '-right-4 sm:-right-5 xl:-right-14', w: 'w-8 sm:w-9 xl:w-12',   rot: '-18deg', dur: '6.1s', delay: '-5.4s', op: 0.75 },
+  { src: '/gem.webp',  at: '-bottom-10', out: '-right-4 sm:-right-5 xl:-right-10', w: 'w-10 sm:w-11 xl:w-20', rot: '12deg',  dur: '6.9s', delay: '-1.1s', op: 0.85 },
+]
+
 const GREEN = '/frame-green-neon.webp'
 const PURPLE = '/frame-purple-neon.webp'
 
@@ -173,67 +205,28 @@ export default function RewardsPage() {
           {/* Left half. Ordered under the frame on mobile, where a single
               column makes the frame the better thing to lead with. */}
           <div className="order-2 md:order-1 relative text-center">
-            {/* Hand-placed rather than FloatingDecor: that component centers
+            {/* Hand-placed rather than FloatingDecor: that component centres
                 its ring on this block's own height and anchors each image by
                 its top-left corner, so its percentage offsets don't give a
                 predictable amount of real clearance on a column this narrow.
-                Pushed well clear of the text on both axes. Three per side —
-                top, middle (vertically centred on the block, level with the
-                widest line of text but far enough out to clear it), bottom. */}
-            <Image
-              src="/gem.webp"
-              alt=""
-              width={320}
-              height={320}
-              className="gem-float pointer-events-none select-none absolute -top-8 -left-6 sm:-left-10 w-14 sm:w-20 h-auto"
-              style={{ opacity: 0.85, ['--gem-rot' as string]: '-15deg', ['--gem-dur' as string]: '6.4s' }}
-              aria-hidden
-            />
-            <Image
-              src="/coin.webp"
-              alt=""
-              width={320}
-              height={320}
-              className="gem-float pointer-events-none select-none absolute top-1/2 -translate-y-1/2 -left-7 sm:-left-12 w-10 sm:w-14 h-auto"
-              style={{ opacity: 0.8, ['--gem-rot' as string]: '20deg', ['--gem-dur' as string]: '6.6s', animationDelay: '-4.1s' }}
-              aria-hidden
-            />
-            <Image
-              src="/coin.webp"
-              alt=""
-              width={320}
-              height={320}
-              className="gem-float pointer-events-none select-none absolute -top-8 -right-6 sm:-right-10 w-12 sm:w-16 h-auto"
-              style={{ opacity: 0.85, ['--gem-rot' as string]: '16deg', ['--gem-dur' as string]: '7.1s', animationDelay: '-2.2s' }}
-              aria-hidden
-            />
-            <Image
-              src="/gem.webp"
-              alt=""
-              width={320}
-              height={320}
-              className="gem-float pointer-events-none select-none absolute top-1/2 -translate-y-1/2 -right-7 sm:-right-12 w-9 sm:w-12 h-auto"
-              style={{ opacity: 0.8, ['--gem-rot' as string]: '-18deg', ['--gem-dur' as string]: '6.1s', animationDelay: '-5.4s' }}
-              aria-hidden
-            />
-            <Image
-              src="/coin.webp"
-              alt=""
-              width={320}
-              height={320}
-              className="gem-float pointer-events-none select-none absolute -bottom-6 -left-4 sm:-left-8 w-10 sm:w-14 h-auto"
-              style={{ opacity: 0.75, ['--gem-rot' as string]: '-10deg', ['--gem-dur' as string]: '5.8s', animationDelay: '-3.4s' }}
-              aria-hidden
-            />
-            <Image
-              src="/gem.webp"
-              alt=""
-              width={320}
-              height={320}
-              className="gem-float pointer-events-none select-none absolute -bottom-6 -right-4 sm:-right-8 w-11 sm:w-16 h-auto"
-              style={{ opacity: 0.75, ['--gem-rot' as string]: '12deg', ['--gem-dur' as string]: '6.9s', animationDelay: '-1.1s' }}
-              aria-hidden
-            />
+                See SIGNUP_DECOR for how the six are arranged. */}
+            {SIGNUP_DECOR.map((g, i) => (
+              <Image
+                key={i}
+                src={g.src}
+                alt=""
+                width={320}
+                height={320}
+                className={`gem-float pointer-events-none select-none absolute h-auto ${g.at} ${g.out} ${g.w}`}
+                style={{
+                  opacity: g.op,
+                  animationDelay: g.delay,
+                  ['--gem-rot' as string]: g.rot,
+                  ['--gem-dur' as string]: g.dur,
+                }}
+                aria-hidden
+              />
+            ))}
             <div className="relative z-10">
               <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
                 Ready to <span className="animated-gradient-text-gold">Start</span>?

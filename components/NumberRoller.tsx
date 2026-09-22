@@ -14,6 +14,9 @@ import { useEffect, useRef, useState } from 'react'
  * The winner is drawn before the animation starts and the strip is built around
  * it, so what scrolls past is decoration — the landed value can't drift with
  * the timing, and a dropped frame can't change the result.
+ *
+ * Under prefers-reduced-motion it still rolls, just a much shorter one — see
+ * REDUCED_MS.
  */
 
 // One cell's height, and how many the window shows. Odd count so there's a true
@@ -33,6 +36,18 @@ const START_INDEX = 2
 // Matches the giveaway roller exactly — same duration, same curve.
 const SPIN_MS = 6000
 const SPIN_EASING = 'cubic-bezier(0.10, 0.82, 0.16, 1)'
+
+// The reduced-motion roll: the same reel, just much less of it — 10 cells of
+// travel instead of 54, over 2.2s instead of 6, on a plain ease-out rather than
+// the dramatic curve.
+//
+// This used to snap straight to the result, which deleted the only thing the
+// component does and made it the odd one out beside the giveaway roller and the
+// prize wheel, neither of which gates on the setting at all. `reduce` asks for
+// less motion, not for a user-invoked reveal to be skipped, so it still rolls.
+const REDUCED_MS = 2200
+const REDUCED_EASING = 'cubic-bezier(0.22, 0.61, 0.36, 1)'
+const REDUCED_START_INDEX = WIN_INDEX - 10
 
 // Cryptographically-seeded random int in [0, max) — same approach as the
 // giveaway roller, so both draws are unbiased rather than Math.random-streaky.
@@ -93,6 +108,8 @@ export default function NumberRoller({
 
   const stripRef = useRef<HTMLDivElement | null>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Picked fresh on each roll, since the preference can be toggled mid-session.
+  const motionRef = useRef({ start: START_INDEX, ms: SPIN_MS, easing: SPIN_EASING })
   // Bumped per roll so the animation effect re-runs even on the same winner.
   const [rollSeq, setRollSeq] = useState(0)
 
@@ -114,15 +131,17 @@ export default function NumberRoller({
     const el = stripRef.current
     if (!el) return
 
+    const { start, ms, easing } = motionRef.current
+
     el.style.transition = 'none'
-    el.style.transform = `translateY(${offsetFor(START_INDEX)}px)`
+    el.style.transform = `translateY(${offsetFor(start)}px)`
     // Force reflow so the jump lands before the animated transform, or the
     // browser coalesces the two and nothing moves.
     void el.offsetHeight
 
     const raf = requestAnimationFrame(() =>
       requestAnimationFrame(() => {
-        el.style.transition = `transform ${SPIN_MS}ms ${SPIN_EASING}`
+        el.style.transition = `transform ${ms}ms ${easing}`
         el.style.transform = `translateY(${offsetFor(WIN_INDEX)}px)`
       })
     )
@@ -130,7 +149,7 @@ export default function NumberRoller({
     timerRef.current = setTimeout(() => {
       setRolling(false)
       setLanded(strip[WIN_INDEX])
-    }, SPIN_MS + 100)
+    }, ms + 100)
 
     return () => {
       cancelAnimationFrame(raf)
@@ -145,14 +164,13 @@ export default function NumberRoller({
     const winner = min + randInt(span)
     const next = buildStrip(winner, min, span)
 
-    if (
+    const reduced =
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    ) {
-      setStrip(next)
-      setLanded(winner)
-      return
-    }
+
+    motionRef.current = reduced
+      ? { start: REDUCED_START_INDEX, ms: REDUCED_MS, easing: REDUCED_EASING }
+      : { start: START_INDEX, ms: SPIN_MS, easing: SPIN_EASING }
 
     setLanded(null)
     setStrip(next)

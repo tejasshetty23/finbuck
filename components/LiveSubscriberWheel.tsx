@@ -4,8 +4,10 @@ import { useRef, useState, useEffect, type ReactNode } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Roller from './Roller'
 
-// Public Kick Pusher app key (same one Kick's own site uses for live chat).
-const PUSHER_WS = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0&flash=false'
+// Chat arrives through /api/chat, which holds the connection to Kick server-
+// side. Kick moved chat off Pusher onto its own realtime service, and that
+// service refuses browser connections from any origin but kick.com — see the
+// route for the details.
 
 // Fixed to FinBuck's channel.
 const CHANNEL = 'finbuck'
@@ -40,7 +42,7 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
   // Live chat from the picked winner, shown in the roller's 30s presence check.
   const [winnerMessages, setWinnerMessages] = useState<{ text: string; at: number }[]>([])
 
-  const wsRef = useRef<WebSocket | null>(null)
+  const streamRef = useRef<EventSource | null>(null)
   const seenRef = useRef<Set<string>>(new Set())
   // KickLogz lists normal (self-paid) and gifted subscriptions separately —
   // the only way to tell them apart, since Kick's chat badges are identical.
@@ -71,7 +73,7 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
 
   useEffect(() => {
     return () => {
-      wsRef.current?.close()
+      streamRef.current?.close()
     }
   }, [])
 
@@ -171,33 +173,52 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
     }
 
     try {
-      const ws = new WebSocket(PUSHER_WS)
-      wsRef.current = ws
+      streamRef.current?.close()
+      const es = new EventSource(`/api/chat?chatroom=${chatroomId}`)
+      streamRef.current = es
 
-      ws.onopen = () => {
-        ws.send(JSON.stringify({ event: 'pusher:subscribe', data: { auth: '', channel: `chatrooms.${chatroomId}.v2` } }))
+      // "Live" only once Kick has confirmed the subscription. Flipping it on
+      // socket open, as before, could show Live while receiving nothing.
+      es.addEventListener('ready', () => {
+        setError('')
         setStatus('connected')
-      }
+      })
 
-      ws.onmessage = (ev) => {
+      es.addEventListener('chat', (ev) => {
         try {
-          const frame = JSON.parse(ev.data)
-          if (frame.event === 'App\\Events\\ChatMessageEvent') {
-            const chat = typeof frame.data === 'string' ? JSON.parse(frame.data) : frame.data
-            handleChatMessage(chat)
-          }
+          handleChatMessage(JSON.parse((ev as MessageEvent).data))
         } catch {
-          /* ignore */
+          /* ignore malformed messages */
         }
-      }
+      })
 
-      ws.onerror = () => {
-        setStatus('error')
-        setError('Chat connection error — try reconnecting.')
-      }
+      // The relay reconnects to Kick on its own; entries are kept here, so a
+      // blip costs at most the messages sent during it.
+      es.addEventListener('status', (ev) => {
+        if ((ev as MessageEvent).data === 'reconnecting') setError('Chat dropped — reconnecting…')
+      })
 
-      ws.onclose = () => {
-        setStatus((s) => (s === 'connected' ? 'idle' : s))
+      es.addEventListener('upstream-error', (ev) => {
+        let stage = ''
+        try {
+          stage = JSON.parse((ev as MessageEvent).data).stage
+        } catch {
+          /* keep generic */
+        }
+        setError(
+          stage === 'token'
+            ? 'Kick refused the chat sign-in — retrying…'
+            : 'Kick chat rejected the connection — retrying…'
+        )
+      })
+
+      // EventSource retries a dropped stream by itself; only a hard close
+      // (e.g. the server is down) is fatal.
+      es.onerror = () => {
+        if (es.readyState === EventSource.CLOSED) {
+          setStatus('error')
+          setError('Lost the chat connection — try reconnecting.')
+        }
       }
     } catch {
       setStatus('error')
@@ -206,8 +227,8 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
   }
 
   function disconnect() {
-    wsRef.current?.close()
-    wsRef.current = null
+    streamRef.current?.close()
+    streamRef.current = null
     setStatus('idle')
   }
 

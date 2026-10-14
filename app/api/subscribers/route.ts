@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server'
 
+// Without this Next.js treats the GET as static: the lists are fetched once
+// during `next build` and served from cache (x-nextjs-cache: HIT) until the
+// next deploy, despite the no-store fetches below. A sub gifted after that
+// deploy is then missing from the gifted list, reads as a paid sub, and gets
+// into a subs-only draw — the one thing this route exists to prevent.
+export const dynamic = 'force-dynamic'
+
 const BASE_URL = 'https://kicklogz.com/api/streamer/finbuck/subscriptions'
 // Safety rails: never crawl forever if upstream reports a bad page count.
 const MAX_PAGES = 20

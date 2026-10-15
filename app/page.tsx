@@ -74,9 +74,9 @@ export default async function Home() {
           </div>
 
           <h1 className="mt-7 font-extrabold uppercase leading-[0.95] tracking-tight">
-            <span className="block text-5xl sm:text-7xl md:text-8xl text-white">FinBucks</span>
+            <span className="block text-[clamp(3rem,15vw,8.75rem)] text-white">FinBucks</span>
             <span
-              className="block text-5xl sm:text-7xl md:text-8xl text-accent-bright"
+              className="block text-4xl sm:text-6xl md:text-7xl text-accent-bright"
               style={{ textShadow: '0 0 40px rgba(0,255,135,0.35)' }}
             >
               Rewards

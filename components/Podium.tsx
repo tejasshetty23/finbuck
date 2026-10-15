@@ -17,7 +17,7 @@ const TIER = {
 type Place = 1 | 2 | 3
 
 /** Size of the 45° corner cuts. */
-const CUT = 16
+const CUT = 19
 /** Border thickness. */
 const B = 1.5
 
@@ -59,7 +59,7 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
         }}
       >
         <div
-          className={`flex flex-col items-center px-4 text-center ${first ? 'pb-6 pt-7 sm:pt-8' : 'pb-5 pt-6'}`}
+          className={`flex flex-col items-center px-4 text-center ${first ? 'pb-7 pt-8 sm:pt-9' : 'pb-6 pt-7'}`}
           style={{
             clipPath: chamfer(CUT - (2 - Math.SQRT2) * B),
             background: `radial-gradient(70% 45% at 50% 22%, rgba(${t.rgb},0.10), transparent 70%), linear-gradient(180deg, #191E52 0%, #12163F 50%, #0D1032 100%)`,
@@ -72,7 +72,7 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
               style={{ background: `rgba(${t.rgb},${first ? 0.35 : 0.22})` }}
             />
             <div
-              className={`relative rounded-full bg-[#0B0D26] p-1.5 ${first ? 'h-24 w-24 sm:h-28 sm:w-28' : 'h-20 w-20 sm:h-24 sm:w-24'}`}
+              className={`relative rounded-full bg-[#0B0D26] p-1.5 ${first ? 'h-28 w-28 sm:h-32 sm:w-32' : 'h-24 w-24 sm:h-28 sm:w-28'}`}
               style={{ boxShadow: `0 0 ${first ? 26 : 20}px rgba(${t.rgb},${first ? 0.45 : 0.32})` }}
             >
               <div
@@ -95,12 +95,12 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
             </div>
           </div>
 
-          <p className={`mt-4 font-extrabold text-white ${first ? 'text-2xl' : 'text-xl'}`}>
+          <p className={`mt-4 font-extrabold text-white ${first ? 'text-[1.7rem]' : 'text-2xl'}`}>
             {entry ? maskName(entry.name) : 'Open spot'}
           </p>
 
           <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA0C8]">Weighted wager</p>
-          <p className="mt-0.5 text-lg font-bold tabular-nums text-white">
+          <p className="mt-0.5 text-xl font-bold tabular-nums text-white">
             {wager ? (
               <>
                 <span className="text-[#9AA0C8]">$</span>
@@ -115,7 +115,7 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
 
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA0C8]">Prize</p>
           <p
-            className={`mt-0.5 font-extrabold tabular-nums ${first ? 'text-4xl' : 'text-3xl'}`}
+            className={`mt-0.5 font-extrabold tabular-nums ${first ? 'text-[2.6rem]' : 'text-[2rem]'}`}
             style={{ color: t.color, textShadow: `0 0 24px rgba(${t.rgb},0.45)` }}
           >
             {prize === null ? '—' : usd(prize)}
@@ -137,7 +137,7 @@ export default function Podium({
   return (
     // Stacked 1st-2nd-3rd on phones; side by side from sm with 1st in the
     // middle, lifted, and the outer two settled on a shared baseline.
-    <div className="mx-auto grid max-w-[44rem] grid-cols-1 gap-5 sm:grid-cols-3 sm:items-end sm:gap-4">
+    <div className="mx-auto grid max-w-[51rem] grid-cols-1 gap-5 sm:grid-cols-3 sm:items-end sm:gap-4">
       <div className="sm:order-2 sm:-translate-y-5">
         <Card place={1} entry={entries[0] ?? null} prize={prizes[0] ?? null} />
       </div>

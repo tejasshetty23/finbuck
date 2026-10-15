@@ -102,7 +102,7 @@ export function Wordmark({ className = 'text-[22px]' }: { className?: string }) 
   return (
     <span className={`inline-block -skew-x-[8deg] font-extrabold uppercase tracking-tight leading-none ${className}`}>
       <span className="text-white">Fin</span>
-      <span className="text-accent-bright [text-shadow:0_0_18px_rgba(30,128,240,0.65)]">Buck</span>
+      <span className="text-accent-bright [text-shadow:0_0_18px_rgba(0,255,135,0.65)]">Buck</span>
     </span>
   )
 }
@@ -124,8 +124,8 @@ export function CodeButton({ className = '' }: { className?: string }) {
       href={SIGNUP_URL}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl px-5 py-3 text-[15px] text-white transition-all hover:brightness-110 shadow-accent hover:shadow-accent-lg ${className}`}
-      style={{ background: 'linear-gradient(110deg, #3D8EF0 0%, #1475E1 50%, #0E5DBE 100%)' }}
+      className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl px-5 py-3 text-[15px] text-ink-deep transition-all hover:brightness-110 shadow-accent hover:shadow-accent-lg ${className}`}
+      style={{ background: 'linear-gradient(110deg, #6BFFB8 0%, #00FF87 50%, #00C96A 100%)' }}
     >
       <span className="font-semibold">Use code&nbsp;</span>
       <span className="font-extrabold tracking-wide">{CODE}</span>

@@ -45,14 +45,14 @@ export default async function LeaderboardPage() {
       <section className="relative mx-auto max-w-4xl pt-16 pb-14 text-center">
         <div
           className="pointer-events-none absolute inset-x-0 -top-10 h-80"
-          style={{ background: 'radial-gradient(50% 60% at 50% 40%, rgba(30,128,240,0.12), transparent 70%)' }}
+          style={{ background: 'radial-gradient(50% 60% at 50% 40%, rgba(0,255,135,0.12), transparent 70%)' }}
         />
         <p className="relative text-xl sm:text-3xl font-bold">
           <span className="text-gold">{usd(race.prizePool)}</span> <span className="text-white">Monthly Prize Pool</span>
         </p>
         <h1
           className="relative mt-2 text-[clamp(2.25rem,11vw,6rem)] font-extrabold uppercase tracking-tight leading-none text-accent-bright"
-          style={{ textShadow: '0 0 44px rgba(30,128,240,0.35)' }}
+          style={{ textShadow: '0 0 44px rgba(0,255,135,0.35)' }}
         >
           Leaderboard
         </h1>
@@ -71,7 +71,7 @@ export default async function LeaderboardPage() {
             href={SIGNUP_URL}
             target="_blank"
             rel="noopener noreferrer sponsored"
-            className="inline-flex items-center gap-2 rounded-xl bg-accent px-7 py-3 text-sm font-bold uppercase tracking-wider text-white shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
+            className="inline-flex items-center gap-2 rounded-xl bg-accent px-7 py-3 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
           >
             Sign up with {CODE}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">

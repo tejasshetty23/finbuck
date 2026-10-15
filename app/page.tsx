@@ -9,7 +9,7 @@ import { CODE, PARTNER, SIGNUP_URL, SOCIALS } from '../lib/site'
 import { getStandings, prizeFor, usd } from '../lib/leaderboard'
 
 // Layout after benny.gg (centred sections, each opened by a small accent label),
-// slate ground after arjhatescash.com, Stake blue accent. Standings come from
+// indigo-violet ground, FinBuck neon green accent. Standings come from
 // the race CSV; see lib/leaderboard.ts.
 
 // Re-read the CSV at most once a minute, so a new upload shows without a deploy.
@@ -56,13 +56,13 @@ export default async function Home() {
     <>
       {/* ── HERO ── */}
       <section className="relative overflow-hidden pt-[72px]">
-        {/* A lighter slate band at the top fading into the page, with a blue
+        {/* A lighter slate band at the top fading into the page, with a green
             bloom behind the headline. */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(55% 45% at 50% 38%, rgba(30,128,240,0.10) 0%, transparent 70%), linear-gradient(180deg, #232738 0%, #1B1D29 100%)',
+              'radial-gradient(55% 45% at 50% 38%, rgba(0,255,135,0.10) 0%, transparent 70%), linear-gradient(180deg, #241F48 0%, #1A1733 100%)',
           }}
         />
         <HeroDecor />
@@ -79,7 +79,7 @@ export default async function Home() {
             <span className="block text-5xl sm:text-7xl md:text-8xl text-white">FinBucks</span>
             <span
               className="block text-5xl sm:text-7xl md:text-8xl text-accent-bright"
-              style={{ textShadow: '0 0 40px rgba(30,128,240,0.35)' }}
+              style={{ textShadow: '0 0 40px rgba(0,255,135,0.35)' }}
             >
               Rewards
             </span>
@@ -95,11 +95,11 @@ export default async function Home() {
               href={SOCIALS.kick.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
+              className="inline-flex items-center gap-2.5 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
             >
               <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-60" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ink-deep opacity-50" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-ink-deep" />
               </span>
               Watch Live
             </a>
@@ -124,7 +124,7 @@ export default async function Home() {
 
             <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr]">
               {/* Mint banner, after arj's "Play with code" card */}
-              <div className="relative overflow-hidden rounded-3xl bg-accent p-8 sm:p-10 text-white">
+              <div className="relative overflow-hidden rounded-3xl bg-accent p-8 sm:p-10 text-ink-deep">
                 <div
                   className="absolute inset-0 opacity-60"
                   style={{ background: 'radial-gradient(80% 90% at 85% 50%, rgba(255,255,255,0.18), transparent 60%)' }}
@@ -139,7 +139,7 @@ export default async function Home() {
                       <br />
                       code {CODE}
                     </h3>
-                    <p className="mt-4 max-w-sm text-sm font-semibold uppercase tracking-wide text-white/80">
+                    <p className="mt-4 max-w-sm text-sm font-semibold uppercase tracking-wide text-ink-deep/75">
                       Every wager counts toward FinBuck&apos;s monthly leaderboard.
                     </p>
                     <a
@@ -155,7 +155,7 @@ export default async function Home() {
 
                   {/* The code as a tilted tile */}
                   <div className="hidden sm:flex h-40 w-40 rotate-[8deg] flex-col items-center justify-center rounded-[28px] bg-ink-deep shadow-[0_24px_50px_rgba(21,23,31,0.45)]">
-                    <span className="text-4xl font-extrabold tracking-tight text-accent-bright [text-shadow:0_0_20px_rgba(30,128,240,0.5)]">
+                    <span className="text-4xl font-extrabold tracking-tight text-accent-bright [text-shadow:0_0_20px_rgba(0,255,135,0.5)]">
                       {CODE}
                     </span>
                     <span className="mt-2 text-[10px] font-bold uppercase tracking-[0.3em] text-muted">Code</span>
@@ -185,7 +185,7 @@ export default async function Home() {
                     href={SIGNUP_URL}
                     target="_blank"
                     rel="noopener noreferrer sponsored"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-accent/40 px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-accent-bright transition-colors hover:bg-accent hover:text-white"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-accent/40 px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-accent-bright transition-colors hover:bg-accent hover:text-ink-deep"
                   >
                     Play on {PARTNER.name}.com
                     {arrowUpRight}
@@ -216,7 +216,7 @@ export default async function Home() {
               eyebrow={race.upcoming ? 'First race starts 25 October' : 'Live race'}
               title={
                 <>
-                  <span className="block text-5xl sm:text-7xl text-accent-bright [text-shadow:0_0_36px_rgba(30,128,240,0.3)]">
+                  <span className="block text-5xl sm:text-7xl text-accent-bright [text-shadow:0_0_36px_rgba(0,255,135,0.3)]">
                     {usd(race.prizePool)}
                   </span>
                   <span className="block text-white">Leaderboard</span>
@@ -233,7 +233,7 @@ export default async function Home() {
             <div className="mt-12 text-center">
               <Link
                 href="/leaderboard"
-                className="inline-flex items-center gap-2 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
+                className="inline-flex items-center gap-2 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
               >
                 View full leaderboard
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4">
@@ -300,7 +300,7 @@ export default async function Home() {
               </p>
               <Link
                 href="/rewards"
-                className="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
+                className="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
               >
                 View rewards
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4">

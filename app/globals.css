@@ -25,7 +25,7 @@ html {
 }
 
 body {
-  background-color: #1b1d29;
+  background-color: #1a1733;
   color: white;
   font-family: var(--font-oxanium);
   overflow-x: hidden;
@@ -36,14 +36,14 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #15171f;
+  background: #14112a;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2f3447;
+  background: #3a3366;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #1475e1;
+  background: #00ff87;
 }
 
 /* Glow utilities */

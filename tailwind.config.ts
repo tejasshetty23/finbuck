@@ -1,8 +1,8 @@
 import type { Config } from 'tailwindcss'
 
-// Slate-navy ground sampled from arjhatescash.com; accent is Stake's brand
-// blue, as used on benny.gg (also a Stake affiliate). Gold/silver/bronze are
-// kept for leaderboard ranks only.
+// Dark indigo-violet ground with FinBuck's own neon green as the accent (the
+// green the live site has always used). Gold/silver/bronze are kept for
+// leaderboard ranks only.
 //
 // The accent is named for its role, not its colour, so a future partner
 // change is a two-value edit here rather than a sweep through every page.
@@ -16,20 +16,21 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          DEFAULT: '#1B1D29', // page
-          deep: '#15171F', // header bar, footer
-          raised: '#202433', // cards
-          high: '#272B3D', // hovered / nested cards
+          DEFAULT: '#1A1733', // page
+          deep: '#14112A', // header bar, footer
+          raised: '#231E42', // cards
+          high: '#2C2652', // hovered / nested cards
         },
         accent: {
-          DEFAULT: '#1475E1', // Stake blue — buttons, fills, borders
-          // Lifted for text and small marks: #1475E1 on the slate ground only
-          // reaches ~3.7:1 contrast, too low for 11px labels.
-          bright: '#4D96F0',
-          deep: '#0E5DBE',
+          DEFAULT: '#00FF87', // FinBuck neon — buttons, fills, borders
+          // Same green: unlike the earlier blue it's bright enough to read as
+          // small text on the dark ground, so no lifted variant is needed.
+          bright: '#00FF87',
+          deep: '#00C96A',
         },
-        muted: '#8A90A6',
-        faint: '#5B6178',
+        // Greys tinted toward the violet ground so they don't read as cold.
+        muted: '#B3AED0',
+        faint: '#908AB8', // >=4.5:1 on cards as well as the page: it carries the small labels
         gold: '#FFC83D',
         silver: '#D3DBE6',
         bronze: '#E8935F',
@@ -41,8 +42,8 @@ const config: Config = {
         display: ['var(--font-oxanium)', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        accent: '0 0 24px rgba(20,117,225,0.40)',
-        'accent-lg': '0 0 44px rgba(20,117,225,0.55)',
+        accent: '0 0 24px rgba(0,255,135,0.30)',
+        'accent-lg': '0 0 44px rgba(0,255,135,0.45)',
       },
     },
   },

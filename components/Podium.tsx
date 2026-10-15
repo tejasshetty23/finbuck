@@ -17,7 +17,7 @@ const TIER = {
 type Place = 1 | 2 | 3
 
 /** Size of the 45° corner cuts. */
-const CUT = 22
+const CUT = 16
 /** Border thickness. */
 const B = 1.5
 
@@ -26,7 +26,7 @@ const chamfer = (c: number) =>
   `polygon(${c}px 0, 100% 0, 100% calc(100% - ${c}px), calc(100% - ${c}px) 100%, 0 100%, 0 ${c}px)`
 
 const trophy = (
-  <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5" aria-hidden>
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3" aria-hidden>
     <path d="M7 3h10v2h3v3a4 4 0 01-4 4h-.35A5 5 0 0113 14.9V17h3v4H8v-4h3v-2.1A5 5 0 018.35 12H8a4 4 0 01-4-4V5h3V3zm0 4H6v1a2 2 0 001 1.73V7zm10 0v2.73A2 2 0 0018 8V7h-1z" />
   </svg>
 )
@@ -39,9 +39,9 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
   return (
     // Room above for the tab, which sits outside the clipped panel so the
     // cut corners don't slice it.
-    <div className="relative pt-3.5">
+    <div className="relative pt-3">
       <span
-        className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-center gap-1.5 rounded-md px-5 py-1 text-sm font-extrabold uppercase tracking-wide text-[#0B0E2A]"
+        className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-center gap-1 rounded-md px-3.5 py-0.5 text-xs font-extrabold uppercase tracking-wide text-[#0B0E2A]"
         style={{ background: t.color, boxShadow: `0 4px 18px rgba(${t.rgb},0.35)` }}
       >
         {trophy}
@@ -59,7 +59,7 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
         }}
       >
         <div
-          className={`flex flex-col items-center px-5 text-center ${first ? 'pb-9 pt-10 sm:pt-11' : 'pb-8 pt-9'}`}
+          className={`flex flex-col items-center px-4 text-center ${first ? 'pb-6 pt-7 sm:pt-8' : 'pb-5 pt-6'}`}
           style={{
             clipPath: chamfer(CUT - (2 - Math.SQRT2) * B),
             background: `radial-gradient(70% 45% at 50% 22%, rgba(${t.rgb},0.10), transparent 70%), linear-gradient(180deg, #191E52 0%, #12163F 50%, #0D1032 100%)`,
@@ -72,8 +72,8 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
               style={{ background: `rgba(${t.rgb},${first ? 0.35 : 0.22})` }}
             />
             <div
-              className={`relative rounded-full bg-[#0B0D26] p-2 ${first ? 'h-32 w-32 sm:h-36 sm:w-36' : 'h-28 w-28 sm:h-32 sm:w-32'}`}
-              style={{ boxShadow: `0 0 ${first ? 34 : 26}px rgba(${t.rgb},${first ? 0.45 : 0.32})` }}
+              className={`relative rounded-full bg-[#0B0D26] p-1.5 ${first ? 'h-24 w-24 sm:h-28 sm:w-28' : 'h-20 w-20 sm:h-24 sm:w-24'}`}
+              style={{ boxShadow: `0 0 ${first ? 26 : 20}px rgba(${t.rgb},${first ? 0.45 : 0.32})` }}
             >
               <div
                 className="flex h-full w-full items-center justify-center rounded-full border-2 bg-[#121843]"
@@ -95,12 +95,12 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
             </div>
           </div>
 
-          <p className={`mt-5 font-extrabold text-white ${first ? 'text-3xl' : 'text-2xl sm:text-[1.7rem]'}`}>
+          <p className={`mt-4 font-extrabold text-white ${first ? 'text-2xl' : 'text-xl'}`}>
             {entry ? maskName(entry.name) : 'Open spot'}
           </p>
 
-          <p className="mt-3 text-xs font-bold uppercase tracking-[0.16em] text-[#9AA0C8]">Weighted wager</p>
-          <p className="mt-0.5 text-2xl font-bold tabular-nums text-white">
+          <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA0C8]">Weighted wager</p>
+          <p className="mt-0.5 text-lg font-bold tabular-nums text-white">
             {wager ? (
               <>
                 <span className="text-[#9AA0C8]">$</span>
@@ -111,11 +111,11 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
             )}
           </p>
 
-          <div className="my-5 h-px w-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+          <div className="my-3.5 h-px w-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
 
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#9AA0C8]">Prize</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA0C8]">Prize</p>
           <p
-            className={`mt-0.5 font-extrabold tabular-nums ${first ? 'text-5xl' : 'text-4xl'}`}
+            className={`mt-0.5 font-extrabold tabular-nums ${first ? 'text-4xl' : 'text-3xl'}`}
             style={{ color: t.color, textShadow: `0 0 24px rgba(${t.rgb},0.45)` }}
           >
             {prize === null ? '—' : usd(prize)}
@@ -137,8 +137,8 @@ export default function Podium({
   return (
     // Stacked 1st-2nd-3rd on phones; side by side from sm with 1st in the
     // middle, lifted, and the outer two settled on a shared baseline.
-    <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3 sm:items-end sm:gap-4">
-      <div className="sm:order-2 sm:-translate-y-6">
+    <div className="mx-auto grid max-w-[44rem] grid-cols-1 gap-5 sm:grid-cols-3 sm:items-end sm:gap-4">
+      <div className="sm:order-2 sm:-translate-y-5">
         <Card place={1} entry={entries[0] ?? null} prize={prizes[0] ?? null} />
       </div>
       <div className="sm:order-1">

@@ -1,40 +1,94 @@
 import Link from 'next/link'
+import { Lockup } from './Navbar'
+import { CODE, SOCIALS } from '../lib/site'
+
+// Footer after benny.gg: lockup and a one-line pitch on the left, link columns,
+// and a responsible-gambling card, with the affiliate disclaimer underneath.
+
+const PAGES = [
+  { href: '/leaderboard', label: 'Leaderboard' },
+  { href: '/rewards', label: 'Rewards' },
+  { href: '/tournaments', label: 'Tournaments' },
+  { href: '/vschat', label: 'Slot Battles' },
+  { href: '/wheelspin', label: 'Giveaways' },
+  { href: '/shop', label: 'Shop' },
+]
+
+const COMMUNITY = [SOCIALS.kick, SOCIALS.discord, SOCIALS.x]
+
+const columnHead = 'mb-4 text-[11px] font-bold uppercase tracking-[0.22em] text-mint'
+const linkCls = 'text-sm text-muted hover:text-white transition-colors'
 
 export default function Footer() {
   return (
-    <footer className="border-t border-purple-900/20 bg-[#07050f] py-10 mt-20">
-      <div className="max-w-6xl mx-auto px-6 flex flex-col gap-8">
-        {/* Nav sits on its own full-width row: sharing with the brand and legal
-            text squeezed it enough to break labels mid-word ("Slot Battles"). */}
-        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500 whitespace-nowrap">
-          <Link href="/" className="hover:text-[#00ff87] transition-colors">Home</Link>
-          <Link href="/tournaments" className="hover:text-[#00ff87] transition-colors">Tournaments</Link>
-          <Link href="/wheelspin" className="hover:text-[#00ff87] transition-colors">Giveaways</Link>
-          <Link href="/vschat" className="hover:text-[#00ff87] transition-colors">Slot Battles</Link>
-          <Link href="/rewards" className="hover:text-[#00ff87] transition-colors">Rewards</Link>
-          <Link href="/shop" className="hover:text-[#00ff87] transition-colors">Shop</Link>
-          <a href="https://kick.com/finbuck" target="_blank" rel="noopener noreferrer" className="hover:text-[#00ff87] transition-colors">Watch Live</a>
+    <footer className="mt-24 border-t border-white/[0.06] bg-ink-deep">
+      <div className="mx-auto max-w-6xl px-6 pt-14 pb-8">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+          <div>
+            <Lockup size="sm" />
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
+              Exclusive Gamba rewards, a monthly leaderboard and stream giveaways — use code{' '}
+              <span className="font-bold text-white">{CODE}</span> on Gamba.
+            </p>
+          </div>
+
+          <div>
+            <p className={columnHead}>Pages</p>
+            <ul className="flex flex-col gap-2.5">
+              {PAGES.map((p) => (
+                <li key={p.href}>
+                  <Link href={p.href} className={linkCls}>
+                    {p.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className={columnHead}>Community</p>
+            <ul className="flex flex-col gap-2.5">
+              {COMMUNITY.map((s) => (
+                <li key={s.href}>
+                  <a href={s.href} target="_blank" rel="noopener noreferrer" className={linkCls}>
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className={columnHead}>Play safe</p>
+            <div className="rounded-2xl border border-white/[0.07] bg-ink-raised p-4">
+              <p className="flex items-center gap-2 text-sm font-bold text-white">
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-mint/40 text-[10px] text-mint">
+                  18+
+                </span>
+                Gamble responsibly
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-muted">
+                Only play with what you can afford to lose. If you need support, visit{' '}
+                <a
+                  href="https://www.gamblingtherapy.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-mint hover:underline"
+                >
+                  GamblingTherapy.org
+                </a>
+                .
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Brand + legal below it */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-center md:text-left">
-            <span className="font-black text-lg tracking-widest uppercase text-white">FinBuck</span>
-            <p className="text-gray-500 text-sm mt-1">Casino · Gaming · Entertainment</p>
-          </div>
-
-          <div className="text-right">
-            <p className="text-gray-600 text-xs text-center md:text-right">
-              © {new Date().getFullYear()} FinBuck. Gambling can be addictive — play responsibly.
-            </p>
-            <p className="text-gray-600 text-[10px] uppercase tracking-widest text-center md:text-right mt-1 leading-relaxed">
-              18+ Gambling Responsibly.<br />
-              If you need support visit{' '}
-              <a href="https://www.gamblingtherapy.org" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-400 transition-colors">
-                GamblingTherapy.org
-              </a>
-            </p>
-          </div>
+        <div className="mt-12 flex flex-col gap-3 border-t border-white/[0.06] pt-6 text-xs text-faint md:flex-row md:items-center md:justify-between">
+          <p className="max-w-2xl leading-relaxed">
+            finbuck.bet is an independent affiliate site. Gamba operates the casino, the leaderboard and all
+            rewards, subject to Gamba&apos;s terms.
+          </p>
+          <p>© {new Date().getFullYear()} FinBuck</p>
         </div>
       </div>
     </footer>

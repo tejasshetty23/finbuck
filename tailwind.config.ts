@@ -1,5 +1,9 @@
 import type { Config } from 'tailwindcss'
 
+// Palette taken from the references: slate-navy ground and mint accent sampled
+// from arjhatescash.com, gold/silver/bronze kept only for leaderboard ranks.
+// Gamba's own logo mint (#05F9A1) sits a shade greener than `mint`, so the
+// partner lockup reads as the same family rather than a clash.
 const config: Config = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,47 +13,32 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        green: {
-          gem: '#00ff87',
-          dark: '#00c96a',
+        ink: {
+          DEFAULT: '#1B1D29', // page
+          deep: '#15171F', // header bar, footer
+          raised: '#202433', // cards
+          high: '#272B3D', // hovered / nested cards
         },
-        purple: {
-          deep: '#1a0a2e',
-          mid: '#6b21a8',
-          bright: '#a855f7',
+        mint: {
+          DEFAULT: '#5CFFC1',
+          deep: '#2FD99B',
+          soft: '#A6FFE0',
         },
-        bg: {
-          dark: '#07050f',
-          card: '#100d1f',
-          card2: '#16112a',
-        },
+        muted: '#8A90A6',
+        faint: '#5B6178',
+        gold: '#FFC83D',
+        silver: '#D3DBE6',
+        bronze: '#E8935F',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Impact', 'Arial Black', 'sans-serif'],
+        // Oxanium, as on arj — squared-off and legible down to body sizes, so
+        // one face covers headings and text alike. Loaded in app/layout.tsx.
+        sans: ['var(--font-oxanium)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-oxanium)', 'system-ui', 'sans-serif'],
       },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-glow': 'radial-gradient(ellipse at center, rgba(168,85,247,0.15) 0%, transparent 70%)',
-      },
-      animation: {
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'float': 'float 6s ease-in-out infinite',
-        'glow': 'glow 2s ease-in-out infinite alternate',
-      },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
-        glow: {
-          '0%': { textShadow: '0 0 10px #00ff87, 0 0 20px #00ff87' },
-          '100%': { textShadow: '0 0 20px #00ff87, 0 0 40px #00ff87, 0 0 60px #00ff87' },
-        },
-      },
-      dropShadow: {
-        green: '0 0 20px rgba(0,255,135,0.5)',
-        purple: '0 0 20px rgba(168,85,247,0.5)',
+      boxShadow: {
+        mint: '0 0 24px rgba(92,255,193,0.35)',
+        'mint-lg': '0 0 44px rgba(92,255,193,0.45)',
       },
     },
   },

@@ -2,553 +2,319 @@ import Image from 'next/image'
 import Link from 'next/link'
 import CopyButton from '../components/CopyButton'
 import Reveal from '../components/Reveal'
-import FloatingDecor from '../components/FloatingDecor'
+import HeroDecor from '../components/HeroDecor'
+import Podium from '../components/Podium'
+import SectionHeading from '../components/SectionHeading'
+import { CODE, SIGNUP_URL, SOCIALS } from '../lib/site'
+import { FALLBACK_POOL, FALLBACK_PRIZES, getRace, prizeFor, usd } from '../lib/gamba'
 
-const socials = [
+// Layout after benny.gg (centred sections, each opened by a small mint label),
+// colours after arjhatescash.com (slate ground, mint accent). The standings are
+// live from Gamba; see lib/gamba.ts for where they come from and what happens
+// when they can't be fetched.
+
+// Matches lib/gamba's fetch cache: the page is rebuilt at most once a minute.
+export const revalidate = 60
+
+const SOCIAL_CARDS = [
   {
-    label: 'Kick',
-    handle: '@FinBuck',
-    href: 'https://kick.com/finbuck',
-    color: 'from-green-500/20 to-green-600/5',
-    border: 'border-green-500/30 hover:border-green-400/60',
-    iconColor: 'text-green-400',
+    ...SOCIALS.kick,
     icon: (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src="/kick-logo.webp" alt="Kick" className="w-8 h-7 object-contain" />
+      <img src="/kick-logo.webp" alt="" className="h-5 w-5 object-contain" />
     ),
-    cta: 'Watch Live',
   },
   {
-    label: 'X / Twitter',
-    handle: '@FinBuckk',
-    href: 'https://x.com/FinBuckk',
-    color: 'from-gray-500/20 to-gray-600/5',
-    border: 'border-gray-500/30 hover:border-gray-300/60',
-    iconColor: 'text-white',
+    ...SOCIALS.x,
     icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-white">
         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
       </svg>
     ),
-    cta: 'Follow',
   },
   {
-    label: 'Discord',
-    handle: 'FinBuckers',
-    href: 'https://discord.com/invite/finbuckers',
-    color: 'from-indigo-500/20 to-indigo-600/5',
-    border: 'border-indigo-500/30 hover:border-indigo-400/60',
-    iconColor: 'text-indigo-400',
+    ...SOCIALS.discord,
     icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
-        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.033.056a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-[#8b9cff]">
+        <path d="M20.3 4.4A19.8 19.8 0 0015.4 3l-.6 1.3a18.3 18.3 0 00-5.5 0L8.7 3a19.7 19.7 0 00-4.9 1.4C.6 9-.3 13.6.1 18.1a19.9 19.9 0 006 3l1.2-2a13 13 0 01-1.9-.9l.4-.3a14.2 14.2 0 0012.1 0l.4.3c-.6.4-1.2.7-1.9.9l1.2 2a19.8 19.8 0 006-3c.5-5.2-.8-9.7-3.5-13.7zM8 15.3c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4z" />
       </svg>
     ),
-    cta: 'Join',
   },
 ]
 
-// Gamba monthly leaderboard prize pool. The twenty places total $10,000 — keep
-// PRIZE_TOTAL in step with the amounts below if they ever change.
-const PRIZE_TOTAL = '$10,000'
+const arrowUpRight = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M9 7h8v8" />
+  </svg>
+)
 
-const PRIZE_PODIUM = [
-  { place: '2nd', amount: '$1,500', tier: 'silver' as const },
-  { place: '1st', amount: '$3,000', tier: 'gold' as const },
-  { place: '3rd', amount: '$1,000', tier: 'bronze' as const },
-]
+export default async function Home() {
+  const race = await getRace()
+  const pool = race?.prizePool ?? FALLBACK_POOL
+  const prizes = race?.prizes.length ? race.prizes : FALLBACK_PRIZES
+  const top3 = [1, 2, 3].map((p) => race?.competitors.find((c) => c.position === p) ?? null)
+  const top3Prizes = [1, 2, 3].map((p) => prizeFor(prizes, p))
+  const paidPlaces = prizes.length
 
-// The frame artwork carries gold/silver/bronze, so each tier only needs its
-// image plus a matching tint for the amount. Content sits inside a 20.5% inset:
-// the opening's bounding box is wider than that, but the ornament spikes inward
-// at each edge midpoint, and 20.5% is the largest centred rectangle that clears
-// them.
-const PRIZE_TIER = {
-  gold: {
-    frame: '/frame-gold.webp',
-    tint: '#ffd75e',
-    glow: '0 0 18px rgba(255,215,94,0.75)',
-    metal: 'linear-gradient(140deg, #fff1a8 0%, #e6b325 40%, #9c7414 65%, #ffe58a 100%)',
-    panel: 'radial-gradient(125% 125% at 50% 0%, #6d5009 0%, #2f2205 45%, #0d0901 100%)',
-    ring: 'linear-gradient(135deg, #fff3b0, #f4bc35, #8a5e05, #ffe486, #f4bc35)',
-    },
-  silver: {
-    frame: '/frame-silver.webp',
-    tint: '#e8edf3',
-    glow: '0 0 18px rgba(232,237,243,0.6)',
-    metal: 'linear-gradient(140deg, #ffffff 0%, #cfcfcf 40%, #6f6f6f 65%, #f2f2f2 100%)',
-    panel: 'radial-gradient(125% 125% at 50% 0%, #575d64 0%, #24272b 45%, #08090a 100%)',
-    ring: 'linear-gradient(135deg, #ffffff, #cbd0d6, #6b747e, #f2f5f8, #cbd0d6)',
-    },
-  bronze: {
-    frame: '/frame-bronze.webp',
-    tint: '#eda36c',
-    glow: '0 0 18px rgba(237,163,108,0.65)',
-    metal: 'linear-gradient(140deg, #f7cfa6 0%, #cd7f32 40%, #7a4010 65%, #f0b070 100%)',
-    panel: 'radial-gradient(125% 125% at 50% 0%, #6b3d19 0%, #2d190a 45%, #0c0603 100%)',
-    ring: 'linear-gradient(135deg, #ffd7b0, #c4713b, #6d3714, #e79b62, #c4713b)',
-    },
-}
-
-// Columns alternate purple/green. Index parity gives that directly: in the
-// four-wide grid it lands purple/green/purple/green, and when it drops to two
-// columns on mobile the same rule still puts purple in column one and green in
-// column two.
-const RANK_ACCENT = {
-  purple: {
-    cls: 'border-[#a855f7]/45 bg-[#120a1f]',
-    text: 'text-[#c084fc]',
-    glow: '0 0 14px rgba(192,132,252,0.75)',
-  },
-  green: {
-    cls: 'border-[#00ff87]/35 bg-[#07150f]',
-    text: 'text-[#00ff87]',
-    glow: '0 0 14px rgba(0,255,135,0.8)',
-  },
-}
-
-const PRIZE_RANKS: [string, string][] = [
-  ['4th', '$550'], ['5th', '$500'], ['6th', '$450'], ['7th', '$400'],
-  ['8th', '$350'], ['9th', '$325'], ['10th', '$300'], ['11th', '$275'],
-  ['12th', '$250'], ['13th', '$225'], ['14th', '$200'], ['15th', '$175'],
-  ['16th', '$150'], ['17th', '$125'], ['18th', '$100'], ['19th', '$75'],
-  ['20th', '$50'],
-]
-
-// Gems and chips drifting around the hero headline. Positions keep clear of the
-// centre column where the headline and CTAs sit; each gets its own rotation and
-// speed so the group never drifts in unison. The smaller ones are hidden below
-// sm, where there is no spare width beside the text.
-
-export default function Home() {
   return (
     <>
       {/* ── HERO ── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
-        {/* Background image */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/background.webp"
-            alt="FinBuck hero"
-            fill
-            priority
-            className="object-cover object-center"
-            style={{ filter: 'brightness(0.5) saturate(1.2)' }}
-          />
-          {/* Gradient overlays */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#07050f]/60 via-transparent to-[#07050f]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#07050f]/40 via-transparent to-[#07050f]/40" />
-          {/* Purple radial glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-700/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 left-1/3 w-[400px] h-[400px] bg-green-400/5 rounded-full blur-3xl" />
-        </div>
-
-
-        {/* Content */}
-        <div className="relative z-10 text-center px-6 max-w-4xl mx-auto top-8">
-          <div className="relative mb-4">
-            <FloatingDecor />
-
-            {/* Above the decor, so a gem can never wash over the wordmark */}
-            <div className="relative z-10">
-              <p className="text-gray-400 text-xs md:text-sm font-semibold uppercase tracking-[0.4em] mb-2">Welcome to</p>
-              <h1 className="font-black uppercase tracking-tight leading-tight animated-gradient-text">
-                <span className="block text-5xl sm:text-6xl md:text-8xl">FinBucks</span>
-                <span className="block text-3xl sm:text-4xl md:text-5xl">Rewards</span>
-              </h1>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center justify-center gap-4 mt-16 w-full max-w-[260px] mx-auto relative top-8">
-            <a
-              href="https://kick.com/finbuck"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group w-full p-[2px] transition-all duration-200 shadow-[0_0_20px_rgba(0,255,135,0.15)] hover:shadow-[0_0_40px_rgba(0,255,135,0.45)]"
-              style={{
-                clipPath: 'polygon(10px 0%, calc(100% - 10px) 0%, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0% calc(100% - 10px), 0% 10px)',
-                background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a, #00ff87)',
-              }}
-            >
-              {/* Inner face — translucent so the hero image still reads through */}
-              <span
-                className="flex items-center justify-center w-full gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-[#00ff87] group-hover:text-white transition-colors bg-[#0a0715]/80 backdrop-blur-sm"
-                style={{ clipPath: 'polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px)' }}
-              >
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ff87] opacity-60"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[#00ff87]"></span>
-                </span>
-                Watch Live
-              </span>
-            </a>
-            <a
-              href="https://gamba.com/promotions/exclusive-leaderboards/21352"
-              target="_blank"
-              rel="noopener noreferrer sponsored"
-              className="group w-full p-[2px] transition-all duration-200 shadow-[0_0_20px_rgba(168,85,247,0.15)] hover:shadow-[0_0_40px_rgba(168,85,247,0.45)]"
-              style={{
-                clipPath: 'polygon(10px 0%, calc(100% - 10px) 0%, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0% calc(100% - 10px), 0% 10px)',
-                background: 'linear-gradient(135deg, #a855f7, #c084fc, #7e22ce, #a855f7)',
-              }}
-            >
-              {/* Inner face — translucent so the hero image still reads through */}
-              <span
-                className="flex items-center justify-center w-full gap-2 px-4 py-3 text-sm font-bold uppercase tracking-wider text-purple-200 group-hover:text-white transition-colors bg-[#0a0715]/80 backdrop-blur-sm"
-                style={{ clipPath: 'polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px)' }}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                Gamba Leaderboard
-              </span>
-            </a>
-          </div>
-        </div>
-
-      </section>
-
-      {/* Divider */}
-      <div className="w-full h-px" style={{ background: 'linear-gradient(to right, transparent, #a855f7, #c084fc, #a855f7, transparent)', boxShadow: '0 0 12px 2px rgba(168,85,247,0.6)' }} />
-
-      {/* Pattern background for all sections below hero */}
-      <div className="relative">
+      <section className="relative overflow-hidden pt-[72px]">
+        {/* A lighter slate band at the top fading into the page, with a mint
+            bloom behind the headline. */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0"
           style={{
-            backgroundImage: 'url(/pattern2.webp)',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            opacity: 0.4,
-            maskImage: 'radial-gradient(ellipse 100% 80% at 50% 50%, black 40%, transparent 100%)',
-            WebkitMaskImage: 'radial-gradient(ellipse 100% 80% at 50% 50%, black 40%, transparent 100%)',
+            background:
+              'radial-gradient(55% 45% at 50% 38%, rgba(92,255,193,0.10) 0%, transparent 70%), linear-gradient(180deg, #232738 0%, #1B1D29 100%)',
           }}
         />
+        <HeroDecor />
 
-      {/* ── SPONSOR ── */}
-      <section className="relative py-24 px-6 overflow-hidden">
-        <Reveal>
-        <div className="max-w-sm mx-auto">
-          {/* Label */}
-          <div className="flex items-center gap-3 mb-8 justify-center">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#00ff87]/30" />
-            <span className="text-[#00ff87] text-xs font-bold uppercase tracking-[0.3em]">Official Sponsor</span>
-            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#00ff87]/30" />
+        <div className="relative z-10 mx-auto flex min-h-[600px] max-w-4xl flex-col items-center justify-center px-6 py-24 text-center md:min-h-[680px]">
+          <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.32em] text-muted">
+            <span className="h-px w-8 bg-white/15" />
+            Official partner
+            <Image src="/gamba-logo.png" alt="Gamba" width={600} height={208} className="h-4 w-auto" />
+            <span className="h-px w-8 bg-white/15" />
           </div>
 
-          {/* Card — filter wrapper (no clip-path so shadow isn't clipped) */}
-          <div className="sponsor-card">
-          {/* Clipped octagon border layer */}
-          <div
-            className="relative p-[3px]"
-            style={{
-              clipPath: 'polygon(20px 0%, calc(100% - 20px) 0%, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0% calc(100% - 20px), 0% 20px)',
-              background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a, #00ff87)',
-            }}
-          >
-          <div
-            className="relative p-6 flex flex-col items-center gap-5"
-            style={{
-              background: 'linear-gradient(160deg, #071a0e 0%, #030d07 50%, #000000 100%)',
-              clipPath: 'polygon(18px 0%, calc(100% - 18px) 0%, 100% 18px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 18px 100%, 0% calc(100% - 18px), 0% 18px)',
-            }}
-          >
-            {/* Logo */}
-            <div className="pt-2">
-              <Image
-                src="/gamba-logo.png"
-                alt="Gamba"
-                width={150}
-                height={52}
-                className="object-contain"
-              />
-            </div>
-
-            {/* Diamond + tagline */}
-            <div className="flex flex-col items-center gap-2 w-full">
-              <div className="flex items-center gap-2 w-full justify-center">
-                <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#00ff87]" />
-                <span className="text-[#00ff87] text-xs">◆</span>
-                <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#00ff87]" />
-              </div>
-              <p className="text-gray-300 text-sm font-bold uppercase tracking-[0.2em] text-center leading-relaxed">
-                The platform<br />behind the big wins.
-              </p>
-              <div className="flex items-center gap-2 w-full justify-center">
-                <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#00ff87]" />
-                <span className="text-[#00ff87] text-xs">◆</span>
-                <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#00ff87]" />
-              </div>
-            </div>
-
-            {/* Code box */}
-            <div
-              className="w-full p-[2px]"
-              style={{
-                clipPath: 'polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px)',
-                background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a, #00ff87)',
-              }}
+          <h1 className="mt-7 font-extrabold uppercase leading-[0.95] tracking-tight">
+            <span className="block text-5xl sm:text-7xl md:text-8xl text-white">FinBucks</span>
+            <span
+              className="block text-5xl sm:text-7xl md:text-8xl text-mint"
+              style={{ textShadow: '0 0 40px rgba(92,255,193,0.35)' }}
             >
-              <div
-                className="w-full flex flex-col items-center gap-1 py-5 px-6 bg-[#041209]"
-                style={{ clipPath: 'polygon(6px 0%, calc(100% - 6px) 0%, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0% calc(100% - 6px), 0% 6px)' }}
-              >
-                <span className="text-[#00ff87]/70 text-xs font-bold uppercase tracking-[0.3em]">Use Code</span>
-                <div className="flex items-center gap-3">
-                  <span className="text-[#00ff87] font-black text-4xl tracking-widest">finbuck</span>
-                  <CopyButton code="finbuck" />
+              Rewards
+            </span>
+          </h1>
+
+          <p className="mt-6 max-w-lg text-base sm:text-lg leading-relaxed text-muted">
+            Climb the monthly leaderboard, win stream giveaways and unlock exclusive rewards. Use code{' '}
+            <span className="font-bold text-mint">{CODE}</span> on Gamba.
+          </p>
+
+          <div className="mt-9 flex flex-col sm:flex-row items-center gap-3">
+            <a
+              href={SOCIALS.kick.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2.5 rounded-xl bg-mint px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-mint transition-all hover:brightness-110 hover:shadow-mint-lg"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ink-deep opacity-50" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-ink-deep" />
+              </span>
+              Watch Live
+            </a>
+            <Link
+              href="/leaderboard"
+              className="inline-flex items-center gap-2.5 rounded-xl border border-white/15 px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:border-mint/60 hover:text-mint"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]">
+                <path d="M9 21V10h6v11M3 21v-6h6M15 21v-8h6v8M2 21h20" />
+              </svg>
+              Leaderboard
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── SPONSOR ── */}
+      <section className="px-6 py-20">
+        <Reveal>
+          <div className="mx-auto max-w-6xl">
+            <SectionHeading eyebrow="Official sponsor" title="Play on Gamba" className="mb-10" />
+
+            <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr]">
+              {/* Mint banner, after arj's "Play with code" card */}
+              <div className="relative overflow-hidden rounded-3xl bg-mint p-8 sm:p-10 text-ink-deep">
+                <div
+                  className="absolute inset-0 opacity-60"
+                  style={{ background: 'radial-gradient(80% 90% at 85% 50%, rgba(255,255,255,0.45), transparent 60%)' }}
+                />
+                <div className="relative grid items-center gap-8 sm:grid-cols-[1fr_auto]">
+                  <div>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-ink-deep px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-mint">
+                      FinBuck × Gamba
+                    </span>
+                    <h3 className="mt-4 text-4xl sm:text-5xl font-extrabold uppercase leading-[0.95] tracking-tight">
+                      Play with
+                      <br />
+                      code {CODE}
+                    </h3>
+                    <p className="mt-4 max-w-sm text-sm font-semibold uppercase tracking-wide text-ink-deep/75">
+                      Every wager counts toward FinBuck&apos;s monthly leaderboard.
+                    </p>
+                    <a
+                      href={SIGNUP_URL}
+                      target="_blank"
+                      rel="noopener noreferrer sponsored"
+                      className="mt-6 inline-flex items-center gap-2 rounded-xl bg-ink-deep px-6 py-3 text-sm font-bold uppercase tracking-wider text-mint transition-transform hover:scale-[1.03]"
+                    >
+                      Sign up now
+                      {arrowUpRight}
+                    </a>
+                  </div>
+
+                  {/* The code as a tilted tile */}
+                  <div className="hidden sm:flex h-40 w-40 rotate-[8deg] flex-col items-center justify-center rounded-[28px] bg-ink-deep shadow-[0_24px_50px_rgba(21,23,31,0.45)]">
+                    <span className="text-4xl font-extrabold tracking-tight text-mint [text-shadow:0_0_20px_rgba(92,255,193,0.5)]">
+                      {CODE}
+                    </span>
+                    <span className="mt-2 text-[10px] font-bold uppercase tracking-[0.3em] text-muted">Code</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Code card */}
+              <div className="flex flex-col justify-between gap-6 rounded-3xl border border-white/[0.07] bg-ink-raised p-8 sm:p-10">
+                <div>
+                  <Image src="/gamba-logo.png" alt="Gamba" width={600} height={208} className="h-8 w-auto" />
+                  <p className="mt-4 text-sm font-semibold uppercase tracking-[0.18em] text-muted">
+                    The platform behind the big wins.
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-mint/25 bg-ink-deep px-5 py-4">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-faint">Use code</p>
+                    <p className="text-3xl font-extrabold tracking-wide text-mint">{CODE}</p>
+                  </div>
+                  <CopyButton code={CODE} />
+                </div>
+
+                <div>
+                  <a
+                    href={SIGNUP_URL}
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-mint/40 px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-mint transition-colors hover:bg-mint hover:text-ink-deep"
+                  >
+                    Play on Gamba.com
+                    {arrowUpRight}
+                  </a>
+                  <p className="mt-4 text-center text-[11px] leading-relaxed text-faint">
+                    18+ · Gamble responsibly · Support at{' '}
+                    <a
+                      href="https://www.gamblingtherapy.org"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-muted"
+                    >
+                      GamblingTherapy.org
+                    </a>
+                  </p>
                 </div>
               </div>
             </div>
-
-            {/* CTA button */}
-            <a
-              href="https://gamba.com/?c=finbuck"
-              target="_blank"
-              rel="noopener noreferrer sponsored"
-              className="w-full flex items-center justify-center gap-2 text-black font-black py-4 uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(0,255,135,0.3)] hover:shadow-[0_0_40px_rgba(0,255,135,0.5)]"
-              style={{
-                clipPath: 'polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px)',
-                background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a, #00ff87)',
-              }}
-            >
-              Play on Gamba.com
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-              </svg>
-            </a>
-
-            {/* Footer disclaimer */}
-            <div className="flex flex-col items-center gap-2 pb-2">
-              <div className="flex items-center gap-2 w-full justify-center">
-                <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#00ff87]" />
-                <span className="text-[#00ff87] text-xs">◆</span>
-                <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#00ff87]" />
-              </div>
-              <div className="flex items-center gap-1.5 text-gray-500 text-xs">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-[#00ff87]/40">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                </svg>
-              </div>
-              <p className="text-gray-600 text-[10px] uppercase tracking-widest text-center leading-relaxed">
-                18+ Gambling Responsibly.<br />
-                If you need support visit<br />
-                <a href="https://www.gamblingtherapy.org" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-400 transition-colors">
-                  GamblingTherapy.org
-                </a>
-              </p>
-            </div>
           </div>
-          </div>
-          </div>
-        </div>
         </Reveal>
       </section>
 
-      {/* ── GAMBA PRIZE POOL ── */}
-      {/* relative + z-10: the pattern overlay above is absolutely positioned, so a
-          static section would be painted over by it and washed out. */}
-      <section className="relative z-10 py-20 px-6">
+      {/* ── LEADERBOARD ── */}
+      <section className="px-6 py-20">
         <Reveal>
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
-            <p className="text-white font-black uppercase tracking-[0.25em] text-xs sm:text-lg mb-2 [text-shadow:0_0_12px_rgba(255,255,255,0.25)]">
-              Monthly Leaderboard
-            </p>
-            <h2 className="font-black uppercase leading-none text-4xl sm:text-6xl md:text-7xl">
-              <span className="text-[#00ff87] [text-shadow:0_0_14px_rgba(0,255,135,0.45),0_0_32px_rgba(0,255,135,0.16)]">
-                {PRIZE_TOTAL}
-              </span>{' '}
-              <span className="text-white [text-shadow:0_0_14px_rgba(255,255,255,0.28),0_0_32px_rgba(255,255,255,0.1)]">
-                Prize Pool
-              </span>
-            </h2>
-          </div>
-
-          {/* Podium — items-end keeps the three blocks on one baseline while 1st stands taller */}
-          <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-3 sm:gap-6 items-end mb-6 sm:mb-8">
-            {PRIZE_PODIUM.map((p, i) => {
-              const t = PRIZE_TIER[p.tier]
-              return (
-                <div key={p.place} className={`relative aspect-square prize-float prize-float-${i + 1}`}>
-                  {/* Backing behind the frame's transparent opening, tinted to the
-                      tier. Inset 11% — slightly wider than the 13% opening — so its
-                      square corners tuck under the ornament instead of poking out.
-                      Lit from the top and dark at the base, which keeps it clearly
-                      gold/silver/bronze while staying dark enough for the metallic
-                      amount text to read against it. */}
-                  <div
-                    className="absolute inset-[11%] rounded-[6%]"
-                    style={{ background: t.panel }}
-                  />
-                  <Image
-                    src={t.frame}
-                    alt=""
-                    fill
-                    sizes="(max-width: 640px) 33vw, 300px"
-                    className="pointer-events-none select-none object-contain"
-                  />
-                  {/* Largest centred box that clears the frame's inward spikes */}
-                  <div className="absolute inset-[20.5%] flex flex-col items-center justify-center text-center">
-                    {/* Avatar in a metal ring matching its frame. Padding is a
-                        percentage so the ring scales with the podium rather than
-                        thinning out as the card grows. */}
-                    <div
-                      className="w-[54%] aspect-square rounded-full p-[3.5%]"
-                      style={{ background: t.ring }}
-                    >
-                      <div className="h-full w-full overflow-hidden rounded-full">
-                        <Image
-                          src="/deer.webp"
-                          alt=""
-                          width={620}
-                          height={620}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                    </div>
-                    <span
-                      className="mt-1.5 block font-black uppercase leading-none text-[9px] sm:text-sm"
-                      style={{ color: t.tint, textShadow: t.glow }}
-                    >
-                      {p.place}
-                    </span>
-                    {/* background-clip:text needs a transparent fill, which kills
-                        text-shadow, so the glow is a drop-shadow filter instead. */}
-                    <span
-                      className="mt-0.5 block font-black leading-none text-xs sm:text-2xl"
-                      style={{
-                        background: t.metal,
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
-                        filter: `drop-shadow(${t.glow})`,
-                      }}
-                    >
-                      {p.amount}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          {/* 4th - 20th. 20th is the odd one out, so it spans the middle to stay centred. */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            {PRIZE_RANKS.map(([place, amount], i) => {
-              const last = i === PRIZE_RANKS.length - 1
-              const a = RANK_ACCENT[i % 2 === 0 ? 'purple' : 'green']
-              return (
-                <div
-                  key={place}
-                  className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2.5 sm:px-4 sm:py-3 ${a.cls} ${
-                    // Spans two columns because a four-wide grid has no true
-                    // middle column; max-w + mx-auto then narrows the tile
-                    // itself without losing that centring.
-                    last ? 'col-span-2 sm:col-start-2 sm:max-w-[60%] sm:mx-auto sm:w-full' : ''
-                  }`}
-                >
-                  <span className="font-black uppercase text-white text-xs sm:text-sm [text-shadow:0_0_12px_rgba(255,255,255,0.35)]">
-                    {place}
+          <div className="mx-auto max-w-5xl">
+            <SectionHeading
+              eyebrow={race ? 'Live race' : 'Monthly race'}
+              title={
+                <>
+                  <span className="block text-5xl sm:text-7xl text-mint [text-shadow:0_0_36px_rgba(92,255,193,0.3)]">
+                    {usd(pool)}
                   </span>
-                  <span
-                    className={`font-black text-xs sm:text-base ${a.text}`}
-                    style={{ textShadow: a.glow }}
-                  >
-                    {amount}
-                  </span>
-                </div>
-              )
-            })}
-          </div>
+                  <span className="block text-white">Leaderboard</span>
+                </>
+              }
+              className="mb-16"
+            >
+              Wager under code {CODE} on Gamba to climb the ranks. The top {paidPlaces} split the pool when the race
+              closes.
+            </SectionHeading>
 
-          {/* Sponsor lockup */}
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-            <Image src="/gamba-logo.png" alt="Gamba" width={170} height={59} className="object-contain" />
-            <div className="text-center sm:text-right">
-              <p className="text-white font-black uppercase tracking-[0.25em] text-[11px] sm:text-sm [text-shadow:0_0_14px_rgba(255,255,255,0.4)]">
-                Play with code
-              </p>
-              <p className="text-[#00ff87] font-black uppercase leading-none text-3xl sm:text-5xl mt-1 [text-shadow:0_0_20px_rgba(0,255,135,0.85),0_0_50px_rgba(0,255,135,0.35)]">
-                FinBuck
-              </p>
+            <Podium entries={top3} prizes={top3Prizes} />
+
+            <div className="mt-12 text-center">
+              <Link
+                href="/leaderboard"
+                className="inline-flex items-center gap-2 rounded-xl bg-mint px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-mint transition-all hover:brightness-110 hover:shadow-mint-lg"
+              >
+                View full leaderboard
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
             </div>
           </div>
-        </div>
         </Reveal>
       </section>
 
       {/* ── SOCIALS ── */}
-      <section className="py-20 px-6">
+      <section className="px-6 py-20">
         <Reveal>
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12 relative">
-            <div className="absolute inset-0 -mx-10 -my-6 bg-[#07050f]/70 blur-2xl rounded-3xl pointer-events-none" />
-            <h2 className="relative text-4xl md:text-5xl font-black uppercase tracking-tight mb-3">
-              <span style={{ color: '#ffffff' }}>Follow the </span><span className="animated-gradient-text">Buck</span>
-            </h2>
-            <p className="relative text-gray-300 text-base">Stay connected across all platforms</p>
-          </div>
+          <div className="mx-auto max-w-4xl">
+            <SectionHeading eyebrow="Stay connected" title="Follow FinBuck" className="mb-10">
+              Stream alerts, giveaways and leaderboard updates.
+            </SectionHeading>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {socials.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`group relative flex flex-col items-center gap-4 p-6 rounded-2xl bg-gradient-to-b ${s.color} border ${s.border} transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}
-              >
-                <span className={`${s.iconColor} transition-transform group-hover:scale-110 duration-300`}>
-                  {s.icon}
-                </span>
-                <div className="text-center">
-                  <p className="text-white font-bold text-base">{s.label}</p>
-                  <p className="text-gray-500 text-sm">{s.handle}</p>
-                </div>
-                <span className={`text-xs font-bold uppercase tracking-widest ${s.iconColor} border border-current/30 rounded-full px-3 py-1`}>
-                  {s.cta}
-                </span>
-              </a>
-            ))}
+            <div className="grid gap-3 sm:grid-cols-3">
+              {SOCIAL_CARDS.map((s) => (
+                <a
+                  key={s.href}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-ink-raised p-4 transition-colors hover:border-mint/40 hover:bg-ink-high"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ink-deep">
+                    {s.icon}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-bold text-white">{s.label}</span>
+                    <span className="block truncate text-xs text-muted">{s.handle}</span>
+                  </span>
+                  <span className="ml-auto text-faint transition-colors group-hover:text-mint">{arrowUpRight}</span>
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
         </Reveal>
       </section>
 
       {/* ── REWARDS CTA ── */}
-      <section className="py-20 px-6">
+      <section className="px-6 py-20">
         <Reveal>
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="relative rounded-3xl overflow-hidden border border-purple-500/20 bg-gradient-to-br from-[#100d1f] to-[#07050f] p-7 sm:p-12">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
-            <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl" />
+          <div className="mx-auto max-w-3xl">
+            <div className="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-ink-raised p-8 sm:p-12 text-center">
+              <div className="absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-mint to-transparent" />
+              <div className="absolute -top-16 left-1/2 h-40 w-64 -translate-x-1/2 rounded-full bg-mint/10 blur-3xl" />
 
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-12 h-12 text-purple-400 mx-auto mb-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13a4 4 0 10-4-4 4 4 0 004 4zm0 0a4 4 0 114-4 4 4 0 01-4 4zM4 12h16M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-            </svg>
+              <span className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ink-deep text-mint">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7">
+                  <path d="M12 2l9 5v10l-9 5-9-5V7zM3 7l9 5 9-5M12 12v10" />
+                </svg>
+              </span>
 
-            <h2 className="text-3xl md:text-4xl font-black uppercase text-white mb-3">
-              Rewards &amp; <span className="text-purple-400">Perks</span>
-            </h2>
-            <p className="text-gray-400 text-base mb-8 max-w-md mx-auto">
-              Affiliate commission, rank up boosts, exclusive giveaways and drops, and the $10,000 monthly leaderboard — everything you unlock playing under code finbuck.
-            </p>
-            <Link
-              href="/rewards"
-              className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-bold px-8 py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(168,85,247,0.2)] hover:shadow-[0_0_40px_rgba(168,85,247,0.4)]"
-            >
-              View Rewards
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
+              <h2 className="relative mt-5 text-3xl sm:text-4xl font-extrabold uppercase tracking-tight">
+                Rewards &amp; <span className="text-mint">Perks</span>
+              </h2>
+              <p className="relative mx-auto mt-3 max-w-md text-sm sm:text-base leading-relaxed text-muted">
+                Affiliate commission, rank up boosts, exclusive giveaways and drops, and the {usd(FALLBACK_POOL)} monthly
+                leaderboard — everything you unlock playing under code {CODE}.
+              </p>
+              <Link
+                href="/rewards"
+                className="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-mint px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-mint transition-all hover:brightness-110 hover:shadow-mint-lg"
+              >
+                View rewards
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
           </div>
-        </div>
         </Reveal>
       </section>
-      </div>
     </>
   )
 }

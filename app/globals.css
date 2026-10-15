@@ -2,16 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-/* Squared display face for headings that sit inside the neon frames. Loaded
-   the same way as Inter rather than via next/font, which fetches at build time
-   — a font download failing on the VPS would take the whole deploy with it. */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
+/* Web fonts are loaded by a <link> in app/layout.tsx, not @import here. An
+   @import is only honoured at the very top of a stylesheet, and the Tailwind
+   directives above expand into hundreds of rules first — so the Inter and
+   Orbitron imports that used to sit here were silently ignored and never
+   loaded at all. */
 
 :root {
   --green-gem: #00ff87;
   --purple-bright: #a855f7;
   --bg-dark: #07050f;
+  /* Tailwind's font-sans/font-display resolve to this. */
+  --font-oxanium: 'Oxanium', system-ui, sans-serif;
 }
 
 * {
@@ -23,9 +25,9 @@ html {
 }
 
 body {
-  background-color: #07050f;
+  background-color: #1b1d29;
   color: white;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-oxanium);
   overflow-x: hidden;
 }
 
@@ -34,14 +36,14 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #07050f;
+  background: #15171f;
 }
 ::-webkit-scrollbar-thumb {
-  background: #6b21a8;
+  background: #2f3447;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a855f7;
+  background: #5cffc1;
 }
 
 /* Glow utilities */

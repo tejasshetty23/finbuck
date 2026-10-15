@@ -16,10 +16,10 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          DEFAULT: '#0F1332', // page — deep blue-violet navy
-          deep: '#0B0E26', // header bar, footer
-          raised: '#171C40', // cards
-          high: '#1F2550', // hovered / nested cards
+          DEFAULT: '#0B0E2A', // page — deep blue-violet navy
+          deep: '#080A20', // header bar, footer
+          raised: '#131740', // cards
+          high: '#1A1F4E', // hovered / nested cards
         },
         accent: {
           DEFAULT: '#00FF87', // FinBuck neon — buttons, fills, borders

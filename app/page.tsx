@@ -61,7 +61,7 @@ export default async function Home() {
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(55% 45% at 50% 38%, rgba(0,255,135,0.10) 0%, transparent 70%), linear-gradient(180deg, rgba(24,30,72,0.6) 0%, rgba(15,19,50,0) 100%)',
+              'radial-gradient(55% 45% at 50% 38%, rgba(0,255,135,0.10) 0%, transparent 70%), linear-gradient(180deg, rgba(24,30,72,0.6) 0%, rgba(11,14,42,0) 100%)',
           }}
         />
 

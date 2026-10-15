@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import Reveal from '../../components/Reveal'
 import TiltCard from '../../components/TiltCard'
-import { GAMBA_RACE_URL } from '../../lib/site'
 
 type Perk = {
   /** The hook, set large in the frame's gradient. Numbers mostly. */
@@ -280,9 +279,7 @@ export default function RewardsPage() {
                 Wager under code finbuck and climb the board.
               </p>
               <a
-                href={GAMBA_RACE_URL}
-                target="_blank"
-                rel="noopener noreferrer sponsored"
+                href="/leaderboard"
                 className="mt-1 inline-flex items-center gap-2 font-black uppercase tracking-widest text-[11px] px-4 py-2 rounded-lg transition-transform hover:scale-105"
                 style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)', color: '#07050a' }}
               >

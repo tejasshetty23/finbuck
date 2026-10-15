@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
  * Copies a code, then shows a tick for a moment so the click visibly did
  * something — without that, nothing on screen confirmed the copy.
  */
-export default function CopyButton({ code, tone = 'mint' }: { code: string; tone?: 'mint' | 'dark' }) {
+export default function CopyButton({ code, tone = 'accent' }: { code: string; tone?: 'accent' | 'onAccent' }) {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -25,9 +25,9 @@ export default function CopyButton({ code, tone = 'mint' }: { code: string; tone
   }
 
   const cls =
-    tone === 'dark'
-      ? 'border-ink-deep/25 text-ink-deep/70 hover:text-ink-deep hover:border-ink-deep/60'
-      : 'border-mint/30 text-mint/70 hover:text-mint hover:border-mint'
+    tone === 'onAccent'
+      ? 'border-white/30 text-white/80 hover:text-white hover:border-white'
+      : 'border-accent/30 text-accent-bright/70 hover:text-accent-bright hover:border-accent'
 
   return (
     <button

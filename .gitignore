@@ -42,3 +42,8 @@ node_modules
 /*.png
 /*.jpg
 /*.pdf
+
+# The real Stake standings. Full usernames and wagers (masked only when
+# rendered) on a public repo — upload it to the server, never commit it.
+# data/leaderboard.sample.csv is the committed placeholder.
+/data/leaderboard.csv

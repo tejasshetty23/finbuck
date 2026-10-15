@@ -1,8 +1,8 @@
-import Image from 'next/image'
-import { maskName, usd, type Competitor } from '../lib/gamba'
+import { PartnerMark } from './PartnerLogo'
+import { maskName, usd, type Competitor } from '../lib/leaderboard'
 
 // Top-three cards after benny.gg: 1st raised in the middle under a crown with a
-// gold glow, 2nd and 3rd either side. Each card carries the Gamba mark in a
+// gold glow, 2nd and 3rd either side. Each card carries the partner mark in a
 // ring of its metal, the (masked) player, what they've wagered, and the prize.
 
 const TIER = {
@@ -33,11 +33,11 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
         </svg>
       )}
 
-      {/* Avatar: Gamba mark in a ring of the place's metal, rank badge below */}
+      {/* Avatar: partner mark in a ring of the place's metal, rank badge below */}
       <div className="relative">
         <div className={`rounded-full p-[3px] ${first ? 'h-20 w-20 sm:h-24 sm:w-24' : 'h-16 w-16 sm:h-20 sm:w-20'}`} style={{ background: t.ring }}>
           <div className="flex h-full w-full items-center justify-center rounded-full bg-ink-deep">
-            <Image src="/gamba-mark.webp" alt="" width={197} height={197} className="h-1/2 w-1/2 object-contain" />
+            <PartnerMark className={first ? 'text-4xl sm:text-5xl' : 'text-3xl sm:text-4xl'} />
           </div>
         </div>
         <span

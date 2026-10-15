@@ -1,19 +1,18 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import CopyButton from '../components/CopyButton'
 import Reveal from '../components/Reveal'
 import HeroDecor from '../components/HeroDecor'
 import Podium from '../components/Podium'
 import SectionHeading from '../components/SectionHeading'
-import { CODE, SIGNUP_URL, SOCIALS } from '../lib/site'
-import { FALLBACK_POOL, FALLBACK_PRIZES, getRace, prizeFor, usd } from '../lib/gamba'
+import { PartnerWordmark } from '../components/PartnerLogo'
+import { CODE, PARTNER, SIGNUP_URL, SOCIALS } from '../lib/site'
+import { getStandings, prizeFor, usd } from '../lib/leaderboard'
 
-// Layout after benny.gg (centred sections, each opened by a small mint label),
-// colours after arjhatescash.com (slate ground, mint accent). The standings are
-// live from Gamba; see lib/gamba.ts for where they come from and what happens
-// when they can't be fetched.
+// Layout after benny.gg (centred sections, each opened by a small accent label),
+// slate ground after arjhatescash.com, Stake blue accent. Standings come from
+// the race CSV; see lib/leaderboard.ts.
 
-// Matches lib/gamba's fetch cache: the page is rebuilt at most once a minute.
+// Re-read the CSV at most once a minute, so a new upload shows without a deploy.
 export const revalidate = 60
 
 const SOCIAL_CARDS = [
@@ -49,24 +48,21 @@ const arrowUpRight = (
 )
 
 export default async function Home() {
-  const race = await getRace()
-  const pool = race?.prizePool ?? FALLBACK_POOL
-  const prizes = race?.prizes.length ? race.prizes : FALLBACK_PRIZES
-  const top3 = [1, 2, 3].map((p) => race?.competitors.find((c) => c.position === p) ?? null)
-  const top3Prizes = [1, 2, 3].map((p) => prizeFor(prizes, p))
-  const paidPlaces = prizes.length
+  const race = await getStandings()
+  const top3 = [1, 2, 3].map((p) => race.competitors.find((c) => c.position === p) ?? null)
+  const top3Prizes = [1, 2, 3].map((p) => prizeFor(race.prizes, p))
 
   return (
     <>
       {/* ── HERO ── */}
       <section className="relative overflow-hidden pt-[72px]">
-        {/* A lighter slate band at the top fading into the page, with a mint
+        {/* A lighter slate band at the top fading into the page, with a blue
             bloom behind the headline. */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(55% 45% at 50% 38%, rgba(92,255,193,0.10) 0%, transparent 70%), linear-gradient(180deg, #232738 0%, #1B1D29 100%)',
+              'radial-gradient(55% 45% at 50% 38%, rgba(30,128,240,0.10) 0%, transparent 70%), linear-gradient(180deg, #232738 0%, #1B1D29 100%)',
           }}
         />
         <HeroDecor />
@@ -75,15 +71,15 @@ export default async function Home() {
           <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.32em] text-muted">
             <span className="h-px w-8 bg-white/15" />
             Official partner
-            <Image src="/gamba-logo.png" alt="Gamba" width={600} height={208} className="h-4 w-auto" />
+            <PartnerWordmark className="text-base tracking-normal normal-case" />
             <span className="h-px w-8 bg-white/15" />
           </div>
 
           <h1 className="mt-7 font-extrabold uppercase leading-[0.95] tracking-tight">
             <span className="block text-5xl sm:text-7xl md:text-8xl text-white">FinBucks</span>
             <span
-              className="block text-5xl sm:text-7xl md:text-8xl text-mint"
-              style={{ textShadow: '0 0 40px rgba(92,255,193,0.35)' }}
+              className="block text-5xl sm:text-7xl md:text-8xl text-accent-bright"
+              style={{ textShadow: '0 0 40px rgba(30,128,240,0.35)' }}
             >
               Rewards
             </span>
@@ -91,7 +87,7 @@ export default async function Home() {
 
           <p className="mt-6 max-w-lg text-base sm:text-lg leading-relaxed text-muted">
             Climb the monthly leaderboard, win stream giveaways and unlock exclusive rewards. Use code{' '}
-            <span className="font-bold text-mint">{CODE}</span> on Gamba.
+            <span className="font-bold text-accent-bright">{CODE}</span> on {PARTNER.name}.
           </p>
 
           <div className="mt-9 flex flex-col sm:flex-row items-center gap-3">
@@ -99,17 +95,17 @@ export default async function Home() {
               href={SOCIALS.kick.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 rounded-xl bg-mint px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-mint transition-all hover:brightness-110 hover:shadow-mint-lg"
+              className="inline-flex items-center gap-2.5 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
             >
               <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ink-deep opacity-50" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-ink-deep" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-60" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
               </span>
               Watch Live
             </a>
             <Link
               href="/leaderboard"
-              className="inline-flex items-center gap-2.5 rounded-xl border border-white/15 px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:border-mint/60 hover:text-mint"
+              className="inline-flex items-center gap-2.5 rounded-xl border border-white/15 px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:border-accent/60 hover:text-accent-bright"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]">
                 <path d="M9 21V10h6v11M3 21v-6h6M15 21v-8h6v8M2 21h20" />
@@ -124,33 +120,33 @@ export default async function Home() {
       <section className="px-6 py-20">
         <Reveal>
           <div className="mx-auto max-w-6xl">
-            <SectionHeading eyebrow="Official sponsor" title="Play on Gamba" className="mb-10" />
+            <SectionHeading eyebrow="Exclusive code" title={`Play on ${PARTNER.name}`} className="mb-10" />
 
             <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr]">
               {/* Mint banner, after arj's "Play with code" card */}
-              <div className="relative overflow-hidden rounded-3xl bg-mint p-8 sm:p-10 text-ink-deep">
+              <div className="relative overflow-hidden rounded-3xl bg-accent p-8 sm:p-10 text-white">
                 <div
                   className="absolute inset-0 opacity-60"
-                  style={{ background: 'radial-gradient(80% 90% at 85% 50%, rgba(255,255,255,0.45), transparent 60%)' }}
+                  style={{ background: 'radial-gradient(80% 90% at 85% 50%, rgba(255,255,255,0.18), transparent 60%)' }}
                 />
                 <div className="relative grid items-center gap-8 sm:grid-cols-[1fr_auto]">
                   <div>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-ink-deep px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-mint">
-                      FinBuck × Gamba
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-ink-deep px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-accent-bright">
+                      FinBuck × {PARTNER.name}
                     </span>
                     <h3 className="mt-4 text-4xl sm:text-5xl font-extrabold uppercase leading-[0.95] tracking-tight">
                       Play with
                       <br />
                       code {CODE}
                     </h3>
-                    <p className="mt-4 max-w-sm text-sm font-semibold uppercase tracking-wide text-ink-deep/75">
+                    <p className="mt-4 max-w-sm text-sm font-semibold uppercase tracking-wide text-white/80">
                       Every wager counts toward FinBuck&apos;s monthly leaderboard.
                     </p>
                     <a
                       href={SIGNUP_URL}
                       target="_blank"
                       rel="noopener noreferrer sponsored"
-                      className="mt-6 inline-flex items-center gap-2 rounded-xl bg-ink-deep px-6 py-3 text-sm font-bold uppercase tracking-wider text-mint transition-transform hover:scale-[1.03]"
+                      className="mt-6 inline-flex items-center gap-2 rounded-xl bg-ink-deep px-6 py-3 text-sm font-bold uppercase tracking-wider text-accent-bright transition-transform hover:scale-[1.03]"
                     >
                       Sign up now
                       {arrowUpRight}
@@ -159,7 +155,7 @@ export default async function Home() {
 
                   {/* The code as a tilted tile */}
                   <div className="hidden sm:flex h-40 w-40 rotate-[8deg] flex-col items-center justify-center rounded-[28px] bg-ink-deep shadow-[0_24px_50px_rgba(21,23,31,0.45)]">
-                    <span className="text-4xl font-extrabold tracking-tight text-mint [text-shadow:0_0_20px_rgba(92,255,193,0.5)]">
+                    <span className="text-4xl font-extrabold tracking-tight text-accent-bright [text-shadow:0_0_20px_rgba(30,128,240,0.5)]">
                       {CODE}
                     </span>
                     <span className="mt-2 text-[10px] font-bold uppercase tracking-[0.3em] text-muted">Code</span>
@@ -170,16 +166,16 @@ export default async function Home() {
               {/* Code card */}
               <div className="flex flex-col justify-between gap-6 rounded-3xl border border-white/[0.07] bg-ink-raised p-8 sm:p-10">
                 <div>
-                  <Image src="/gamba-logo.png" alt="Gamba" width={600} height={208} className="h-8 w-auto" />
+                  <PartnerWordmark className="text-4xl" />
                   <p className="mt-4 text-sm font-semibold uppercase tracking-[0.18em] text-muted">
                     The platform behind the big wins.
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 rounded-2xl border border-mint/25 bg-ink-deep px-5 py-4">
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-accent/25 bg-ink-deep px-5 py-4">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-faint">Use code</p>
-                    <p className="text-3xl font-extrabold tracking-wide text-mint">{CODE}</p>
+                    <p className="text-3xl font-extrabold tracking-wide text-accent-bright">{CODE}</p>
                   </div>
                   <CopyButton code={CODE} />
                 </div>
@@ -189,9 +185,9 @@ export default async function Home() {
                     href={SIGNUP_URL}
                     target="_blank"
                     rel="noopener noreferrer sponsored"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-mint/40 px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-mint transition-colors hover:bg-mint hover:text-ink-deep"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-accent/40 px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-accent-bright transition-colors hover:bg-accent hover:text-white"
                   >
-                    Play on Gamba.com
+                    Play on {PARTNER.name}.com
                     {arrowUpRight}
                   </a>
                   <p className="mt-4 text-center text-[11px] leading-relaxed text-faint">
@@ -217,19 +213,19 @@ export default async function Home() {
         <Reveal>
           <div className="mx-auto max-w-5xl">
             <SectionHeading
-              eyebrow={race ? 'Live race' : 'Monthly race'}
+              eyebrow={race.upcoming ? 'First race starts 25 October' : 'Live race'}
               title={
                 <>
-                  <span className="block text-5xl sm:text-7xl text-mint [text-shadow:0_0_36px_rgba(92,255,193,0.3)]">
-                    {usd(pool)}
+                  <span className="block text-5xl sm:text-7xl text-accent-bright [text-shadow:0_0_36px_rgba(30,128,240,0.3)]">
+                    {usd(race.prizePool)}
                   </span>
                   <span className="block text-white">Leaderboard</span>
                 </>
               }
               className="mb-16"
             >
-              Wager under code {CODE} on Gamba to climb the ranks. The top {paidPlaces} split the pool when the race
-              closes.
+              Wager under code {CODE} on {PARTNER.name} to climb the ranks. The top {race.prizes.length} split the pool
+              when the race closes.
             </SectionHeading>
 
             <Podium entries={top3} prizes={top3Prizes} />
@@ -237,7 +233,7 @@ export default async function Home() {
             <div className="mt-12 text-center">
               <Link
                 href="/leaderboard"
-                className="inline-flex items-center gap-2 rounded-xl bg-mint px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-mint transition-all hover:brightness-110 hover:shadow-mint-lg"
+                className="inline-flex items-center gap-2 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
               >
                 View full leaderboard
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4">
@@ -264,7 +260,7 @@ export default async function Home() {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-ink-raised p-4 transition-colors hover:border-mint/40 hover:bg-ink-high"
+                  className="group flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-ink-raised p-4 transition-colors hover:border-accent/40 hover:bg-ink-high"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ink-deep">
                     {s.icon}
@@ -273,7 +269,7 @@ export default async function Home() {
                     <span className="block text-sm font-bold text-white">{s.label}</span>
                     <span className="block truncate text-xs text-muted">{s.handle}</span>
                   </span>
-                  <span className="ml-auto text-faint transition-colors group-hover:text-mint">{arrowUpRight}</span>
+                  <span className="ml-auto text-faint transition-colors group-hover:text-accent-bright">{arrowUpRight}</span>
                 </a>
               ))}
             </div>
@@ -286,25 +282,25 @@ export default async function Home() {
         <Reveal>
           <div className="mx-auto max-w-3xl">
             <div className="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-ink-raised p-8 sm:p-12 text-center">
-              <div className="absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-mint to-transparent" />
-              <div className="absolute -top-16 left-1/2 h-40 w-64 -translate-x-1/2 rounded-full bg-mint/10 blur-3xl" />
+              <div className="absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-accent to-transparent" />
+              <div className="absolute -top-16 left-1/2 h-40 w-64 -translate-x-1/2 rounded-full bg-accent/15 blur-3xl" />
 
-              <span className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ink-deep text-mint">
+              <span className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ink-deep text-accent-bright">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7">
                   <path d="M12 2l9 5v10l-9 5-9-5V7zM3 7l9 5 9-5M12 12v10" />
                 </svg>
               </span>
 
               <h2 className="relative mt-5 text-3xl sm:text-4xl font-extrabold uppercase tracking-tight">
-                Rewards &amp; <span className="text-mint">Perks</span>
+                Rewards &amp; <span className="text-accent-bright">Perks</span>
               </h2>
               <p className="relative mx-auto mt-3 max-w-md text-sm sm:text-base leading-relaxed text-muted">
-                Affiliate commission, rank up boosts, exclusive giveaways and drops, and the {usd(FALLBACK_POOL)} monthly
+                Affiliate commission, rank up boosts, exclusive giveaways and drops, and the {usd(race.prizePool)} monthly
                 leaderboard — everything you unlock playing under code {CODE}.
               </p>
               <Link
                 href="/rewards"
-                className="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-mint px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-mint transition-all hover:brightness-110 hover:shadow-mint-lg"
+                className="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
               >
                 View rewards
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4">

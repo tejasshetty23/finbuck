@@ -1,9 +1,11 @@
 import type { Config } from 'tailwindcss'
 
-// Palette taken from the references: slate-navy ground and mint accent sampled
-// from arjhatescash.com, gold/silver/bronze kept only for leaderboard ranks.
-// Gamba's own logo mint (#05F9A1) sits a shade greener than `mint`, so the
-// partner lockup reads as the same family rather than a clash.
+// Slate-navy ground sampled from arjhatescash.com; accent is Stake's brand
+// blue, as used on benny.gg (also a Stake affiliate). Gold/silver/bronze are
+// kept for leaderboard ranks only.
+//
+// The accent is named for its role, not its colour, so a future partner
+// change is a two-value edit here rather than a sweep through every page.
 const config: Config = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -19,10 +21,12 @@ const config: Config = {
           raised: '#202433', // cards
           high: '#272B3D', // hovered / nested cards
         },
-        mint: {
-          DEFAULT: '#5CFFC1',
-          deep: '#2FD99B',
-          soft: '#A6FFE0',
+        accent: {
+          DEFAULT: '#1475E1', // Stake blue — buttons, fills, borders
+          // Lifted for text and small marks: #1475E1 on the slate ground only
+          // reaches ~3.7:1 contrast, too low for 11px labels.
+          bright: '#4D96F0',
+          deep: '#0E5DBE',
         },
         muted: '#8A90A6',
         faint: '#5B6178',
@@ -37,8 +41,8 @@ const config: Config = {
         display: ['var(--font-oxanium)', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        mint: '0 0 24px rgba(92,255,193,0.35)',
-        'mint-lg': '0 0 44px rgba(92,255,193,0.45)',
+        accent: '0 0 24px rgba(20,117,225,0.40)',
+        'accent-lg': '0 0 44px rgba(20,117,225,0.55)',
       },
     },
   },

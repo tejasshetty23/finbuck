@@ -1,14 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef, type ReactNode } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { CODE, SIGNUP_URL, SOCIALS } from '../lib/site'
+import { PartnerWordmark } from './PartnerLogo'
+import { CODE, PARTNER, SIGNUP_URL, SOCIALS } from '../lib/site'
 
 // Header modelled on the YUNGREAL × Gamdom bar: a two-tone wordmark with the
 // partner logo, uppercase items that each carry a line icon (the current page
-// white with a mint icon, the rest grey), and the code as a mint button.
+// white with an accent icon, the rest grey), and the code as an accent button.
 
 type Child = { href: string; label: string; icon: ReactNode; external?: boolean }
 type NavLink = { href: string; label: string; icon: ReactNode }
@@ -97,30 +97,23 @@ const chevron = (open: boolean) => (
   </svg>
 )
 
-/** FIN in white, BUCK in glowing mint, slanted like the reference wordmark. */
+/** FIN in white, BUCK in the glowing accent, slanted like the reference wordmark. */
 export function Wordmark({ className = 'text-[22px]' }: { className?: string }) {
   return (
     <span className={`inline-block -skew-x-[8deg] font-extrabold uppercase tracking-tight leading-none ${className}`}>
       <span className="text-white">Fin</span>
-      <span className="text-mint [text-shadow:0_0_18px_rgba(92,255,193,0.65)]">Buck</span>
+      <span className="text-accent-bright [text-shadow:0_0_18px_rgba(30,128,240,0.65)]">Buck</span>
     </span>
   )
 }
 
-/** Wordmark × Gamba, as one link home. */
+/** Wordmark × partner, as one link home. */
 export function Lockup({ size = 'md' }: { size?: 'md' | 'sm' }) {
   return (
-    <Link href="/" className="flex items-center gap-3 shrink-0" aria-label="FinBuck × Gamba — home">
+    <Link href="/" className="flex items-center gap-3 shrink-0" aria-label={`FinBuck × ${PARTNER.name} — home`}>
       <Wordmark className={size === 'md' ? 'text-[22px] sm:text-2xl' : 'text-xl'} />
       <span className="text-faint text-sm font-semibold">×</span>
-      <Image
-        src="/gamba-logo.png"
-        alt="Gamba"
-        width={600}
-        height={208}
-        className={size === 'md' ? 'h-[22px] w-auto' : 'h-5 w-auto'}
-        priority
-      />
+      <PartnerWordmark className={size === 'md' ? 'text-[22px] sm:text-2xl' : 'text-xl'} />
     </Link>
   )
 }
@@ -131,8 +124,8 @@ export function CodeButton({ className = '' }: { className?: string }) {
       href={SIGNUP_URL}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl px-5 py-3 text-[15px] text-ink-deep transition-all hover:brightness-110 shadow-mint hover:shadow-mint-lg ${className}`}
-      style={{ background: 'linear-gradient(110deg, #8CFFD6 0%, #5CFFC1 45%, #34D99E 100%)' }}
+      className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl px-5 py-3 text-[15px] text-white transition-all hover:brightness-110 shadow-accent hover:shadow-accent-lg ${className}`}
+      style={{ background: 'linear-gradient(110deg, #3D8EF0 0%, #1475E1 50%, #0E5DBE 100%)' }}
     >
       <span className="font-semibold">Use code&nbsp;</span>
       <span className="font-extrabold tracking-wide">{CODE}</span>
@@ -184,7 +177,7 @@ export default function Navbar() {
     }`
 
   const iconClass = (active: boolean) =>
-    active ? 'text-mint' : 'text-muted group-hover:text-white transition-colors'
+    active ? 'text-accent-bright' : 'text-muted group-hover:text-white transition-colors'
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-ink-deep/95 backdrop-blur-md border-b border-white/[0.06]">
@@ -232,7 +225,7 @@ export default function Navbar() {
                       }`
                       const inner = (
                         <>
-                          <span className={on ? 'text-mint' : 'text-faint'}>{c.icon}</span>
+                          <span className={on ? 'text-accent-bright' : 'text-faint'}>{c.icon}</span>
                           {c.label}
                           {c.external && (
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="ml-auto w-3.5 h-3.5 text-faint">
@@ -292,7 +285,7 @@ export default function Navbar() {
                   const cls = `flex items-center gap-3 pl-1 text-sm font-semibold uppercase tracking-[0.06em] ${on ? 'text-white' : 'text-muted'}`
                   const inner = (
                     <>
-                      <span className={on ? 'text-mint' : 'text-faint'}>{c.icon}</span>
+                      <span className={on ? 'text-accent-bright' : 'text-faint'}>{c.icon}</span>
                       {c.label}
                     </>
                   )
@@ -314,7 +307,7 @@ export default function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 className={`flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.06em] ${isActive(item) ? 'text-white' : 'text-muted'}`}
               >
-                <span className={isActive(item) ? 'text-mint' : 'text-faint'}>{item.icon}</span>
+                <span className={isActive(item) ? 'text-accent-bright' : 'text-faint'}>{item.icon}</span>
                 {item.label}
               </Link>
             )

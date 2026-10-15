@@ -7,7 +7,16 @@ import { useEffect, useState } from 'react'
  * browser would compute different seconds, and a mismatch there is a React
  * hydration error rather than just a stale number.
  */
-export default function Countdown({ endsAt, label = 'Race ends in' }: { endsAt: number; label?: string }) {
+export default function Countdown({
+  endsAt,
+  label = 'Race ends in',
+  endedLabel = 'Race finished',
+}: {
+  endsAt: number
+  label?: string
+  /** Shown once the clock hits zero, until the page next revalidates. */
+  endedLabel?: string
+}) {
   const [now, setNow] = useState<number | null>(null)
 
   useEffect(() => {
@@ -30,7 +39,7 @@ export default function Countdown({ endsAt, label = 'Race ends in' }: { endsAt: 
 
   return (
     <div className="flex flex-col items-center">
-      <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-mint">{ended ? 'Race finished' : label}</p>
+      <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">{ended ? endedLabel : label}</p>
       <div className="mt-3 flex items-start gap-2 sm:gap-3">
         {['Days', 'Hours', 'Mins', 'Secs'].map((unit, i) => (
           <div key={unit} className="flex flex-col items-center">

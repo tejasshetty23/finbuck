@@ -17,7 +17,7 @@ export default function SectionHeading({
 }) {
   return (
     <div className={`text-center ${className}`}>
-      <p className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.32em] text-mint">{eyebrow}</p>
+      <p className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.32em] text-accent-bright">{eyebrow}</p>
       <h2 className="mt-3 text-3xl sm:text-5xl font-extrabold uppercase tracking-tight leading-[1.05]">{title}</h2>
       {children && <p className="mx-auto mt-4 max-w-xl text-sm sm:text-base leading-relaxed text-muted">{children}</p>}
     </div>

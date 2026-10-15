@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import Button from './Button'
 import { PartnerWordmark } from './PartnerLogo'
 import { CODE, PARTNER, SIGNUP_URL, SOCIALS } from '../lib/site'
 
@@ -120,16 +121,12 @@ export function Lockup({ size = 'md' }: { size?: 'md' | 'sm' }) {
 
 export function CodeButton({ className = '' }: { className?: string }) {
   return (
-    <a
-      href={SIGNUP_URL}
-      target="_blank"
-      rel="noopener noreferrer sponsored"
-      className={`inline-flex items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-[15px] text-ink-deep transition-all hover:brightness-110 shadow-accent hover:shadow-accent-lg ${className}`}
-      style={{ background: 'linear-gradient(110deg, #6BFFB8 0%, #00FF87 50%, #00C96A 100%)' }}
-    >
-      <span className="font-semibold">Use code&nbsp;</span>
-      <span className="font-extrabold tracking-wide">{CODE}</span>
-    </a>
+    // The same cut-corner button as the rest of the site, minus the trailing
+    // ↗ — the code is the point here, not the fact that it opens a new tab.
+    <Button href={SIGNUP_URL} external sponsored size="sm" className={`[&>svg]:hidden ${className}`}>
+      <span className="font-semibold">Use code</span>
+      <span className="font-extrabold">{CODE}</span>
+    </Button>
   )
 }
 

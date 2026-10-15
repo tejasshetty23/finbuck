@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Button from '../components/Button'
 import CopyButton from '../components/CopyButton'
 import Reveal from '../components/Reveal'
 import Podium from '../components/Podium'
@@ -39,6 +39,12 @@ const SOCIAL_CARDS = [
     ),
   },
 ]
+
+const kickMark = (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
+    <path d="M4 3h5v5h2V6h2V4h2V3h5v6h-2v2h-2v2h2v2h2v6h-5v-1h-2v-2h-2v-2H9v5H4z" />
+  </svg>
+)
 
 const arrowUpRight = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
@@ -89,27 +95,14 @@ export default async function Home() {
           </p>
 
           <div className="mt-9 flex flex-col sm:flex-row items-center gap-3">
-            <a
-              href={SOCIALS.kick.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
-            >
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ink-deep opacity-50" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-ink-deep" />
-              </span>
-              Watch Live
-            </a>
-            <Link
-              href="/leaderboard"
-              className="inline-flex items-center gap-2.5 rounded-xl border border-white/15 px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:border-accent/60 hover:text-accent-bright"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]">
-                <path d="M9 21V10h6v11M3 21v-6h6M15 21v-8h6v8M2 21h20" />
-              </svg>
+            {/* Kick's mark rather than a pulsing "live" dot, which pulsed
+                whether or not FinBuck was actually live. */}
+            <Button href={SOCIALS.kick.href} external icon={kickMark}>
+              Watch live
+            </Button>
+            <Button href="/leaderboard" variant="ghost">
               Leaderboard
-            </Link>
+            </Button>
           </div>
         </div>
       </section>
@@ -140,15 +133,9 @@ export default async function Home() {
                     <p className="mt-4 max-w-sm text-sm font-semibold uppercase tracking-wide text-ink-deep/75">
                       Every wager counts toward FinBuck&apos;s monthly leaderboard.
                     </p>
-                    <a
-                      href={SIGNUP_URL}
-                      target="_blank"
-                      rel="noopener noreferrer sponsored"
-                      className="mt-6 inline-flex items-center gap-2 rounded-xl bg-ink-deep px-6 py-3 text-sm font-bold uppercase tracking-wider text-accent-bright transition-transform hover:scale-[1.03]"
-                    >
+                    <Button href={SIGNUP_URL} external sponsored variant="dark" className="mt-6">
                       Sign up now
-                      {arrowUpRight}
-                    </a>
+                    </Button>
                   </div>
 
                   {/* The code as a tilted tile */}
@@ -179,15 +166,9 @@ export default async function Home() {
                 </div>
 
                 <div>
-                  <a
-                    href={SIGNUP_URL}
-                    target="_blank"
-                    rel="noopener noreferrer sponsored"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-accent/40 px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-accent-bright transition-colors hover:bg-accent hover:text-ink-deep"
-                  >
+                  <Button href={SIGNUP_URL} external sponsored variant="ghost" className="w-full">
                     Play on {PARTNER.name}.com
-                    {arrowUpRight}
-                  </a>
+                  </Button>
                   <p className="mt-4 text-center text-[11px] leading-relaxed text-faint">
                     18+ · Gamble responsibly · Support at{' '}
                     <a
@@ -229,15 +210,7 @@ export default async function Home() {
             <Podium entries={top3} prizes={top3Prizes} />
 
             <div className="mt-12 text-center">
-              <Link
-                href="/leaderboard"
-                className="inline-flex items-center gap-2 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
-              >
-                View full leaderboard
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
+              <Button href="/leaderboard">View full leaderboard</Button>
             </div>
           </div>
         </Reveal>
@@ -296,15 +269,9 @@ export default async function Home() {
                 Affiliate commission, rank up boosts, exclusive giveaways and drops, and the {usd(race.prizePool)} monthly
                 leaderboard — everything you unlock playing under code {CODE}.
               </p>
-              <Link
-                href="/rewards"
-                className="relative mt-8 inline-flex items-center gap-2 rounded-xl bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
-              >
+              <Button href="/rewards" className="relative mt-8">
                 View rewards
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
+              </Button>
             </div>
           </div>
         </Reveal>

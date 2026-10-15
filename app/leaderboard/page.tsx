@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Button from '../../components/Button'
 import CopyButton from '../../components/CopyButton'
 import Countdown from '../../components/Countdown'
 import Podium from '../../components/Podium'
@@ -67,17 +68,9 @@ export default async function LeaderboardPage() {
         </p>
 
         <div className="relative mt-8 flex justify-center">
-          <a
-            href={SIGNUP_URL}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            className="inline-flex items-center gap-2 rounded-xl bg-accent px-7 py-3 text-sm font-bold uppercase tracking-wider text-ink-deep shadow-accent transition-all hover:brightness-110 hover:shadow-accent-lg"
-          >
+          <Button href={SIGNUP_URL} external sponsored>
             Sign up with {CODE}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M9 7h8v8" />
-            </svg>
-          </a>
+          </Button>
         </div>
       </section>
 

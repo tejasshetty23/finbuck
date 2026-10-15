@@ -1,23 +1,16 @@
-// TEMPORARY Stake wordmark and mark, drawn as text.
+/* eslint-disable @next/next/no-img-element */
+// Stake's script wordmark and "S" icon — every partner logo on the site
+// renders through this one file.
 //
-// stake.com can't be reached from where this was built, so the official logo
-// couldn't be pulled. Replace both with the files from FinBuck's Stake
-// affiliate brand kit (e.g. public/stake-logo.svg and public/stake-mark.svg)
-// — every partner logo on the site renders through this one file.
+// Plain <img> rather than next/image: these are small static SVGs, which the
+// Next image optimiser won't process without dangerouslyAllowSVG anyway.
+// Sizing is by height; the width follows the artwork.
 
-export function PartnerWordmark({ className = 'text-xl' }: { className?: string }) {
-  return (
-    <span className={`inline-block -skew-x-[10deg] font-extrabold tracking-tight leading-none text-white ${className}`} aria-label="Stake">
-      Stake
-    </span>
-  )
+export function PartnerWordmark({ className = 'h-6' }: { className?: string }) {
+  return <img src="/stake-logo.svg" alt="Stake" className={`w-auto select-none ${className}`} draggable={false} />
 }
 
-/** Round badge for the podium avatars, like benny's Stake "S". */
-export function PartnerMark({ className = '' }: { className?: string }) {
-  return (
-    <span className={`inline-block -skew-x-[10deg] font-extrabold leading-none text-white ${className}`} aria-hidden>
-      S
-    </span>
-  )
+/** The "S" icon, for the podium avatars (as benny.gg uses it). */
+export function PartnerMark({ className = 'h-1/2' }: { className?: string }) {
+  return <img src="/stake-icon.svg" alt="" aria-hidden className={`w-auto select-none ${className}`} draggable={false} />
 }

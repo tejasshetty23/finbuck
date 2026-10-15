@@ -113,7 +113,7 @@ export function Lockup({ size = 'md' }: { size?: 'md' | 'sm' }) {
     <Link href="/" className="flex items-center gap-3 shrink-0" aria-label={`FinBuck × ${PARTNER.name} — home`}>
       <Wordmark className={size === 'md' ? 'text-[22px] sm:text-2xl' : 'text-xl'} />
       <span className="text-faint text-sm font-semibold">×</span>
-      <PartnerWordmark className={size === 'md' ? 'text-[22px] sm:text-2xl' : 'text-xl'} />
+      <PartnerWordmark className={size === 'md' ? 'h-7 sm:h-8' : 'h-7'} />
     </Link>
   )
 }

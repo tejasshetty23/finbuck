@@ -71,7 +71,7 @@ export default async function Home() {
           <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.32em] text-muted">
             <span className="h-px w-8 bg-white/15" />
             Official partner
-            <PartnerWordmark className="text-base tracking-normal normal-case" />
+            <PartnerWordmark className="h-6" />
             <span className="h-px w-8 bg-white/15" />
           </div>
 
@@ -166,7 +166,7 @@ export default async function Home() {
               {/* Code card */}
               <div className="flex flex-col justify-between gap-6 rounded-3xl border border-white/[0.07] bg-ink-raised p-8 sm:p-10">
                 <div>
-                  <PartnerWordmark className="text-4xl" />
+                  <PartnerWordmark className="h-14" />
                   <p className="mt-4 text-sm font-semibold uppercase tracking-[0.18em] text-muted">
                     The platform behind the big wins.
                   </p>

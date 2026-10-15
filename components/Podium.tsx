@@ -37,7 +37,7 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
       <div className="relative">
         <div className={`rounded-full p-[3px] ${first ? 'h-20 w-20 sm:h-24 sm:w-24' : 'h-16 w-16 sm:h-20 sm:w-20'}`} style={{ background: t.ring }}>
           <div className="flex h-full w-full items-center justify-center rounded-full bg-ink-deep">
-            <PartnerMark className={first ? 'text-4xl sm:text-5xl' : 'text-3xl sm:text-4xl'} />
+            <PartnerMark className="h-[55%]" />
           </div>
         </div>
         <span

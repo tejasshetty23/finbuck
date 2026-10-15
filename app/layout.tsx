@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import BackgroundCoins from '../components/BackgroundCoins'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://finbuck.bet'),
@@ -44,9 +45,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             ignores. */}
         <div
           aria-hidden
-          className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-[0.22]"
+          className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-[0.35]"
           style={{ backgroundImage: 'url(/pattern-overlay.webp)' }}
         />
+        {/* Bronze, silver and gold coins drifting over the pattern. */}
+        <BackgroundCoins />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

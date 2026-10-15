@@ -24,7 +24,7 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
       }`}
       style={{
         boxShadow: `0 0 ${first ? 60 : 36}px ${t.glow}, inset 0 1px 0 rgba(255,255,255,0.04)`,
-        background: `linear-gradient(180deg, ${first ? 'rgba(255,200,61,0.07)' : 'rgba(255,255,255,0.025)'} 0%, transparent 55%), #231E42`,
+        background: `linear-gradient(180deg, ${first ? 'rgba(255,200,61,0.07)' : 'rgba(255,255,255,0.025)'} 0%, transparent 55%), #171C40`,
       }}
     >
       {first && (

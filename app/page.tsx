@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import CopyButton from '../components/CopyButton'
 import Reveal from '../components/Reveal'
-import HeroDecor from '../components/HeroDecor'
 import Podium from '../components/Podium'
 import SectionHeading from '../components/SectionHeading'
 import { PartnerWordmark } from '../components/PartnerLogo'
@@ -62,10 +61,9 @@ export default async function Home() {
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(55% 45% at 50% 38%, rgba(0,255,135,0.10) 0%, transparent 70%), linear-gradient(180deg, rgba(36,31,72,0.75) 0%, rgba(26,23,51,0) 100%)',
+              'radial-gradient(55% 45% at 50% 38%, rgba(0,255,135,0.10) 0%, transparent 70%), linear-gradient(180deg, rgba(24,30,72,0.6) 0%, rgba(15,19,50,0) 100%)',
           }}
         />
-        <HeroDecor />
 
         <div className="relative z-10 mx-auto flex min-h-[600px] max-w-4xl flex-col items-center justify-center px-6 py-24 text-center md:min-h-[680px]">
           <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.32em] text-muted">

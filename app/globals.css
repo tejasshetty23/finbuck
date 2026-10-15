@@ -25,7 +25,7 @@ html {
 }
 
 body {
-  background-color: #1a1733;
+  background-color: #0f1332;
   color: white;
   font-family: var(--font-oxanium);
   overflow-x: hidden;
@@ -36,10 +36,10 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #14112a;
+  background: #0b0e26;
 }
 ::-webkit-scrollbar-thumb {
-  background: #3a3366;
+  background: #2a3270;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {

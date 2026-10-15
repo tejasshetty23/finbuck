@@ -1,6 +1,6 @@
 import type { Config } from 'tailwindcss'
 
-// Dark indigo-violet ground with FinBuck's own neon green as the accent (the
+// Deep blue-violet navy ground with FinBuck's own neon green as the accent (the
 // green the live site has always used). Gold/silver/bronze are kept for
 // leaderboard ranks only.
 //
@@ -16,10 +16,10 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          DEFAULT: '#1A1733', // page
-          deep: '#14112A', // header bar, footer
-          raised: '#231E42', // cards
-          high: '#2C2652', // hovered / nested cards
+          DEFAULT: '#0F1332', // page — deep blue-violet navy
+          deep: '#0B0E26', // header bar, footer
+          raised: '#171C40', // cards
+          high: '#1F2550', // hovered / nested cards
         },
         accent: {
           DEFAULT: '#00FF87', // FinBuck neon — buttons, fills, borders

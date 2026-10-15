@@ -2,7 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Web fonts are loaded by a <link> in app/layout.tsx, not @import here. An
+/* Inter, self-hosted from public/fonts (SIL Open Font License). Serving it
+   from our own domain means nothing can block it: Google Fonts is on the
+   lists many ad and tracker blockers use, and visitors behind one were
+   quietly getting Segoe UI. The files are committed, so nothing is fetched
+   at build time either. One variable file per subset covers every weight;
+   unicode-range means a browser only downloads latin-ext if a page needs it. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* (No @import for fonts: an @import is only honoured at the very top of a
+   stylesheet, and the Tailwind directives above expand first.) An
    @import is only honoured at the very top of a stylesheet, and the Tailwind
    directives above expand into hundreds of rules first — so the Inter and
    Orbitron imports that used to sit here were silently ignored and never
@@ -12,8 +36,10 @@
   --green-gem: #00ff87;
   --purple-bright: #a855f7;
   --bg-dark: #07050f;
-  /* Tailwind's font-sans/font-display resolve to this. */
-  --font-oxanium: 'Oxanium', system-ui, sans-serif;
+  /* The site's one typeface — Tailwind's font-sans/font-display resolve
+     to this. To switch faces, add its files to public/fonts and an
+     @font-face above, then change the name here. */
+  --font-site: 'Inter', system-ui, sans-serif;
 }
 
 * {
@@ -27,7 +53,7 @@ html {
 body {
   background-color: #0b0e2a;
   color: white;
-  font-family: var(--font-oxanium);
+  font-family: var(--font-site);
   overflow-x: hidden;
 }
 
@@ -356,8 +382,9 @@ html {
   }
 }
 
-/* Orbitron falls back to Inter, so a blocked font request degrades to the
-   site's normal face rather than a serif default. */
+/* The site face, like everything else. This used to name Orbitron then
+   Inter, neither of which ever loaded (see the note at the top), so
+   everything marked font-display was rendering in the system font. */
 .font-display {
-  font-family: 'Orbitron', 'Inter', system-ui, sans-serif;
+  font-family: var(--font-site);
 }

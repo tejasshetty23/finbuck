@@ -36,10 +36,10 @@ const config: Config = {
         bronze: '#E8935F',
       },
       fontFamily: {
-        // Oxanium, as on arj — squared-off and legible down to body sizes, so
-        // one face covers headings and text alike. Loaded in app/layout.tsx.
-        sans: ['var(--font-oxanium)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-oxanium)', 'system-ui', 'sans-serif'],
+        // One face for headings and text alike: --font-site in globals.css,
+        // loaded by the <link> in app/layout.tsx.
+        sans: ['var(--font-site)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-site)', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         accent: '0 0 24px rgba(0,255,135,0.30)',

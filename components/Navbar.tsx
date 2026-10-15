@@ -124,7 +124,7 @@ export function CodeButton({ className = '' }: { className?: string }) {
       href={SIGNUP_URL}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl px-5 py-3 text-[15px] text-ink-deep transition-all hover:brightness-110 shadow-accent hover:shadow-accent-lg ${className}`}
+      className={`inline-flex items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-[15px] text-ink-deep transition-all hover:brightness-110 shadow-accent hover:shadow-accent-lg ${className}`}
       style={{ background: 'linear-gradient(110deg, #6BFFB8 0%, #00FF87 50%, #00C96A 100%)' }}
     >
       <span className="font-semibold">Use code&nbsp;</span>
@@ -180,8 +180,12 @@ export default function Navbar() {
     active ? 'text-accent-bright' : 'text-muted group-hover:text-white transition-colors'
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-ink-deep/95 backdrop-blur-md border-b border-white/[0.06]">
-      <div className="mx-auto flex h-[72px] max-w-[1600px] items-center justify-between gap-6 px-5 sm:px-8">
+    // A floating pill, Dynamic Island style: inset from the top and sides,
+    // fully rounded ends, with its own border and shadow so it lifts off the
+    // page instead of spanning it. The outer layer is transparent and ignores
+    // the pointer, so the gaps either side of the pill stay clickable.
+    <nav className="pointer-events-none fixed top-0 left-0 right-0 z-50 px-3 pt-3 sm:px-5">
+      <div className="pointer-events-auto mx-auto flex h-[60px] max-w-[1400px] items-center justify-between gap-6 rounded-full border border-white/[0.08] bg-ink-deep/85 pl-6 pr-2.5 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-md sm:pl-7">
         <Lockup />
 
         {/* Desktop nav */}
@@ -216,7 +220,7 @@ export default function Navbar() {
                 {open && (
                   <div
                     role="menu"
-                    className="absolute left-1/2 -translate-x-1/2 top-full mt-5 w-56 rounded-2xl border border-white/[0.07] bg-ink-raised p-2 shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
+                    className="absolute left-1/2 -translate-x-1/2 top-full mt-7 w-56 rounded-2xl border border-white/[0.07] bg-ink-raised p-2 shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
                   >
                     {item.children.map((c) => {
                       const on = !c.external && pathname === c.href.split('?')[0]
@@ -254,7 +258,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <CodeButton className="hidden sm:inline-flex" />
           <button
-            className="xl:hidden rounded-lg p-2 text-muted hover:text-white hover:bg-white/[0.05] transition-colors"
+            className="xl:hidden rounded-full p-2 text-muted hover:text-white hover:bg-white/[0.05] transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
@@ -273,7 +277,7 @@ export default function Navbar() {
       {/* Mobile menu — groups render as a heading with their pages nested
           under it, since a click-to-open flyout is awkward on touch. */}
       {mobileOpen && (
-        <div className="xl:hidden max-h-[calc(100vh-72px)] overflow-y-auto border-t border-white/[0.06] bg-ink-deep px-5 sm:px-8 py-5 flex flex-col gap-5">
+        <div className="pointer-events-auto xl:hidden mx-auto mt-2 max-h-[calc(100vh-90px)] max-w-[1400px] overflow-y-auto rounded-3xl border border-white/[0.08] bg-ink-deep/95 px-6 py-5 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-md flex flex-col gap-5">
           {NAV_ITEMS.map((item) =>
             isGroup(item) ? (
               <div key={item.label} className="flex flex-col gap-3">

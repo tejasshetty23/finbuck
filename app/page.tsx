@@ -62,7 +62,7 @@ export default async function Home() {
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(55% 45% at 50% 38%, rgba(0,255,135,0.10) 0%, transparent 70%), linear-gradient(180deg, #241F48 0%, #1A1733 100%)',
+              'radial-gradient(55% 45% at 50% 38%, rgba(0,255,135,0.10) 0%, transparent 70%), linear-gradient(180deg, rgba(36,31,72,0.75) 0%, rgba(26,23,51,0) 100%)',
           }}
         />
         <HeroDecor />

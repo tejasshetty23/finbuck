@@ -36,6 +36,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </noscript>
       </head>
       <body className="bg-ink font-sans text-white min-h-screen flex flex-col antialiased">
+        {/* Swirl texture from public/pattern.jpg, turned into a violet overlay
+            (public/pattern-overlay.webp) and stretched once across the
+            viewport. Not tiled: the source isn't seamless, so repeating it
+            drew a visible grid. Fixed, so it stays put while the page scrolls;
+            a fixed element rather than background-attachment, which iOS
+            ignores. */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-[0.22]"
+          style={{ backgroundImage: 'url(/pattern-overlay.webp)' }}
+        />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

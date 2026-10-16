@@ -25,6 +25,19 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* Big Shoulders Display, the display face for headlines and numbers (SIL
+   OFL). Condensed and heavy, so a headline can fill its width and a prize
+   can be set huge without the line turning into a wall. Self-hosted, as
+   above. Latin only: it's never used for body copy. */
+@font-face {
+  font-family: 'Big Shoulders Display';
+  font-style: normal;
+  font-weight: 500 900;
+  font-display: swap;
+  src: url('/fonts/big-shoulders-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* (No @import for fonts: an @import is only honoured at the very top of a
    stylesheet, and the Tailwind directives above expand first.) An
    @import is only honoured at the very top of a stylesheet, and the Tailwind
@@ -40,6 +53,9 @@
      to this. To switch faces, add its files to public/fonts and an
      @font-face above, then change the name here. */
   --font-site: 'Inter', system-ui, sans-serif;
+  /* Headlines, prize amounts, rank numerals. Falls back to a condensed
+     system face so the layout holds if the file is slow to arrive. */
+  --font-display: 'Big Shoulders Display', 'Arial Narrow', 'Impact', sans-serif;
 }
 
 * {
@@ -382,9 +398,51 @@ html {
   }
 }
 
-/* The site face, like everything else. This used to name Orbitron then
-   Inter, neither of which ever loaded (see the note at the top), so
-   everything marked font-display was rendering in the system font. */
+/* Display face for headlines and numbers. Tracking is tightened because a
+   condensed face set loose at large sizes reads as gappy. Uppercase always:
+   it's a headline voice, not a reading one. */
 .font-display {
-  font-family: var(--font-site);
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+/* ── Redesign motion ─────────────────────────────────────────────────────── */
+
+/* Ticker: the track holds two copies of the items and slides by one copy's
+   width (50%), so the second copy lands exactly where the first began. */
+@keyframes ticker-slide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.ticker-track { animation: ticker-slide 48s linear infinite; }
+.ticker:hover .ticker-track { animation-play-state: paused; }
+
+/* Primary button shine: a diagonal highlight parked off the left edge that
+   sweeps across on hover. */
+.btn-shine { position: relative; overflow: hidden; isolation: isolate; }
+.btn-shine::after {
+  content: '';
+  position: absolute;
+  inset: -40% auto -40% -60%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.55) 50%, transparent 100%);
+  transform: skewX(-18deg) translateX(0);
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+  pointer-events: none;
+}
+.btn-shine:hover::after { transform: skewX(-18deg) translateX(360%); }
+
+/* Film grain over the whole page: a tiny tiled noise texture at low opacity.
+   Cheap, static, and it stops flat colour fields looking like plastic. */
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  mix-blend-mode: overlay;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+  .btn-shine::after { display: none; }
 }

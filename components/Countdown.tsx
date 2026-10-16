@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from 'react'
 
+const CUT = 10
+const chamfer = `polygon(${CUT}px 0, 100% 0, 100% calc(100% - ${CUT}px), calc(100% - ${CUT}px) 100%, 0 100%, 0 ${CUT}px)`
+
 /**
- * arj-style race clock. Renders dashes until mounted: the server and the
- * browser would compute different seconds, and a mismatch there is a React
- * hydration error rather than just a stale number.
+ * Race clock. Renders dashes until mounted: the server and the browser would
+ * compute different seconds, and a mismatch there is a React hydration error
+ * rather than just a stale number.
  */
 export default function Countdown({
   endsAt,
@@ -39,14 +42,27 @@ export default function Countdown({
 
   return (
     <div className="flex flex-col items-center">
-      <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">{ended ? endedLabel : label}</p>
-      <div className="mt-3 flex items-start gap-2 sm:gap-3">
+      <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
+        <span className="h-1.5 w-1.5 rotate-45 bg-accent" />
+        {ended ? endedLabel : label}
+        <span className="h-1.5 w-1.5 rotate-45 bg-accent" />
+      </p>
+      <div className="mt-4 flex items-start gap-2 sm:gap-3">
         {['Days', 'Hours', 'Mins', 'Secs'].map((unit, i) => (
           <div key={unit} className="flex flex-col items-center">
-            <span className="min-w-[56px] sm:min-w-[68px] rounded-xl border border-white/[0.07] bg-ink-raised px-2 py-2.5 text-center text-2xl sm:text-3xl font-bold tabular-nums text-white">
-              {parts ? String(parts[i]).padStart(2, '0') : '--'}
+            {/* Cut-corner tile, lit along the top edge like the panels */}
+            <span
+              className="block p-px"
+              style={{ clipPath: chamfer, background: 'linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.05))' }}
+            >
+              <span
+                className="font-display flex min-w-[64px] items-center justify-center px-2 py-1 text-[2.6rem] leading-none tabular-nums text-white sm:min-w-[80px] sm:text-[3.4rem]"
+                style={{ clipPath: chamfer, background: 'linear-gradient(180deg, #181D4A, #0F1338)' }}
+              >
+                {parts ? String(parts[i]).padStart(2, '0') : '--'}
+              </span>
             </span>
-            <span className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-faint">{unit}</span>
+            <span className="mt-2 text-[10px] font-bold uppercase tracking-[0.24em] text-faint">{unit}</span>
           </div>
         ))}
       </div>

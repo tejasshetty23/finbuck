@@ -36,10 +36,10 @@ const config: Config = {
         bronze: '#E8935F',
       },
       fontFamily: {
-        // One face for headings and text alike: --font-site in globals.css,
-        // loaded by the <link> in app/layout.tsx.
+        // Inter for reading; Big Shoulders Display for headlines and numbers.
+        // Both self-hosted from public/fonts via @font-face in globals.css.
         sans: ['var(--font-site)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-site)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'Arial Narrow', 'Impact', 'sans-serif'],
       },
       boxShadow: {
         accent: '0 0 24px rgba(0,255,135,0.30)',

@@ -39,6 +39,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         {/* Bronze, silver and gold coins drifting over the pattern. */}
         <BackgroundCoins />
+        {/* Film grain over the lot. */}
+        <div aria-hidden className="grain pointer-events-none fixed inset-0 -z-10 opacity-[0.07]" />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

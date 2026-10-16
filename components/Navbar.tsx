@@ -101,7 +101,7 @@ const chevron = (open: boolean) => (
 /** FIN in white, BUCK in the glowing accent, slanted like the reference wordmark. */
 export function Wordmark({ className = 'text-[22px]' }: { className?: string }) {
   return (
-    <span className={`inline-block -skew-x-[8deg] font-extrabold uppercase tracking-tight leading-none ${className}`}>
+    <span className={`font-display inline-block -skew-x-[8deg] leading-none tracking-[0.02em] ${className}`}>
       <span className="text-white">Fin</span>
       <span className="text-accent-bright [text-shadow:0_0_18px_rgba(0,255,135,0.65)]">Buck</span>
     </span>
@@ -112,7 +112,7 @@ export function Wordmark({ className = 'text-[22px]' }: { className?: string }) 
 export function Lockup({ size = 'md' }: { size?: 'md' | 'sm' }) {
   return (
     <Link href="/" className="flex items-center gap-3 shrink-0" aria-label={`FinBuck × ${PARTNER.name} — home`}>
-      <Wordmark className={size === 'md' ? 'text-[22px] sm:text-2xl' : 'text-xl'} />
+      <Wordmark className={size === 'md' ? 'text-[30px] sm:text-[34px]' : 'text-[28px]'} />
       <span className="text-faint text-sm font-semibold">×</span>
       <PartnerWordmark className={size === 'md' ? 'h-7 sm:h-8' : 'h-7'} />
     </Link>

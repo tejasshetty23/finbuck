@@ -21,7 +21,7 @@ const clip = `polygon(${CUT}px 0, 100% 0, 100% calc(100% - ${CUT}px), calc(100% 
 const VARIANT: Record<Variant, { cls: string; bg?: string }> = {
   // Neon fill, dark text.
   primary: {
-    cls: 'text-[#0B0E2A] hover:brightness-[1.06]',
+    cls: 'btn-shine text-[#0B0E2A] hover:brightness-[1.06]',
     bg: 'linear-gradient(180deg, #3DFFA4 0%, #00F07F 100%)',
   },
   // Quiet secondary: a faint lift off whatever it sits on, white text.

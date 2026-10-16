@@ -1,3 +1,4 @@
+import CountUp from './CountUp'
 import { maskName, usd, type Competitor } from '../lib/leaderboard'
 
 // Top-three cards. 1st sits raised in the middle, 2nd and 3rd either side.
@@ -41,7 +42,7 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
     // cut corners don't slice it.
     <div className="relative pt-3">
       <span
-        className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-center gap-1 rounded-md px-3.5 py-0.5 text-xs font-extrabold uppercase tracking-wide text-[#0B0E2A]"
+        className="font-display absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-center gap-1.5 rounded-sm px-4 py-0.5 text-base tracking-[0.04em] text-[#0B0E2A]"
         style={{ background: t.color, boxShadow: `0 4px 18px rgba(${t.rgb},0.35)` }}
       >
         {trophy}
@@ -95,12 +96,12 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
             </div>
           </div>
 
-          <p className={`mt-4 font-extrabold text-white ${first ? 'text-[1.7rem]' : 'text-2xl'}`}>
+          <p className={`font-display mt-4 text-white ${first ? 'text-[2.4rem]' : 'text-[2rem]'}`}>
             {entry ? maskName(entry.name) : 'Open spot'}
           </p>
 
-          <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA0C8]">Weighted wager</p>
-          <p className="mt-0.5 text-xl font-bold tabular-nums text-white">
+          <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.22em] text-[#9AA0C8]">Weighted wager</p>
+          <p className="font-display mt-0.5 text-[1.9rem] tabular-nums text-white">
             {wager ? (
               <>
                 <span className="text-[#9AA0C8]">$</span>
@@ -113,12 +114,12 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
 
           <div className="my-3.5 h-px w-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
 
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#9AA0C8]">Prize</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#9AA0C8]">Prize</p>
           <p
-            className={`mt-0.5 font-extrabold tabular-nums ${first ? 'text-[2.6rem]' : 'text-[2rem]'}`}
+            className={`font-display mt-0.5 tabular-nums ${first ? 'text-[3.6rem]' : 'text-[2.9rem]'}`}
             style={{ color: t.color, textShadow: `0 0 24px rgba(${t.rgb},0.45)` }}
           >
-            {prize === null ? '—' : usd(prize)}
+            {prize === null ? '—' : <CountUp value={prize} />}
           </p>
         </div>
       </div>

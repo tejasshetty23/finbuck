@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Button from '../../components/Button'
 import CopyButton from '../../components/CopyButton'
+import CountUp from '../../components/CountUp'
 import Countdown from '../../components/Countdown'
 import Podium from '../../components/Podium'
 import Reveal from '../../components/Reveal'
@@ -34,6 +35,9 @@ export default async function LeaderboardPage() {
 
   // Every place from 4th down: all competitors, plus any paid places nobody
   // has reached yet shown as open spots, so the whole prize ladder is visible.
+  // Each row's bar is its wager as a share of the leader's, so the table
+  // doubles as a chart of how far the field is behind.
+  const topWager = competitors[0]?.wagered ?? 0
   const lastRow = Math.max(prizes.length, competitors.length)
   const rows = Array.from({ length: Math.max(0, lastRow - 3) }, (_, i) => {
     const position = i + 4
@@ -48,14 +52,23 @@ export default async function LeaderboardPage() {
           className="pointer-events-none absolute inset-x-0 -top-10 h-80"
           style={{ background: 'radial-gradient(50% 60% at 50% 40%, rgba(0,255,135,0.12), transparent 70%)' }}
         />
-        <p className="relative text-xl sm:text-3xl font-bold">
-          <span className="text-gold">{usd(race.prizePool)}</span> <span className="text-white">Monthly Prize Pool</span>
+        <p className="relative mx-auto flex max-w-xs items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
+          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-accent/50" />
+          <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
+          <span className="whitespace-nowrap">Monthly prize pool</span>
+          <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
+          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-accent/50" />
         </p>
-        <h1
-          className="relative mt-2 text-[clamp(2.25rem,11vw,6rem)] font-extrabold uppercase tracking-tight leading-none text-accent-bright"
-          style={{ textShadow: '0 0 44px rgba(0,255,135,0.35)' }}
-        >
-          Leaderboard
+        <h1 className="font-display relative mt-4 leading-[0.85]">
+          <span className="block text-[clamp(4rem,16vw,9rem)] text-gold [text-shadow:0_0_40px_rgba(255,196,77,0.3)]">
+            <CountUp value={race.prizePool} />
+          </span>
+          <span
+            className="block text-[clamp(2.75rem,11vw,6.5rem)] text-accent-bright"
+            style={{ textShadow: '0 0 44px rgba(0,255,135,0.35)' }}
+          >
+            Leaderboard
+          </span>
         </h1>
         {/* A plain paragraph, not a flex row: as flex, the copy button forced a
             wrap that stranded "Play with code BUCK" on a line of its own. */}
@@ -75,7 +88,8 @@ export default async function LeaderboardPage() {
       </section>
 
       {race.isSample && (
-        <p className="mx-auto mb-8 max-w-md rounded-xl border border-gold/30 bg-gold/5 px-4 py-2.5 text-center text-xs text-gold">
+        <p className="mx-auto mb-8 flex max-w-md items-center justify-center gap-2 border border-gold/30 bg-gold/5 px-4 py-2.5 text-center text-xs text-gold" style={{ clipPath: 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)' }}>
+          <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold" />
           Preview — placeholder standings until the first {PARTNER.name} race data is uploaded.
         </p>
       )}
@@ -108,9 +122,18 @@ export default async function LeaderboardPage() {
             {rows.map(({ position, entry, prize }) => (
               <li
                 key={position}
-                className="grid grid-cols-[2.6rem_1fr_auto_3.6rem] sm:grid-cols-[4.5rem_1fr_9rem_7rem] items-center gap-x-2 sm:gap-x-3 rounded-xl border border-white/[0.06] bg-ink-raised px-3 sm:px-4 py-3 text-[13px] sm:text-sm transition-colors hover:bg-ink-high"
+                className="relative grid grid-cols-[2.6rem_1fr_auto_3.6rem] sm:grid-cols-[4.5rem_1fr_9rem_7rem] items-center gap-x-2 sm:gap-x-3 overflow-hidden border border-white/[0.06] bg-ink-raised px-3 sm:px-4 py-3 text-[13px] sm:text-sm transition-colors hover:bg-ink-high"
+                style={{ clipPath: 'polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)' }}
               >
-                <span className="font-bold text-muted tabular-nums">{ordinal(position)}</span>
+                {/* Wager bar along the bottom edge */}
+                {entry && topWager > 0 && (
+                  <span
+                    aria-hidden
+                    className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-accent/80 to-accent/20"
+                    style={{ width: `${Math.max(2, (entry.wagered / topWager) * 100)}%` }}
+                  />
+                )}
+                <span className="font-display text-[1.35rem] leading-none text-muted tabular-nums">{ordinal(position)}</span>
                 <span className="flex min-w-0 items-center gap-2.5">
                   <span className="hidden sm:flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink-deep text-[11px] font-bold text-faint">
                     {entry ? (maskName(entry.name)[0] ?? '?').toUpperCase() : '·'}
@@ -122,7 +145,7 @@ export default async function LeaderboardPage() {
                 <span className="text-right font-semibold tabular-nums text-white/85">
                   {entry ? usd(entry.wagered, true) : '—'}
                 </span>
-                <span className={`text-right font-bold tabular-nums ${prize === null ? 'text-faint' : 'text-accent-bright'}`}>
+                <span className={`font-display text-right text-[1.35rem] leading-none tabular-nums ${prize === null ? 'text-faint' : 'text-accent-bright'}`}>
                   {prize === null ? '—' : usd(prize)}
                 </span>
               </li>

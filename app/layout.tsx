@@ -26,16 +26,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </noscript>
       </head>
       <body className="bg-ink font-sans text-white min-h-screen flex flex-col antialiased">
-        {/* Swirl texture from public/pattern.jpg, turned into a violet overlay
-            (public/pattern-overlay.webp) and stretched once across the
-            viewport. Not tiled: the source isn't seamless, so repeating it
-            drew a visible grid. Fixed, so it stays put while the page scrolls;
-            a fixed element rather than background-attachment, which iOS
-            ignores. */}
+        {/* Organic line texture from the seamless grey-and-white source,
+            turned into a navy overlay (public/pattern-lines.webp: line colour
+            fixed, darkness becomes alpha, white becomes transparent). The
+            source is seamless, so it tiles with no visible grid. Fixed, so it
+            stays put while the page scrolls; a fixed element rather than
+            background-attachment, which iOS ignores. */}
         <div
           aria-hidden
-          className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-[0.35]"
-          style={{ backgroundImage: 'url(/pattern-overlay.webp)' }}
+          className="pointer-events-none fixed inset-0 -z-10 bg-repeat bg-center opacity-[0.35] [background-size:720px_auto] md:[background-size:1100px_auto]"
+          style={{ backgroundImage: 'url(/pattern-lines.webp)' }}
         />
         {/* Bronze, silver and gold coins drifting over the pattern. */}
         <BackgroundCoins />

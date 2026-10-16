@@ -119,11 +119,12 @@ export function Lockup({ size = 'md' }: { size?: 'md' | 'sm' }) {
   )
 }
 
-export function CodeButton({ className = '' }: { className?: string }) {
+export function CodeButton({ className = '', shape = 'cut' }: { className?: string; shape?: 'cut' | 'pill' }) {
   return (
-    // The same cut-corner button as the rest of the site, minus the trailing
-    // ↗ — the code is the point here, not the fact that it opens a new tab.
-    <Button href={SIGNUP_URL} external sponsored size="sm" className={`[&>svg]:hidden ${className}`}>
+    // The site's primary button, minus the trailing ↗: the code is the point
+    // here, not the fact that it opens a new tab. In the header it's a pill,
+    // nested concentrically in the header's rounded end.
+    <Button href={SIGNUP_URL} external sponsored size="sm" shape={shape} className={`[&>svg]:hidden ${className}`}>
       <span className="font-semibold">Use code</span>
       <span className="font-extrabold">{CODE}</span>
     </Button>
@@ -253,7 +254,7 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <CodeButton className="hidden sm:inline-flex" />
+          <CodeButton shape="pill" className="hidden sm:inline-flex" />
           <button
             className="xl:hidden rounded-full p-2 text-muted hover:text-white hover:bg-white/[0.05] transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}

@@ -186,9 +186,12 @@ export default async function Home() {
                     </Button>
                   </div>
 
-                  {/* The code as a chip: a cut-corner tile with a glossy top */}
+                  {/* The code as a chip: a cut-corner tile with a glossy top.
+                      The wrapper bounces it in place; the tilt stays on the
+                      tile so the two transforms don't overwrite each other. */}
+                  <div className="code-bounce hidden sm:block">
                   <div
-                    className="relative hidden h-44 w-44 rotate-[8deg] flex-col items-center justify-center bg-[#0B0E2A] shadow-[0_30px_60px_rgba(11,14,42,0.45)] sm:flex"
+                    className="relative flex h-48 w-48 rotate-[8deg] flex-col items-center justify-center bg-[#0B0E2A] shadow-[0_30px_60px_rgba(11,14,42,0.45)] lg:h-52 lg:w-52"
                     style={{ clipPath: chamfer }}
                   >
                     <div
@@ -196,10 +199,11 @@ export default async function Home() {
                       className="absolute inset-x-0 top-0 h-1/2"
                       style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.08), transparent)' }}
                     />
-                    <span className="font-display relative text-[3.2rem] leading-none text-accent-bright [text-shadow:0_0_22px_rgba(0,255,135,0.5)]">
+                    <span className="relative mb-2 text-[10px] font-bold uppercase tracking-[0.34em] text-muted">Code</span>
+                    <span className="font-display relative text-[3.5rem] leading-none text-accent-bright [text-shadow:0_0_24px_rgba(0,255,135,0.5)] lg:text-[3.9rem]">
                       {CODE}
                     </span>
-                    <span className="relative mt-2 text-[10px] font-bold uppercase tracking-[0.34em] text-muted">Code</span>
+                  </div>
                   </div>
                 </div>
               </div>

@@ -446,3 +446,19 @@ html {
   .ticker-track { animation: none; }
   .btn-shine::after { display: none; }
 }
+
+/* The tilted BUCK code tile hops in place: a quick rise, a heavier fall,
+   then a small rebound before it settles and waits for the next hop. */
+@keyframes code-bounce {
+  0%   { transform: translateY(0);     animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1); }
+  30%  { transform: translateY(-18px); animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+  52%  { transform: translateY(0);     animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1); }
+  62%  { transform: translateY(-5px);  animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+  72%, 100% { transform: translateY(0); }
+}
+
+.code-bounce { animation: code-bounce 2.4s infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .code-bounce { animation: none; }
+}

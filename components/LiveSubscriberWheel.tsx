@@ -2,6 +2,10 @@
 
 import { useRef, useState, useEffect, type ReactNode } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Button from './Button'
+import Modal from './Modal'
+import PageHeader from './PageHeader'
+import Panel from './Panel'
 import Roller from './Roller'
 
 // Chat arrives through /api/chat, which holds the connection to Kick server-
@@ -269,127 +273,124 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
   const requested = searchParams.get('picker') as PickerId | null
   const view: PickerId = requested && PICKER_IDS.includes(requested) ? requested : 'giveaway'
 
-  const checkboxClass =
-    'appearance-none w-4 h-4 rounded-[3px] border-2 border-[#00ff87] bg-transparent checked:bg-[#00ff87] cursor-pointer transition-colors disabled:opacity-50 shrink-0'
+  const titles: Record<PickerId, { eyebrow: string; title: ReactNode; lede: string }> = {
+    giveaway: {
+      eyebrow: 'Live from Kick chat',
+      title: <>Giveaway <span className="text-accent-bright">picker</span></>,
+      lede: 'Viewers type the keyword in chat to enter. Roll to draw one, then watch them check in.',
+    },
+    prize: {
+      eyebrow: 'Spin for the reward',
+      title: <>Prize <span className="text-accent-bright">picker</span></>,
+      lede: 'Spin the wheel to see what the winner takes home.',
+    },
+    number: {
+      eyebrow: 'Pick a number',
+      title: <>Number <span className="text-accent-bright">roller</span></>,
+      lede: 'A whole number from the range, drawn like a slot reel.',
+    },
+  }
+  const t = titles[view]
+
+  const statusDot = isConnected ? 'bg-accent animate-pulse' : status === 'error' ? 'bg-red-500' : 'bg-faint'
 
   return (
     <div>
-
-      {/* Active picker's title, at the same scale as other pages' headings */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight leading-tight">
-          {view === 'prize' ? (
-            <span className="animated-gradient-text-purple">Prize Picker</span>
-          ) : view === 'number' ? (
-            <span className="animated-gradient-text">Number Roller</span>
-          ) : (
-            <span className="animated-gradient-text">Giveaway Picker</span>
-          )}
-        </h1>
-      </div>
+      <PageHeader eyebrow={t.eyebrow} title={t.title} live={view === 'giveaway' && isConnected} className="mb-10">
+        {t.lede}
+      </PageHeader>
 
       {/* Chat controls belong to the giveaway picker only — the prize wheel and
           number roller draw from nothing chat-related. Hidden rather than
           unmounted so the typed keyword survives switching away and back. */}
-      <div className={`w-full max-w-md mx-auto mb-8 ${view === 'giveaway' ? '' : 'hidden'}`}>
-        {/* Keyword input */}
-        <div className="text-left">
-          <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Keyword</label>
+      <div className={`mx-auto mb-6 w-full max-w-md ${view === 'giveaway' ? '' : 'hidden'}`}>
+        <Panel innerClassName="p-5 sm:p-6">
+          <label className="block text-[11px] font-bold uppercase tracking-[0.3em] text-faint">Keyword</label>
           <input
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             disabled={isConnected}
             placeholder="buck"
-            className="w-full h-12 bg-[#0d0a1a] border border-purple-700/50 rounded-lg px-4 text-base text-white focus:outline-none focus:border-[#00ff87] disabled:opacity-50"
+            className="field mt-2 font-semibold"
           />
-        </div>
 
-        {/* Connect on the left, checkboxes stacked on the right */}
-        <div className="flex items-center justify-center gap-6 mt-4">
-          {!isConnected ? (
-            <button
-              onClick={connect}
-              disabled={status === 'connecting'}
-              className="h-12 text-black font-black px-6 rounded-lg uppercase tracking-widest text-sm transition-all disabled:opacity-50"
-              style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)' }}
-            >
-              {status === 'connecting' ? 'Connecting…' : 'Connect to Chat'}
-            </button>
-          ) : (
-            <button
-              onClick={disconnect}
-              className="h-12 border border-red-500/40 text-red-300 hover:bg-red-500/10 font-bold px-6 rounded-lg uppercase tracking-widest text-sm transition-all"
-            >
-              Disconnect
-            </button>
-          )}
-
-          <div className="flex flex-col gap-1.5">
-            <label className="flex items-center gap-2 text-sm text-[#00ff87] font-semibold cursor-pointer">
-              <input type="checkbox" checked={subsOnly} onChange={(e) => setSubsOnly(e.target.checked)} disabled={isConnected} className={checkboxClass} />
-              Subscribers only
-            </label>
-
-            {/* Subluck — only when subs-only is off: active subscribers get 2x entries */}
-            {!subsOnly && (
-              <label className="flex items-center gap-2 text-sm text-[#00ff87] font-semibold cursor-pointer" title="Subscribers get double entries on the roller">
-                <input type="checkbox" checked={subLuck} onChange={(e) => setSubLuck(e.target.checked)} className={checkboxClass} />
-                <span><span className="font-black">2×</span> Subluck</span>
-              </label>
+          {/* Connect on the left, checkboxes stacked on the right */}
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+            {!isConnected ? (
+              <Button onClick={connect} disabled={status === 'connecting'}>
+                {status === 'connecting' ? 'Connecting…' : 'Connect to chat'}
+              </Button>
+            ) : (
+              <Button onClick={disconnect} variant="ghost" className="!text-red-300">
+                Disconnect
+              </Button>
             )}
-          </div>
-        </div>
 
-        {/* Status row */}
-        <div className="flex items-center justify-center gap-4 mt-3">
-          <span className="inline-flex items-center gap-2 text-xs">
-            <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#00ff87] animate-pulse' : status === 'error' ? 'bg-red-500' : 'bg-gray-600'}`} />
-            <span className="text-gray-400">
+            <div className="flex flex-col gap-2">
+              <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-white">
+                <input type="checkbox" checked={subsOnly} onChange={(e) => setSubsOnly(e.target.checked)} disabled={isConnected} className="check" />
+                Subscribers only
+              </label>
+
+              {/* Subluck — only when subs-only is off: active subscribers get 2x entries */}
+              {!subsOnly && (
+                <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-white" title="Subscribers get double entries on the roller">
+                  <input type="checkbox" checked={subLuck} onChange={(e) => setSubLuck(e.target.checked)} className="check" />
+                  <span><span className="text-accent-bright">2×</span> Subluck</span>
+                </label>
+              )}
+            </div>
+          </div>
+
+          {/* Status row */}
+          <div className="mt-4 flex items-center justify-between gap-4 border-t border-white/[0.06] pt-4">
+            <span className="inline-flex items-center gap-2 text-xs text-muted">
+              <span className={`h-2 w-2 rounded-full ${statusDot}`} />
               {isConnected ? `Live · ${entries.length} entered` : status === 'connecting' ? 'Connecting…' : status === 'error' ? 'Not connected' : 'Idle'}
             </span>
-          </span>
 
-          {entries.length > 0 && (
-            <button
-              onClick={clearEntries}
-              className="inline-flex items-center gap-1.5 text-red-300 hover:text-red-200 font-bold uppercase tracking-widest text-[10px] transition-all"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-              </svg>
-              Clear
-            </button>
-          )}
-        </div>
+            {entries.length > 0 && (
+              <button
+                type="button"
+                onClick={clearEntries}
+                className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-red-300 transition-colors hover:text-red-200"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3.5 w-3.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+                Clear
+              </button>
+            )}
+          </div>
 
-        {error && <p className="text-red-400/80 text-xs leading-relaxed text-center mt-2">{error}</p>}
-        {verifyWarning && <p className="text-amber-400/90 text-xs leading-relaxed text-center mt-2">⚠ {verifyWarning}</p>}
+          {error && <p className="mt-3 text-center text-xs leading-relaxed text-red-300">{error}</p>}
+          {verifyWarning && <p className="mt-3 text-center text-xs leading-relaxed text-gold">⚠ {verifyWarning}</p>}
+        </Panel>
       </div>
 
       {/* All three stay mounted; only the selected one is shown */}
       <div className="flex flex-col gap-8">
-        {/* Giveaway wheel */}
-        <div className={`relative rounded-2xl border border-purple-900/40 bg-[#0d0a1a]/40 p-6 pt-16 ${view === 'giveaway' ? '' : 'hidden'}`}>
-          {/* Status — top-left corner */}
-          <div className="absolute top-5 left-5 z-20 inline-flex items-center gap-2 text-xs">
-            <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#00ff87] animate-pulse' : status === 'error' ? 'bg-red-500' : 'bg-gray-600'}`} />
-            <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">
+        {/* Giveaway roller */}
+        <div className={view === 'giveaway' ? '' : 'hidden'}>
+          <Panel innerClassName="relative p-5 pt-16 sm:p-6 sm:pt-16">
+            {/* Status — top-left corner */}
+            <div className="absolute left-5 top-5 z-20 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-faint sm:left-6">
+              <span className={`h-2 w-2 rounded-full ${statusDot}`} />
               {isConnected ? 'Live' : status === 'connecting' ? 'Connecting' : status === 'error' ? 'Not connected' : 'Inactive'}
-            </span>
-          </div>
-          {/* View entrants — top-right corner */}
-          <button
-            onClick={() => setShowEntrants(true)}
-            className="absolute top-5 right-5 z-20 inline-flex items-center gap-1.5 border border-purple-500/40 text-purple-200 hover:text-white hover:border-purple-400 hover:bg-purple-500/10 font-bold py-1.5 px-3 rounded-lg uppercase tracking-widest text-[10px] transition-all"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-            </svg>
-            View Entrants ({entries.length})
-          </button>
-          <div className="w-full flex items-center justify-center">
-            <Roller items={rollerItems} winWord="Congrats!" onWatch={watchWinner} winnerMessages={winnerMessages} onPick={removeEntrant} />
-          </div>
+            </div>
+            {/* View entrants — top-right corner */}
+            <div className="absolute right-5 top-4 z-20 sm:right-6">
+              <Button onClick={() => setShowEntrants(true)} variant="ghost" size="xs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3.5 w-3.5" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                </svg>
+                Entrants ({entries.length})
+              </Button>
+            </div>
+            <div className="flex w-full items-center justify-center">
+              <Roller items={rollerItems} winWord="Congrats!" onWatch={watchWinner} winnerMessages={winnerMessages} onPick={removeEntrant} />
+            </div>
+          </Panel>
         </div>
 
         {/* Prize wheel and number roller come from the page */}
@@ -399,32 +400,19 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
 
       {/* Entrants popup */}
       {showEntrants && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/75 backdrop-blur-sm" onClick={() => setShowEntrants(false)}>
-          <div
-            className="relative max-w-md w-full rounded-2xl border border-purple-700/40 bg-[#0d0a1a] p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-white font-black uppercase tracking-widest text-sm">Entrants ({entries.length})</h4>
-              <button onClick={() => setShowEntrants(false)} className="text-gray-500 hover:text-white transition-colors" aria-label="Close">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        <Modal onClose={() => setShowEntrants(false)} title={`Entrants (${entries.length})`}>
+          {entries.length === 0 ? (
+            <p className="text-sm text-muted">No entries yet — viewers type the keyword in chat to join.</p>
+          ) : (
+            <div className="flex max-h-72 flex-wrap gap-1.5 overflow-y-auto pr-1">
+              {entries.map((name, i) => (
+                <span key={i} className="break-all rounded-full border border-white/10 bg-[#0B0E2A] px-2.5 py-1 text-xs text-muted">
+                  {name}
+                </span>
+              ))}
             </div>
-            {entries.length === 0 ? (
-              <p className="text-gray-600 text-sm">No entries yet — subscribers type the keyword in chat to join.</p>
-            ) : (
-              <div className="flex flex-wrap gap-1.5 max-h-72 overflow-y-auto pr-1">
-                {entries.map((name, i) => (
-                  <span key={i} className="text-xs text-gray-300 bg-[#07050f] border border-purple-900/40 rounded-full px-2.5 py-1 break-all">
-                    {name}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+          )}
+        </Modal>
       )}
     </div>
   )

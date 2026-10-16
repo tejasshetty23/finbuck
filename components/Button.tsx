@@ -9,8 +9,12 @@ import type { ReactNode } from 'react'
 // one-pixel lift on hover and a press on click. Labels are sentence case; an
 // icon appears only where it carries meaning (a brand mark, or ↗ for a link
 // that leaves the site).
+//
+// With `href` it renders a link; with `onClick` (and no href) it renders a
+// real <button>, so the tool pages' controls share the same shape as the
+// site's links instead of carrying their own styles.
 
-type Variant = 'primary' | 'ghost' | 'dark'
+type Variant = 'primary' | 'ghost' | 'dark' | 'gold' | 'outline'
 
 const CUT = 9
 
@@ -32,6 +36,16 @@ const VARIANT: Record<Variant, { cls: string; bg?: string }> = {
   dark: {
     cls: 'bg-[#0B0E2A] text-accent-bright hover:bg-[#151A45]',
   },
+  // Champion / prize moments only.
+  gold: {
+    cls: 'btn-shine text-[#0B0E2A] hover:brightness-[1.06]',
+    bg: 'linear-gradient(180deg, #FFD978 0%, #FFC83D 100%)',
+  },
+  // Green text on a faint green ground: a secondary action that still
+  // belongs to the accent (re-roll, set range, edit).
+  outline: {
+    cls: 'bg-accent/[0.08] text-accent-bright hover:bg-accent/[0.16]',
+  },
 }
 
 export const externalIcon = (
@@ -42,6 +56,10 @@ export const externalIcon = (
 
 export default function Button({
   href,
+  onClick,
+  type = 'button',
+  disabled = false,
+  title,
   children,
   variant = 'primary',
   icon,
@@ -50,7 +68,12 @@ export default function Button({
   size = 'md',
   className = '',
 }: {
-  href: string
+  /** Where the button goes. Omit it (and pass onClick) for an action button. */
+  href?: string
+  onClick?: () => void
+  type?: 'button' | 'submit'
+  disabled?: boolean
+  title?: string
   children: ReactNode
   variant?: Variant
   /** Leading icon, e.g. a brand mark. */
@@ -64,7 +87,7 @@ export default function Button({
   className?: string
 }) {
   const v = VARIANT[variant]
-  const cls = `group inline-flex items-center justify-center gap-2 font-bold tracking-[0.01em] whitespace-nowrap transition-[transform,filter,background-color] duration-150 hover:-translate-y-px active:translate-y-px ${
+  const cls = `group inline-flex items-center justify-center gap-2 font-bold tracking-[0.01em] whitespace-nowrap transition-[transform,filter,background-color,opacity] duration-150 hover:-translate-y-px active:translate-y-px disabled:pointer-events-none disabled:opacity-40 ${
     size === 'md' ? 'h-12 px-6 text-[15px]' : size === 'sm' ? 'h-10 px-4 text-sm' : 'h-[34px] px-3.5 text-sm'
   } ${v.cls} ${className}`
   const style = v.bg ? { clipPath: clip, background: v.bg } : { clipPath: clip }
@@ -76,6 +99,14 @@ export default function Button({
     </>
   )
 
+  if (!href) {
+    return (
+      <button type={type} onClick={onClick} disabled={disabled} title={title} className={cls} style={style}>
+        {inner}
+      </button>
+    )
+  }
+
   if (external) {
     return (
       <a
@@ -84,13 +115,14 @@ export default function Button({
         rel={sponsored ? 'noopener noreferrer sponsored' : 'noopener noreferrer'}
         className={cls}
         style={style}
+        title={title}
       >
         {inner}
       </a>
     )
   }
   return (
-    <Link href={href} className={cls} style={style}>
+    <Link href={href} className={cls} style={style} title={title}>
       {inner}
     </Link>
   )

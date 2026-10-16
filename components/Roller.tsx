@@ -1,9 +1,14 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import Button from './Button'
+import Modal from './Modal'
 
-// Two-tone: site green + royal purple, alternating.
-const COLORS = ['#00ff87', '#6d28d9']
+// Two-tone: the site's green and the raised navy of its cards, alternating.
+const COLORS = ['#00FF87', '#2A2F6E']
+
+// Cut corners, same as the buttons.
+const CARD_CUT = 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)'
 
 // Stride of one card (includes its padding gap).
 const CARD_W = 166
@@ -294,38 +299,38 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
   const canRoll = pool.length >= 2 && !rolling
 
   return (
-    <div className="flex flex-col items-center w-full">
-      {/* Roller viewport */}
-      <div className="relative w-full h-28 overflow-hidden rounded-2xl border border-purple-900/40 bg-[#07050f]">
+    <div className="flex w-full flex-col items-center">
+      {/* Roller viewport: a sunken well in the panel */}
+      <div className="relative h-28 w-full overflow-hidden rounded-xl border border-white/[0.06] bg-[#080A20]">
         {/* Edge fades */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-16 z-10 bg-gradient-to-r from-[#07050f] to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 z-10 bg-gradient-to-l from-[#07050f] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[#080A20] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#080A20] to-transparent" />
 
         {/* Center marker */}
         <div
-          className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 z-20 w-[3px] bg-[#00ff87]"
+          className="absolute bottom-0 left-1/2 top-0 z-20 w-[3px] -translate-x-1/2 bg-accent"
           style={{ boxShadow: '0 0 14px rgba(0,255,135,0.8)' }}
         />
-        <div className="absolute left-1/2 -translate-x-1/2 top-0 z-20" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))' }}>
-          <svg width="18" height="11" viewBox="0 0 18 11"><path d="M0 0 L18 0 L9 11 Z" fill="#00ff87" /></svg>
+        <div className="absolute left-1/2 top-0 z-20 -translate-x-1/2" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))' }}>
+          <svg width="18" height="11" viewBox="0 0 18 11"><path d="M0 0 L18 0 L9 11 Z" fill="#00FF87" /></svg>
         </div>
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-0 z-20" style={{ filter: 'drop-shadow(0 -1px 2px rgba(0,0,0,0.6))' }}>
-          <svg width="18" height="11" viewBox="0 0 18 11"><path d="M0 11 L18 11 L9 0 Z" fill="#00ff87" /></svg>
+        <div className="absolute bottom-0 left-1/2 z-20 -translate-x-1/2" style={{ filter: 'drop-shadow(0 -1px 2px rgba(0,0,0,0.6))' }}>
+          <svg width="18" height="11" viewBox="0 0 18 11"><path d="M0 11 L18 11 L9 0 Z" fill="#00FF87" /></svg>
         </div>
 
         {/* Strip */}
-        <div ref={stripRef} className="absolute left-1/2 top-0 h-full flex" style={{ willChange: 'transform' }}>
+        <div ref={stripRef} className="absolute left-1/2 top-0 flex h-full" style={{ willChange: 'transform' }}>
           {strip.map((name, i) => {
             const c = COLORS[i % COLORS.length]
             const isGreen = i % 2 === 0
             return (
               <div key={i} className="h-full shrink-0 p-1.5" style={{ width: CARD_W }}>
                 <div
-                  className="h-full w-full rounded-xl flex items-center justify-center text-center px-2.5 font-black leading-tight break-words [overflow-wrap:anywhere]"
+                  className="flex h-full w-full items-center justify-center break-words px-2.5 text-center font-bold leading-tight [overflow-wrap:anywhere]"
                   style={{
-                    background: `linear-gradient(160deg, ${lighten(c, 0.18)}, ${darken(c, 0.72)})`,
-                    color: isGreen ? '#06210f' : '#ffffff',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    clipPath: CARD_CUT,
+                    background: `linear-gradient(180deg, ${lighten(c, 0.16)}, ${darken(c, 0.78)})`,
+                    color: isGreen ? '#0B0E2A' : '#ffffff',
                     fontSize: name ? fontForName(name) : undefined,
                   }}
                 >
@@ -338,123 +343,100 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
       </div>
 
       {/* Roll button */}
-      <button
-        onClick={() => roll()}
-        disabled={!canRoll}
-        className="mt-6 text-black font-black py-3 px-10 rounded-xl uppercase tracking-widest text-sm transition-transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
-        style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)' }}
-      >
+      <Button onClick={() => roll()} disabled={!canRoll} className="mt-6 min-w-[160px]">
         {rolling ? 'Rolling…' : 'Roll'}
-      </button>
+      </Button>
 
-      {pickError && <p className="mt-3 text-red-400/90 text-xs text-center">{pickError}</p>}
+      {pickError && <p className="mt-3 text-center text-xs text-red-300">{pickError}</p>}
 
       {/* Win popup */}
       {showWin && winner && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/75 backdrop-blur-sm" onClick={() => setShowWin(false)}>
-          <div
-            className="relative max-w-sm w-full overflow-hidden text-center rounded-2xl"
-            style={{
-              background:
-                'linear-gradient(160deg, #0a1f12 0%, #06120a 55%, #000000 100%) padding-box, linear-gradient(135deg, #00ff87 0%, #00c96a 50%, #00ff87 100%) border-box',
-              border: '2px solid transparent',
-              boxShadow: '0 0 0 1px rgba(0,0,0,0.6), 0 24px 70px rgba(0,0,0,0.75), 0 0 60px rgba(0,255,135,0.22)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Top accent line */}
-            <div className="pointer-events-none absolute top-0 left-0 right-0 h-[3px] z-20" style={{ background: 'linear-gradient(90deg, transparent, #00ff87, #4ade80, #00ff87, transparent)' }} />
-            <div className="px-7 pt-7 pb-7 relative">
-            {/* FinBuck as a god — halo + radiating rays behind the cutout */}
-            <div className="relative mx-auto mb-3 w-fit">
-              {/* Rotating god-rays */}
-              <div
-                className="godray pointer-events-none absolute left-1/2 top-1/2 rounded-full"
-                style={{
-                  width: 230,
-                  height: 230,
-                  background: 'repeating-conic-gradient(from 0deg, rgba(0,255,135,0.34) 0deg 5deg, transparent 5deg 16deg)',
-                  WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,0.95) 16%, rgba(0,0,0,0.5) 40%, transparent 70%)',
-                  maskImage: 'radial-gradient(circle, rgba(0,0,0,0.95) 16%, rgba(0,0,0,0.5) 40%, transparent 70%)',
-                }}
-              />
-              {/* Oval halo glow */}
-              <div
-                className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                style={{
-                  width: 150,
-                  height: 195,
-                  borderRadius: '50%',
-                  background: 'radial-gradient(ellipse at center, rgba(0,255,135,0.6), rgba(0,255,135,0.18) 55%, transparent 72%)',
-                  filter: 'blur(7px)',
-                }}
-              />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/finbuck-face.webp"
-                alt="Winner"
-                className="relative max-h-36 w-auto object-contain"
-                style={{ filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.55)) drop-shadow(0 0 14px rgba(0,255,135,0.4))' }}
-              />
-            </div>
-            <p className="text-[11px] font-black uppercase tracking-[0.35em] mb-1" style={{ color: '#00ff87' }}>{winWord}</p>
-            <p className="text-3xl font-black mb-5 break-words text-white">{winner}</p>
+        <Modal onClose={() => setShowWin(false)} tone="accent" size="sm" innerClassName="p-7 text-center">
+          {/* FinBuck as a god — halo + radiating rays behind the cutout */}
+          <div className="relative mx-auto mb-3 w-fit">
+            {/* Rotating god-rays */}
+            <div
+              className="godray pointer-events-none absolute left-1/2 top-1/2 rounded-full"
+              style={{
+                width: 230,
+                height: 230,
+                background: 'repeating-conic-gradient(from 0deg, rgba(0,255,135,0.34) 0deg 5deg, transparent 5deg 16deg)',
+                WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,0.95) 16%, rgba(0,0,0,0.5) 40%, transparent 70%)',
+                maskImage: 'radial-gradient(circle, rgba(0,0,0,0.95) 16%, rgba(0,0,0,0.5) 40%, transparent 70%)',
+              }}
+            />
+            {/* Oval halo glow */}
+            <div
+              className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              style={{
+                width: 150,
+                height: 195,
+                borderRadius: '50%',
+                background: 'radial-gradient(ellipse at center, rgba(0,255,135,0.6), rgba(0,255,135,0.18) 55%, transparent 72%)',
+                filter: 'blur(7px)',
+              }}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/finbuck-face.webp"
+              alt="Winner"
+              className="relative max-h-36 w-auto object-contain"
+              style={{ filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.55)) drop-shadow(0 0 14px rgba(0,255,135,0.4))' }}
+            />
+          </div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-accent-bright">{winWord}</p>
+          <p className="font-display mt-1 break-words text-[2.8rem] leading-none text-white">{winner}</p>
 
-            {/* Presence check — live chat from the winner for 30s */}
-            <div className="text-left mb-5">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Presence check</span>
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-black" style={{ color: secondsLeft > 0 ? '#00ff87' : '#9ca3af' }}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${secondsLeft > 0 ? 'bg-[#00ff87] animate-pulse' : 'bg-gray-500'}`} />
-                  {secondsLeft > 0 ? `${secondsLeft}s` : 'Ended'}
-                </span>
-              </div>
-              <div className="h-20 overflow-y-auto rounded-lg border border-[#00ff87]/20 bg-black/40 p-2.5 space-y-1.5">
-                {winnerMessages.length === 0 ? (
-                  <p className="text-gray-600 text-xs">
-                    {secondsLeft > 0
-                      ? `Waiting for ${winner} to type in chat…`
-                      : `${winner} didn't send any messages.`}
+          {/* Presence check — live chat from the winner for 30s */}
+          <div className="mt-5 text-left">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-faint">Presence check</span>
+              <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold ${secondsLeft > 0 ? 'text-accent-bright' : 'text-faint'}`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${secondsLeft > 0 ? 'animate-pulse bg-accent' : 'bg-faint'}`} />
+                {secondsLeft > 0 ? `${secondsLeft}s` : 'Ended'}
+              </span>
+            </div>
+            <div className="h-20 space-y-1.5 overflow-y-auto rounded-lg border border-white/[0.08] bg-[#080A20] p-2.5">
+              {winnerMessages.length === 0 ? (
+                <p className="text-xs text-faint">
+                  {secondsLeft > 0
+                    ? `Waiting for ${winner} to type in chat…`
+                    : `${winner} didn't send any messages.`}
+                </p>
+              ) : (
+                winnerMessages.map((m, i) => (
+                  <p key={i} className="break-words text-left text-xs leading-snug text-white">
+                    <span className="font-bold text-accent-bright">{winner}:</span> {m.text}
                   </p>
-                ) : (
-                  winnerMessages.map((m, i) => (
-                    <p key={i} className="text-xs text-gray-200 break-words leading-snug text-left">
-                      <span className="font-bold" style={{ color: '#00ff87' }}>{winner}:</span> {m.text}
-                    </p>
-                  ))
-                )}
-              </div>
-              {winnerMessages.length > 0 && (
-                <p className="text-[10px] text-[#00ff87] mt-2 font-bold uppercase tracking-widest">✓ Active in chat</p>
+                ))
               )}
             </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  const absent = winner
-                  setShowWin(false)
-                  roll(absent)
-                }}
-                disabled={pool.length < 2}
-                className="flex-1 border border-purple-500/50 text-purple-200 hover:text-white hover:bg-purple-500/15 font-black py-3 rounded-lg uppercase tracking-widest text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h5M20 20v-5h-5M5.5 9A7 7 0 0118 7.5M18.5 15A7 7 0 016 16.5" />
-                </svg>
-                Re-roll
-              </button>
-              <button
-                onClick={() => setShowWin(false)}
-                className="flex-1 text-black font-black py-3 rounded-lg uppercase tracking-widest text-sm transition-all hover:brightness-110"
-                style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)' }}
-              >
-                Close
-              </button>
-            </div>
-            </div>
+            {winnerMessages.length > 0 && (
+              <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.2em] text-accent-bright">✓ Active in chat</p>
+            )}
           </div>
-        </div>
+
+          <div className="mt-5 flex gap-3">
+            <Button
+              onClick={() => {
+                const absent = winner
+                setShowWin(false)
+                roll(absent)
+              }}
+              disabled={pool.length < 2}
+              variant="outline"
+              className="flex-1"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h5M20 20v-5h-5M5.5 9A7 7 0 0118 7.5M18.5 15A7 7 0 016 16.5" />
+              </svg>
+              Re-roll
+            </Button>
+            <Button onClick={() => setShowWin(false)} className="flex-1">
+              Close
+            </Button>
+          </div>
+        </Modal>
       )}
     </div>
   )

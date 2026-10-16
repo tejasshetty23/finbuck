@@ -1,386 +1,163 @@
-import Image from 'next/image'
+import type { Metadata } from 'next'
+import Button from '../../components/Button'
+import CopyButton from '../../components/CopyButton'
+import CountUp from '../../components/CountUp'
+import PageHeader from '../../components/PageHeader'
+import Panel from '../../components/Panel'
 import Reveal from '../../components/Reveal'
-import TiltCard from '../../components/TiltCard'
+import { PartnerWordmark } from '../../components/PartnerLogo'
+import { CODE, PARTNER, RACE, SIGNUP_URL, SOCIALS } from '../../lib/site'
+import { usd } from '../../lib/leaderboard'
 
-type Perk = {
-  /** The hook, set large in the frame's gradient. Numbers mostly. */
-  lead?: string
-  title: string
-  desc?: string
-  href?: string
-  cta?: string
+export const metadata: Metadata = {
+  title: 'Rewards — FinBuck',
+  description: `Everything you unlock playing under code ${CODE} on ${PARTNER.name}.`,
 }
 
-// Sign-up is deliberately not in here — it gets its own full-width call to
-// action at the bottom, since it's the one thing every other perk depends on.
+type Perk = {
+  /** The hook, set large in the display face. Numbers mostly. */
+  lead: string
+  title: string
+  desc: string
+  href?: string
+  cta?: string
+  external?: boolean
+  sponsored?: boolean
+}
+
+// Sign-up is deliberately not in here: it gets its own panel at the top, since
+// it's the one thing every other perk depends on.
 const PERKS: Perk[] = [
-  { lead: '15%', title: 'Affiliate Commission' },
-  { lead: '100%', title: 'Rank Up Bonus Boost' },
+  { lead: '15%', title: 'Affiliate commission', desc: 'A cut of the house edge on everything wagered under the code.' },
+  { lead: '100%', title: 'Rank up bonus boost', desc: 'Every level-up bonus doubled while you play under code BUCK.' },
   {
     lead: 'Exclusive',
-    title: 'Stream Giveaways',
-    href: 'https://kick.com/finbuck',
-    cta: 'Watch Live',
+    title: 'Stream giveaways',
+    desc: 'Live draws on stream, open to anyone playing under the code.',
+    href: SOCIALS.kick.href,
+    cta: 'Watch live',
+    external: true,
   },
-  { lead: 'Exclusive', title: 'Code Drops' },
+  { lead: 'Exclusive', title: 'Code drops', desc: 'Bonus codes dropped in chat and on Discord, code-holders first.' },
   {
     lead: 'Discord',
-    title: 'Channel Access',
-    href: 'https://discord.com/invite/finbuckers',
+    title: 'Channel access',
+    desc: 'The affiliate channels: drops, giveaway tickets and the mod team.',
+    href: SOCIALS.discord.href,
     cta: 'Join Discord',
+    external: true,
   },
   {
     lead: 'VIP',
-    title: 'Gamba Rewards',
-    desc: '10–20% lossback once losses exceed $1,000.',
-    href: 'https://gamba.com/vip-program',
-    cta: 'VIP Program',
+    title: `${PARTNER.name} VIP club`,
+    desc: 'Rakeback, level-up bonuses and weekly and monthly boosts as you climb.',
+    href: `${PARTNER.url}/vip-club`,
+    cta: 'VIP club',
+    external: true,
+    sponsored: true,
   },
 ]
 
-/**
- * Font size for a perk's lead.
- *
- * Orbitron is a wide face and the leads sit in a box only 68% of the card
- * across, so a long word overruns the frame's opening at the size the short
- * ones want. "Exclusive" at nine characters is the only lead that reaches the
- * ceiling; "Discord" at seven still clears it.
- */
-function leadSize(lead: string) {
-  return lead.length > 7 ? 'clamp(19px, 3.2vw, 28px)' : 'clamp(26px, 4.6vw, 40px)'
-}
-
-/**
- * The gems and chips ringing the sign-up block, three down each side.
- *
- * Size carries the composition rather than being picked per piece: the large
- * pair sits on one diagonal (top-left, bottom-right) and the medium pair on the
- * other, so the group reads as arranged instead of scattered. The middles are
- * the smallest and pushed furthest out, because the line they sit beside — the
- * subtitle — is the widest in the block, so that is where clearance is tightest.
- *
- * Tops and bottoms are staggered against each other across the axis (the left
- * column sits higher, the right lower) so the two sides don't read as a mirror.
- *
- * Both size and offset are responsive because the room to place them is: this
- * is the left column of a centred max-w-5xl grid, so below ~1070px the grid
- * fills the viewport and the column edge sits a bare 16-24px off the page,
- * while at xl the cap kicks in and centring leaves ~128px of margin. Fixed
- * values either clipped off the page edge at laptop widths or overlapped the
- * subtitle, so the pieces grow and push out only once there is space for it.
- *
- * `at` anchors a top or bottom edge rather than centring: .gem-float animates
- * `transform`, which would win over a `-translate-y-1/2` utility and silently
- * drop it, so the middles use a tuned percentage instead.
- */
-const SIGNUP_DECOR = [
-  { src: '/gem.webp',  at: '-top-10',    out: '-left-4 sm:-left-5 xl:-left-10',    w: 'w-10 sm:w-11 xl:w-20', rot: '-15deg', dur: '6.4s', delay: '0s',    op: 0.85 },
-  { src: '/coin.webp', at: 'top-[40%]',  out: '-left-4 sm:-left-5 xl:-left-14',    w: 'w-8 sm:w-9 xl:w-12',   rot: '20deg',  dur: '6.6s', delay: '-4.1s', op: 0.75 },
-  { src: '/coin.webp', at: '-bottom-7',  out: '-left-4 sm:-left-5 xl:-left-10',    w: 'w-9 sm:w-10 xl:w-16',  rot: '-10deg', dur: '5.8s', delay: '-3.4s', op: 0.8  },
-  { src: '/coin.webp', at: '-top-7',     out: '-right-4 sm:-right-5 xl:-right-10', w: 'w-9 sm:w-10 xl:w-16',  rot: '16deg',  dur: '7.1s', delay: '-2.2s', op: 0.8  },
-  { src: '/gem.webp',  at: 'top-[32%]',  out: '-right-4 sm:-right-5 xl:-right-14', w: 'w-8 sm:w-9 xl:w-12',   rot: '-18deg', dur: '6.1s', delay: '-5.4s', op: 0.75 },
-  { src: '/gem.webp',  at: '-bottom-10', out: '-right-4 sm:-right-5 xl:-right-10', w: 'w-10 sm:w-11 xl:w-20', rot: '12deg',  dur: '6.9s', delay: '-1.1s', op: 0.85 },
-]
-
-const GREEN = '/frame-green-neon.webp'
-const PURPLE = '/frame-purple-neon.webp'
-
-/**
- * A perk sitting inside one of the neon frames.
- *
- * The frame art is square with a black interior, so it doubles as the card's
- * own background — no separate panel needed. Content sits at a 16% inset, which
- * is the largest centred box that clears the frame's inward corner notches,
- * measured off the artwork rather than guessed.
- *
- * The layers are spread along Z so TiltCard's rotation parallaxes them against
- * each other: the frame stands proud of the wash behind it and the text sits
- * just off that wash, which is what lets you look around the border rather than
- * only at it. Depths are small — at a 1000px perspective, +26px is under 3%
- * of apparent size, enough to separate the planes without the frame visibly
- * outgrowing its square.
- */
-function FramedCard({
-  frame,
-  accent,
-  variant = 0,
-  children,
-  className = '',
-}: {
-  frame: string
-  accent: string
-  /** Swaps gem and chip between the corners, so adjacent cards differ. */
-  variant?: number
-  children: React.ReactNode
-  className?: string
-}) {
-  // A piece in each of the two upper corners. Content occupies the middle
-  // (16-84%), so the interior corners are the only free space, and the lower
-  // pair read as crowding the text where the upper pair frame it.
-  // Anchored to the corners of a box inset inside the frame's opening, so each
-  // piece sits in its corner whatever size it renders at. Fixed percentages left
-  // them short of the edge, since the offset ignored the piece's own width.
-  // Widening that inset walks both inward along their diagonals at once.
-  const decor =
-    variant % 2 === 0
-      ? [
-          { src: '/gem.webp', at: 'top-0 left-0', rot: '-16deg' },
-          { src: '/coin.webp', at: 'top-0 right-0', rot: '18deg' },
-        ]
-      : [
-          { src: '/coin.webp', at: 'top-0 left-0', rot: '13deg' },
-          { src: '/gem.webp', at: 'top-0 right-0', rot: '-19deg' },
-        ]
-
-  return (
-    <TiltCard className={className}>
-      <div className="relative aspect-square" style={{ transformStyle: 'preserve-3d' }}>
-        {/* Faint wash in the frame's own colour, run out to 8% so its edge
-            tucks under the frame border rather than stopping short of it — at
-            12% three quarters of that edge sat in the open interior as a
-            visible boundary. Square corners, so the opening fills all the way
-            into them. Painted before the frame so the border sits on top, and
-            pushed back along Z so the border stands off it. */}
-        <div
-          className="absolute inset-[8%]"
-          style={{
-            background: `radial-gradient(115% 115% at 50% 0%, ${accent}24 0%, ${accent}14 45%, ${accent}08 100%)`,
-            transform: 'translateZ(-22px)',
-          }}
-        />
-
-        <Image
-          src={frame}
-          alt=""
-          fill
-          sizes="(max-width: 640px) 90vw, 380px"
-          className="pointer-events-none select-none object-fill"
-          style={{ transform: 'translateZ(26px)' }}
-        />
-
-        {/* Furthest forward, so the pieces swing widest as the card turns. */}
-        <div
-          className="pointer-events-none select-none absolute inset-[14%]"
-          style={{ transform: 'translateZ(46px)' }}
-          aria-hidden
-        >
-          {decor.map((g, i) => (
-            <Image
-              key={i}
-              src={g.src}
-              alt=""
-              width={320}
-              height={320}
-              className={`absolute w-7 sm:w-9 h-auto ${g.at}`}
-              style={{ transform: `rotate(${g.rot})`, opacity: 0.85 }}
-            />
-          ))}
-        </div>
-        <div
-          className="absolute inset-[16%] flex flex-col items-center justify-center text-center gap-2"
-          style={{ ['--accent' as string]: accent, transform: 'translateZ(8px)' }}
-        >
-          {children}
-        </div>
-      </div>
-    </TiltCard>
-  )
-}
+const smallCut = 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)'
 
 export default function RewardsPage() {
   return (
-    <div className="min-h-screen pt-28 pb-24 px-4 sm:px-6 relative">
-      {/* Background */}
-      <div className="fixed inset-0 -z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/background.webp" alt="" className="w-full h-full object-cover object-center" style={{ filter: 'brightness(0.2) saturate(1.1)' }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#07050f]/70 via-[#07050f]/50 to-[#07050f]" />
-      </div>
+    <div className="px-6 pb-24 pt-[72px]">
+      <PageHeader eyebrow={`FinBuck × ${PARTNER.name}`} title={<>Rewards <span className="text-accent-bright">&amp; perks</span></>}>
+        Everything you unlock playing under code {CODE}: the monthly leaderboard, affiliate commission, boosted
+        bonuses and the stream giveaways.
+      </PageHeader>
 
-      {/* The two calls to action share a row: sign-up on the left, the
-          headline prize on the right. They were bookending the perk grid, one
-          at each end of the page. */}
+      {/* The two calls to action share a row: the headline prize and the
+          sign-up. Everything below depends on one of these two. */}
       <Reveal>
-        <div className="max-w-5xl mx-auto mb-14 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-          {/* Left half. Ordered under the frame on mobile, where a single
-              column makes the frame the better thing to lead with. */}
-          <div className="order-2 md:order-1 relative text-center">
-            {/* Hand-placed rather than FloatingDecor: that component centres
-                its ring on this block's own height and anchors each image by
-                its top-left corner, so its percentage offsets don't give a
-                predictable amount of real clearance on a column this narrow.
-                See SIGNUP_DECOR for how the six are arranged. */}
-            {SIGNUP_DECOR.map((g, i) => (
-              <Image
-                key={i}
-                src={g.src}
-                alt=""
-                width={320}
-                height={320}
-                className={`gem-float pointer-events-none select-none absolute h-auto ${g.at} ${g.out} ${g.w}`}
-                style={{
-                  opacity: g.op,
-                  animationDelay: g.delay,
-                  ['--gem-rot' as string]: g.rot,
-                  ['--gem-dur' as string]: g.dur,
-                }}
-                aria-hidden
-              />
-            ))}
-            <div className="relative z-10">
-              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
-                Ready to <span className="animated-gradient-text-gold">Start</span>?
-              </h2>
-              <p className="text-gray-500 text-sm mt-3">
-                Sign up under code <span className="text-[#ffd700] font-bold">finbuck</span> to unlock all of it.
-              </p>
-              <a
-                href="https://gamba.com/?c=finbuck"
-                target="_blank"
-                rel="noopener noreferrer sponsored"
-                className="mt-6 inline-flex items-center gap-2 font-black uppercase tracking-widest text-sm px-8 py-3.5 rounded-xl transition-transform hover:scale-105"
-                style={{ background: 'linear-gradient(135deg, #e0b400 0%, #ffe14d 26%, #fffbe0 44%, #ffd400 62%, #d9a800 100%)', color: '#07050a' }}
-              >
-                Sign Up on Gamba
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3.5 h-3.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                </svg>
-              </a>
-            </div>
-          </div>
+        <div className="mx-auto mt-12 grid max-w-5xl gap-5 md:grid-cols-2">
+          <Panel tone="gold" innerClassName="flex flex-col items-center p-8 text-center sm:p-10">
+            <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">Headline prize</p>
+            <p className="font-display mt-3 text-[clamp(3.5rem,9vw,5.5rem)] leading-none text-gold [text-shadow:0_0_36px_rgba(255,200,61,0.3)]">
+              <CountUp value={RACE.prizePool} />
+            </p>
+            <h2 className="font-display mt-3 text-[2rem] leading-none text-white">Monthly leaderboard</h2>
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted">
+              Wager under code {CODE} and climb the board. Top {RACE.split.length} paid, every month.
+            </p>
+            <Button href="/leaderboard" variant="ghost" className="mt-7">
+              View leaderboard
+            </Button>
+          </Panel>
 
-          {/* Right half. Capped so the square does not grow past the frame art
-              on a wide screen. */}
-          <div className="order-1 md:order-2 w-full max-w-md mx-auto">
-            <FramedCard frame={GREEN} accent="#00ff87">
-              <span className="font-display text-[9px] font-bold uppercase tracking-[0.24em] text-[#00ff87]">
-                Headline Prize
-              </span>
-              <span
-                className="font-display block font-black leading-none tracking-tight animated-gradient-text"
-                style={{ fontSize: 'clamp(32px, 6.4vw, 50px)' }}
-              >
-                $10,000
-              </span>
-              <span
-                className="block w-12 h-px my-0.5"
-                style={{ background: 'linear-gradient(90deg, transparent, #00ff87, transparent)' }}
-              />
-              <h2
-                className="font-display text-[11px] sm:text-xs font-bold uppercase leading-snug text-white/90 tracking-[0.14em]"
-                style={{ textShadow: '0 0 12px #00ff8744' }}
-              >
-                Monthly Leaderboard
+          <Panel tone="accent" innerClassName="flex flex-col justify-between gap-7 p-8 sm:p-10">
+            <div>
+              <PartnerWordmark className="h-10" />
+              <h2 className="font-display mt-5 text-[2.4rem] leading-[0.9] text-white">
+                Ready to <span className="text-accent-bright">start?</span>
               </h2>
-              <p
-                className="text-gray-300 text-xs sm:text-sm leading-relaxed"
-                style={{ textShadow: '0 1px 12px rgba(0,0,0,0.95), 0 0 22px rgba(0,0,0,0.75)' }}
-              >
-                Wager under code finbuck and climb the board.
+              <p className="mt-3 text-sm leading-relaxed text-muted">
+                Sign up under code {CODE} on {PARTNER.name} to unlock all of it.
               </p>
-              <a
-                href="/leaderboard"
-                className="mt-1 inline-flex items-center gap-2 font-black uppercase tracking-widest text-[11px] px-4 py-2 rounded-lg transition-transform hover:scale-105"
-                style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)', color: '#07050a' }}
-              >
-                View Leaderboard
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-3 h-3">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                </svg>
-              </a>
-            </FramedCard>
-          </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 bg-[#0B0E2A] px-5 py-4" style={{ clipPath: smallCut }}>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-faint">Use code</p>
+                <p className="font-display text-[2.4rem] leading-none text-accent-bright">{CODE}</p>
+              </div>
+              <CopyButton code={CODE} />
+            </div>
+
+            <Button href={SIGNUP_URL} external sponsored className="w-full">
+              Sign up on {PARTNER.name}
+            </Button>
+          </Panel>
         </div>
       </Reveal>
 
-      {/* Scroll hint. The hero row is a tall square, so on most screens the
-          perks start below the fold with nothing visible to say so. In the flow
-          rather than fixed, so it scrolls away once it has been taken, and a
-          plain anchor rather than a handler — html already carries
-          scroll-behavior: smooth. */}
-      <div className="flex justify-center -mt-4 mb-10">
-        <a
-          href="#perks"
-          aria-label="Skip to the rest of the rewards"
-          className="flex flex-col items-center gap-1.5 text-gray-600 hover:text-[#00ff87] transition-colors"
-        >
-          <span className="text-[9px] font-bold uppercase tracking-[0.3em]">More</span>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2.5}
-            className="scroll-nudge w-5 h-5"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </a>
+      {/* The perks */}
+      <div className="mx-auto mt-16 max-w-5xl">
+        <Reveal>
+          <p className="mx-auto flex max-w-xs items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-accent/50" />
+            <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
+            <span className="whitespace-nowrap">What you get</span>
+            <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-accent/50" />
+          </p>
+        </Reveal>
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {PERKS.map((p, i) => (
+            <Reveal key={p.title} delay={(i % 3) * 80} className="h-full">
+              <Panel className="h-full" innerClassName="flex h-full flex-col p-6 sm:p-7">
+                {/* Index tab, like the podium's trophy tabs */}
+                <span className="absolute right-5 top-5 text-[10px] font-bold uppercase tracking-[0.3em] text-faint">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span className="font-display text-[3.2rem] leading-none text-accent-bright [text-shadow:0_0_26px_rgba(0,255,135,0.3)]">
+                  {p.lead}
+                </span>
+                <span className="mt-4 block h-px w-10 bg-gradient-to-r from-accent to-transparent" />
+                <h3 className="font-display mt-4 text-[1.7rem] leading-none text-white">{p.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted">{p.desc}</p>
+                {p.href && p.cta && (
+                  <div className="mt-auto pt-6">
+                    <Button href={p.href} external={p.external} sponsored={p.sponsored} variant="outline" size="sm">
+                      {p.cta}
+                    </Button>
+                  </div>
+                )}
+              </Panel>
+            </Reveal>
+          ))}
+        </div>
       </div>
 
-      {/* The rest, alternating frames. scroll-mt clears the fixed navbar, which
-          would otherwise sit over the first row after the jump. */}
-      <div
-        id="perks"
-        className="scroll-mt-28 max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
-      >
-        {PERKS.map((p, i) => {
-          const green = i % 2 === 0
-          const accent = green ? '#00ff87' : '#c084fc'
-          return (
-            <Reveal key={p.title} delay={(i % 3) * 80}>
-              <FramedCard frame={green ? GREEN : PURPLE} accent={accent} variant={i}>
-                {p.lead && (
-                  <span
-                    className={`font-display block font-black leading-none tracking-tight ${
-                      green ? 'animated-gradient-text' : 'animated-gradient-text-purple'
-                    }`}
-                    style={{ fontSize: leadSize(p.lead) }}
-                  >
-                    {p.lead}
-                  </span>
-                )}
-                {/* Hairline in the frame's colour, tying the two halves together */}
-                <span
-                  className="block w-8 h-px my-0.5"
-                  style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
-                />
-                <h3
-                  className="font-display text-[10px] sm:text-[11px] font-bold uppercase leading-snug text-white/90 px-1 tracking-[0.12em]"
-                  style={{ textShadow: `0 0 10px ${accent}44` }}
-                >
-                  {p.title}
-                </h3>
-                {p.desc && (
-                  <p
-                    className="text-gray-300 text-[11px] leading-relaxed px-1"
-                    style={{ textShadow: '0 1px 12px rgba(0,0,0,0.95), 0 0 22px rgba(0,0,0,0.75)' }}
-                  >
-                    {p.desc}
-                  </p>
-                )}
-                {p.href && p.cta && (
-                  <a
-                    href={p.href}
-                    target="_blank"
-                    rel={
-                      p.href.includes('gamba.com')
-                        ? 'noopener noreferrer sponsored'
-                        : 'noopener noreferrer'
-                    }
-                    className="mt-1 inline-flex items-center gap-1.5 font-black uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-md border transition-colors"
-                    style={{ borderColor: `${accent}66`, color: accent }}
-                  >
-                    {p.cta}
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-2.5 h-2.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                    </svg>
-                  </a>
-                )}
-              </FramedCard>
-            </Reveal>
-          )
-        })}
-      </div>
+      {/* Closing line */}
+      <Reveal>
+        <p className="mx-auto mt-14 max-w-md text-center text-[12px] leading-relaxed text-faint">
+          Perks apply to accounts registered under code {CODE}. The {usd(RACE.prizePool)} leaderboard resets on the{' '}
+          {RACE.dayOfMonth}th of every month. 18+ · Gamble responsibly.
+        </p>
+      </Reveal>
     </div>
   )
 }

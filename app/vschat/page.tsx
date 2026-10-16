@@ -1,8 +1,17 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import FloatingDecor from '../../components/FloatingDecor'
+import Button from '../../components/Button'
+import PageHeader from '../../components/PageHeader'
+import Panel from '../../components/Panel'
 import Reveal from '../../components/Reveal'
+import SectionHeading from '../../components/SectionHeading'
+
+// The two sides' colours: the site's green for the house, a soft violet
+// for the challenger so the pair still reads as two without leaving the
+// navy-and-green palette.
+const HOUSE = '#00FF87'
+const CHAT = '#B4A7FF'
 
 // One slot per line. Duplicates are dropped so the randomiser stays fair —
 // 22 of these titles are carried by more than one provider.
@@ -1111,7 +1120,6 @@ const STEPS = [
   {
     title: 'Chat gets picked',
     desc: 'A viewer is pulled from chat — they become the challenger.',
-    color: '#a855f7',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
@@ -1121,7 +1129,6 @@ const STEPS = [
   {
     title: 'Slots locked in',
     desc: 'A viewer and FinBuck get their slots picked randomly.',
-    color: '#00ff87',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
@@ -1131,7 +1138,6 @@ const STEPS = [
   {
     title: 'Spin it out',
     desc: 'Both run live at the same bet. Highest multiplier takes it.',
-    color: '#38bdf8',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.306a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
@@ -1141,7 +1147,6 @@ const STEPS = [
   {
     title: 'Winner takes it',
     desc: 'If chat wins → the prize is paid out on stream.',
-    color: '#FFD700',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" />
@@ -1150,52 +1155,9 @@ const STEPS = [
   },
 ]
 
-/**
- * Shrink the font as the text gets longer so it stays inside its box.
- * `fitChars` is how many characters fit at full size; beyond that the whole
- * clamp (min/preferred/max) scales down proportionally, so it stays responsive.
- */
-function fitFont(text: string, fitChars: number, minPx: number, vw: number, maxPx: number): string {
-  const len = text.trim().length || 1
-  const k = Math.max(0.55, Math.min(1, fitChars / len))
-  return `clamp(${Math.max(7, minPx * k).toFixed(1)}px, ${(vw * k).toFixed(2)}vw, ${(maxPx * k).toFixed(1)}px)`
-}
-
-/** Reusable avatar with drag-drop / click-to-upload. */
-// Frame aspect + overlay regions (percentages of the frame box), tuned to the
-// neon frame artwork so content sits inside the circle / name bar / slot boxes.
-// Positions are percentages of the frame box, measured from the artwork by
-// scanning for its neon lines. The avatar sits just inside the ring and the
-// frame renders on top, so the ring always draws cleanly over the photo's edge.
-// The artwork carries no text — SLOT/WINNER are drawn as HTML so they stay
-// editable and can never desync from the image.
-type Region = {
-  ar: number
-  avatar: { x: number; y: number; size: number }
-  name: { x: number; y: number; w: number }
-  slot: { x: number; y: number; w: number }
-  win: { x: number; y: number; w: number }
-  slotLabelY: number
-}
-const REGION_GREEN: Region = {
-  ar: 659 / 1024,
-  avatar: { x: 50, y: 23.3, size: 32 },
-  name: { x: 50, y: 39.2, w: 55 },
-  slot: { x: 50, y: 54.7, w: 66 },
-  win: { x: 50, y: 77.6, w: 60 },
-  slotLabelY: 44.8,
-}
-const REGION_PURPLE: Region = {
-  ar: 664 / 1024,
-  avatar: { x: 50, y: 23.3, size: 32 },
-  name: { x: 50, y: 39.2, w: 55 },
-  slot: { x: 50, y: 54.7, w: 66 },
-  win: { x: 50, y: 77.6, w: 60 },
-  slotLabelY: 44.8,
-}
-
 interface Fighter {
   role: string
+  /** This side's colour: green for the house, violet for chat. */
   color: string
   img: string
   /** Scale applied to the avatar photo (>1 zooms in, <1 zooms out). */
@@ -1207,119 +1169,86 @@ interface Fighter {
   setName: (v: string) => void
   slot: string
   setSlot: (v: string) => void
-  /** Fill for this side's winner button. */
-  gradient: string
 }
 
-function FighterCard({ f, frameSrc, fillSrc, region, winner, onWin }: { f: Fighter; frameSrc: string; fillSrc: string; region: Region; winner: boolean | null; onWin: () => void }) {
+const smallCut = 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)'
+const btnCut = 'polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)'
+
+function FighterCard({ f, winner, onWin }: { f: Fighter; winner: boolean | null; onWin: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const glow = winner === true
   const handle = (file?: File) => { if (file) f.setImg(URL.createObjectURL(file)) }
 
   return (
     <div
-      className="relative w-full transition-all duration-300"
-      style={{ aspectRatio: `${region.ar}`, filter: glow ? `drop-shadow(0 0 26px ${f.color})` : 'none' }}
+      className="w-full transition-all duration-300"
+      style={{ filter: glow ? `drop-shadow(0 0 26px ${f.color}80)` : 'none', opacity: winner === false ? 0.6 : 1 }}
     >
-      {/* Solid black card interior, matched to the frame's shape */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={fillSrc} alt="" className="absolute inset-0 w-full h-full pointer-events-none select-none" />
+      <Panel innerClassName="flex flex-col items-center p-6 text-center sm:p-7">
+        {/* This side's colour, as a lit edge along the top */}
+        <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[3px]" style={{ background: `linear-gradient(90deg, transparent, ${f.color}, transparent)` }} />
 
-      {/* Avatar sits BEHIND the frame so the neon ring draws over its edge */}
-      <div
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => { e.preventDefault(); handle(e.dataTransfer.files?.[0]) }}
-        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full overflow-hidden cursor-pointer bg-[#07050f] flex items-center justify-center"
-        style={{ left: `${region.avatar.x}%`, top: `${region.avatar.y}%`, width: `${region.avatar.size}%`, aspectRatio: '1' }}
-        title="Click or drop an image"
-      >
-        {f.img ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={f.img}
-            alt=""
-            className="w-full h-full object-cover"
-            style={{ transform: `translate(${f.nudge?.x ?? 0}%, ${f.nudge?.y ?? 0}%) scale(${f.zoom ?? 1})` }}
-          />
-        ) : (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-1/3 h-1/3 text-gray-600">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-          </svg>
-        )}
-        <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handle(e.target.files?.[0] ?? undefined)} />
-      </div>
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: f.color }}>{f.role}</p>
 
-      {/* Frame overlays the avatar */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={frameSrc} alt="" className="absolute inset-0 w-full h-full pointer-events-none select-none" />
-
-      {/* Name */}
-      <input
-        value={f.name}
-        onChange={(e) => f.setName(e.target.value)}
-        className="absolute -translate-x-1/2 -translate-y-1/2 text-center bg-transparent font-black text-white uppercase focus:outline-none truncate"
-        style={{ left: `${region.name.x}%`, top: `${region.name.y}%`, width: `${region.name.w}%`, fontSize: fitFont(f.name, 8, 9, 1.7, 15) }}
-      />
-
-      {/* Slot */}
-      <input
-        value={f.slot}
-        onChange={(e) => f.setSlot(e.target.value)}
-        placeholder="—"
-        className="absolute -translate-x-1/2 -translate-y-1/2 text-center bg-transparent font-bold text-white focus:outline-none placeholder-gray-600"
-        style={{ left: `${region.slot.x}%`, top: `${region.slot.y}%`, width: `${region.slot.w}%`, fontSize: fitFont(f.slot, 18, 14, 2.8, 22) }}
-      />
-
-      {/* Section label, drawn as HTML so it stays editable and can never
-          desync from the artwork. */}
-      <span
-        className="absolute -translate-x-1/2 -translate-y-1/2 font-bold uppercase pointer-events-none select-none"
-        style={{
-          left: '50%',
-          top: `${region.slotLabelY}%`,
-          color: f.color,
-          fontSize: 'clamp(9px, 1.3vw, 12px)',
-          letterSpacing: '0.25em',
-        }}
-      >
-        Slot
-      </span>
-
-      {/* Declare this side the winner — chamfered badge to match the frame's
-          own cut-corner boxes, instead of a plain rounded rectangle. */}
-      <button
-        onClick={onWin}
-        className="absolute -translate-x-1/2 -translate-y-1/2 group transition-transform hover:scale-[1.03] active:scale-[0.97]"
-        style={{ left: `${region.win.x}%`, top: `${region.win.y}%`, width: `${region.win.w}%` }}
-      >
-        {/* Gradient border ring */}
+        {/* Avatar: click or drop to replace */}
         <div
-          className="relative transition-all duration-300"
+          onClick={() => inputRef.current?.click()}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => { e.preventDefault(); handle(e.dataTransfer.files?.[0]) }}
+          className="mt-4 flex h-28 w-28 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-[#080A20] sm:h-32 sm:w-32"
+          style={{ boxShadow: `0 0 0 3px #0B0E2A, 0 0 0 5px ${f.color}` }}
+          title="Click or drop an image"
+        >
+          {f.img ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={f.img}
+              alt=""
+              className="h-full w-full object-cover"
+              style={{ transform: `translate(${f.nudge?.x ?? 0}%, ${f.nudge?.y ?? 0}%) scale(${f.zoom ?? 1})` }}
+            />
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-10 w-10 text-faint">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+          )}
+          <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handle(e.target.files?.[0] ?? undefined)} />
+        </div>
+
+        {/* Name */}
+        <input
+          value={f.name}
+          onChange={(e) => f.setName(e.target.value)}
+          aria-label="Name"
+          className="font-display mt-4 w-full truncate bg-transparent text-center text-[2rem] leading-none text-white focus:outline-none"
+        />
+
+        {/* Slot */}
+        <label className="mt-4 block w-full">
+          <span className="block text-[10px] font-bold uppercase tracking-[0.3em] text-faint">Slot</span>
+          <input
+            value={f.slot}
+            onChange={(e) => f.setSlot(e.target.value)}
+            placeholder="—"
+            className="field mt-2 !h-11 text-center text-sm font-bold"
+          />
+        </label>
+
+        {/* Declare this side the winner */}
+        <button
+          type="button"
+          onClick={onWin}
+          className="mt-5 flex h-11 w-full items-center justify-center text-sm font-bold uppercase tracking-[0.12em] transition-[transform,filter] hover:-translate-y-px active:translate-y-px"
           style={{
-            clipPath: 'polygon(13px 0%, 100% 0%, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0% 100%, 0% 13px)',
-            background: `linear-gradient(135deg, ${f.color}, ${f.color}88)`,
-            padding: '2px',
-            boxShadow: winner === true ? `0 0 24px ${f.color}` : 'none',
-            opacity: winner === false ? 0.5 : 1,
+            clipPath: btnCut,
+            background: winner === true ? f.color : `${f.color}1F`,
+            color: winner === true ? '#0B0E2A' : f.color,
+            boxShadow: winner === true ? `0 0 24px ${f.color}66` : 'none',
           }}
         >
-          {/* Fill */}
-          <div
-            className="flex items-center justify-center font-black uppercase tracking-widest transition-all duration-300"
-            style={{
-              clipPath: 'polygon(11px 0%, 100% 0%, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0% 100%, 0% 11px)',
-              background: winner === true ? f.gradient : `linear-gradient(160deg, ${f.color}14 0%, #07050a 70%)`,
-              color: winner === true ? '#08060f' : f.color,
-              paddingTop: '0.65rem',
-              paddingBottom: '0.65rem',
-              fontSize: 'clamp(11px, 1.6vw, 14px)',
-            }}
-          >
-            {winner === true ? 'Winner' : 'Declare winner'}
-          </div>
-        </div>
-      </button>
+          {winner === true ? 'Winner' : 'Declare winner'}
+        </button>
+      </Panel>
     </div>
   )
 }
@@ -1446,8 +1375,8 @@ export default function VsChatPage() {
     setOutcome(null)
   }
 
-  const house: Fighter = { role: 'The House', color: '#00ff87', gradient: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)', img: houseImg, setImg: setHouseImg, name: houseName, setName: setHouseName, slot: houseSlot, setSlot: setHouseSlot }
-  const chat: Fighter = { role: 'Challenger · from chat', color: '#a855f7', gradient: 'linear-gradient(135deg, #c084fc, #a855f7, #7c3aed)', img: chatImg, setImg: setChatImg, name: chatName, setName: setChatName, slot: chatSlot, setSlot: setChatSlot }
+  const house: Fighter = { role: 'The house', color: HOUSE, img: houseImg, setImg: setHouseImg, name: houseName, setName: setHouseName, slot: houseSlot, setSlot: setHouseSlot }
+  const chat: Fighter = { role: 'Challenger · from chat', color: CHAT, img: chatImg, setImg: setChatImg, name: chatName, setName: setChatName, slot: chatSlot, setSlot: setChatSlot }
 
   // ── Random slot picker ──
   const pool = DEFAULT_POOL
@@ -1483,248 +1412,180 @@ export default function VsChatPage() {
     step()
   }
 
+  const isWin = outcome === 'chat' || outcome === 'house'
+  const winColor = outcome === 'house' ? HOUSE : CHAT
+
   return (
-    <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 relative">
-      {/* Background */}
-      {/* Starts below the fixed navbar so the artwork's top isn't hidden by it */}
-      <div className="fixed inset-0 -z-10 bg-[#07050f]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/vschat-bg.webp"
-          alt=""
-          className="absolute inset-x-0 bottom-0 w-full object-cover object-top"
-          style={{ top: '58px', filter: 'brightness(0.45) saturate(1.05)' }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#07050f]/60 via-[#07050f]/45 to-[#07050f]" />
-      </div>
+    <div className="px-6 pb-24 pt-[72px]">
+      <PageHeader eyebrow="Live slot duel" live title={<>Slot <span className="text-accent-bright">battles</span></>}>
+        A viewer takes on the house. Both spin a slot — highest multiplier wins. Beat FinBuck, take the prize.
+      </PageHeader>
 
-      {/* Header */}
+      {/* Running score — persisted in this browser only, survives a refresh */}
       <Reveal>
-      <div className="relative max-w-4xl mx-auto mb-10 text-center">
-        <FloatingDecor height="h-[280px] sm:h-[340px]" className="!top-[40%]" />
-        <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-purple-400 text-sm font-semibold tracking-widest uppercase">Live Slot Duel</span>
+        <div className="mt-8 flex justify-center">
+          <Panel innerClassName="flex items-center gap-6 px-7 py-4">
+            <div className="text-center">
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: HOUSE }}>FinBuck</p>
+              <p className="font-display text-[2.6rem] leading-none tabular-nums" style={{ color: HOUSE }}>{score.house}</p>
+            </div>
+            <span className="h-8 w-px bg-white/10" />
+            <div className="text-center">
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: CHAT }}>Chat</p>
+              <p className="font-display text-[2.6rem] leading-none tabular-nums" style={{ color: CHAT }}>{score.chat}</p>
+            </div>
+            <button
+              type="button"
+              onClick={resetScore}
+              title="Reset score to 0-0"
+              className="ml-1 text-faint transition-colors hover:text-red-300"
+              aria-label="Reset score"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+              </svg>
+            </button>
+          </Panel>
         </div>
-        <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight mb-4 whitespace-nowrap">
-          <span className="animated-gradient-text">Slot</span> <span className="animated-gradient-text-purple">Battles</span>
-        </h1>
-        <p className="text-gray-500 text-base max-w-lg mx-auto mb-6">
-          A viewer takes on the house. Both spin a slot — highest multiplier wins. Beat FinBuck, take the prize.
-        </p>
-
-        {/* Running score — persisted in this browser only, survives a refresh */}
-        <div className="inline-flex items-center gap-5 rounded-xl border border-purple-900/40 bg-[#0d0a1a]/70 px-6 py-3">
-          <div className="text-center">
-            <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#00ff87' }}>FinBuck</p>
-            <p className="text-3xl font-black" style={{ color: '#00ff87' }}>{score.house}</p>
-          </div>
-          <span className="text-gray-600 font-black text-lg">—</span>
-          <div className="text-center">
-            <p className="text-[10px] font-black uppercase tracking-widest text-purple-300">Chat</p>
-            <p className="text-3xl font-black text-purple-300">{score.chat}</p>
-          </div>
-          <button
-            onClick={resetScore}
-            title="Reset score to 0-0"
-            className="ml-2 text-gray-600 hover:text-red-400 transition-colors"
-            aria-label="Reset score"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-            </svg>
-          </button>
-        </div>
-      </div>
       </Reveal>
 
       {/* Random slot picker */}
-      <div className="max-w-5xl mx-auto mb-6">
-        <div className="flex items-center gap-3 mb-6 justify-center">
-          <div className="h-px flex-1 max-w-[80px] bg-gradient-to-r from-transparent to-purple-500/40" />
-          <span className="text-purple-300 text-xs font-black uppercase tracking-[0.3em]">Random Slot Picker</span>
-          <div className="h-px flex-1 max-w-[80px] bg-gradient-to-l from-transparent to-purple-500/40" />
-        </div>
+      <Reveal>
+        <div className="mx-auto mt-14 max-w-xl">
+          <p className="mx-auto flex max-w-xs items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-accent/50" />
+            <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
+            <span className="whitespace-nowrap">Random slot picker</span>
+            <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-accent/50" />
+          </p>
 
-        <div className="py-2">
+          <Panel tone={landed ? 'accent' : 'default'} className="mt-6" innerClassName="flex min-h-[140px] items-center justify-center px-6 py-10 text-center">
+            <span
+              className={`font-display break-words text-[2.2rem] leading-[0.95] sm:text-[2.8rem] ${
+                rolling ? 'text-white/70' : landed ? 'text-accent-bright [text-shadow:0_0_30px_rgba(0,255,135,0.35)]' : 'text-faint'
+              }`}
+            >
+              {display}
+            </span>
+          </Panel>
 
-          {/* Display */}
-          <div className="relative z-10 flex flex-col items-center justify-center max-w-xl mx-auto">
-            {/* Octagon frame, purple twin of the sponsor card on the home page */}
-            <div className="picker-card w-full mb-6">
-              <div
-                className="relative p-[3px]"
-                style={{
-                  clipPath: 'polygon(20px 0%, calc(100% - 20px) 0%, 100% 20px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 20px 100%, 0% calc(100% - 20px), 0% 20px)',
-                  background: landed
-                    ? 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a, #00ff87)'
-                    : 'linear-gradient(135deg, #a855f7, #c084fc, #7c3aed, #a855f7)',
-                  transition: 'background 0.3s ease',
-                }}
-              >
-                <div
-                  className="relative flex items-center justify-center text-center px-6 py-12"
-                  style={{
-                    background: 'linear-gradient(160deg, #170b28 0%, #0a0512 50%, #000000 100%)',
-                    clipPath: 'polygon(18px 0%, calc(100% - 18px) 0%, 100% 18px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 18px 100%, 0% calc(100% - 18px), 0% 18px)',
-                  }}
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <Button
+              onClick={outcome ? resetRound : randomize}
+              disabled={!outcome && (rolling || pool.length < 2)}
+              variant={outcome ? 'ghost' : 'primary'}
+              title={outcome ? 'Clear the board for the next battle — the score is kept' : undefined}
+              className="min-w-[150px]"
+            >
+              {outcome ? 'Reset' : rolling ? 'Rolling…' : 'Randomize'}
+            </Button>
+            <Button
+              onClick={undoLastRound}
+              disabled={history.length === 0}
+              variant="ghost"
+              title={
+                history.length
+                  ? 'Undo the last declared winner — takes the point back and restores that round’s slots'
+                  : 'Nothing to undo yet'
+              }
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 14L4 9l5-5" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 9h11a5 5 0 010 10h-3" />
+              </svg>
+              Undo
+            </Button>
+            {landed && !rolling && (
+              <>
+                <Button onClick={() => setHouseSlot(landed)} variant="outline" size="sm">→ FinBuck</Button>
+                <button
+                  type="button"
+                  onClick={() => setChatSlot(landed)}
+                  className="inline-flex h-10 items-center justify-center px-4 text-sm font-bold transition-[transform,background-color] hover:-translate-y-px"
+                  style={{ clipPath: btnCut, background: `${CHAT}1F`, color: CHAT }}
                 >
-                  <span className={`font-black leading-tight break-words ${rolling ? 'text-white/70' : landed ? 'text-[#00ff87]' : 'text-gray-500'} text-2xl sm:text-3xl`}>
-                    {display}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={outcome ? resetRound : randomize}
-                disabled={!outcome && (rolling || pool.length < 2)}
-                title={outcome ? 'Clear the board for the next battle — the score is kept' : undefined}
-                className="text-black font-black py-3 px-8 rounded-xl uppercase tracking-widest text-sm transition-transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
-                style={{
-                  // Purple once it turns into Reset, so it is obvious the button
-                  // has changed job rather than just relabelled.
-                  background: outcome
-                    ? 'linear-gradient(135deg, #c084fc, #a855f7, #7c3aed)'
-                    : 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)',
-                }}
-              >
-                {outcome ? 'Reset' : rolling ? 'Rolling…' : 'Randomize'}
-              </button>
-              <button
-                onClick={undoLastRound}
-                disabled={history.length === 0}
-                title={
-                  history.length
-                    ? 'Undo the last declared winner — takes the point back and restores that round’s slots'
-                    : 'Nothing to undo yet'
-                }
-                className="inline-flex items-center gap-1.5 border border-purple-500/50 text-purple-300 hover:bg-purple-500/10 hover:text-white font-bold py-3 px-5 rounded-xl uppercase tracking-widest text-sm transition-all disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-purple-300 disabled:cursor-not-allowed"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 14L4 9l5-5" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 9h11a5 5 0 010 10h-3" />
-                </svg>
-                Undo
-              </button>
-              {landed && !rolling && (
-                <>
-                  <button onClick={() => setHouseSlot(landed)} className="border border-[#00ff87]/50 text-[#00ff87] hover:bg-[#00ff87]/10 font-bold py-2.5 px-3 rounded-lg uppercase tracking-widest text-[10px] transition-all">→ FinBuck</button>
-                  <button onClick={() => setChatSlot(landed)} className="border border-purple-500/50 text-purple-300 hover:bg-purple-500/10 font-bold py-2.5 px-3 rounded-lg uppercase tracking-widest text-[10px] transition-all">→ Chat</button>
-                </>
-              )}
-            </div>
+                  → Chat
+                </button>
+              </>
+            )}
           </div>
         </div>
-      </div>
+      </Reveal>
 
       {/* Arena */}
       <Reveal>
-      <div className="max-w-5xl mx-auto mb-16">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
-          <div className="w-full md:flex-1 max-w-[320px]">
-            <FighterCard f={house} frameSrc="/frame2-green.webp" fillSrc="/frame2-green-fill.webp" region={REGION_GREEN} winner={outcome ? outcome === 'house' : null} onWin={() => declareWinner('house')} />
+        <div className="mx-auto mt-14 max-w-4xl">
+          <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:items-stretch md:gap-6">
+            <div className="w-full max-w-[340px] md:flex-1">
+              <FighterCard f={house} winner={outcome ? outcome === 'house' : null} onWin={() => declareWinner('house')} />
+            </div>
+
+            {/* VS emblem — floats gently */}
+            <div className="relative z-10 -my-2 flex shrink-0 items-center justify-center md:my-0">
+              <span
+                className="vs-float font-display flex h-20 w-20 items-center justify-center bg-[#080A20] text-[2.4rem] leading-none text-white shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
+                style={{ clipPath: smallCut, textShadow: `0 0 18px ${HOUSE}66` }}
+                aria-label="versus"
+              >
+                VS
+              </span>
+            </div>
+
+            <div className="w-full max-w-[340px] md:flex-1">
+              <FighterCard f={chat} winner={outcome ? outcome === 'chat' : null} onWin={() => declareWinner('chat')} />
+            </div>
           </div>
 
-          {/* VS emblem — floats gently */}
-          <div className="relative flex items-center justify-center shrink-0 -my-6 md:my-0 z-10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/vs.webp"
-              alt="VS"
-              className="vs-float relative w-28 sm:w-36 h-auto select-none pointer-events-none"
-            />
-          </div>
-
-          <div className="w-full md:flex-1 max-w-[320px]">
-            <FighterCard f={chat} frameSrc="/frame2-purple.webp" fillSrc="/frame2-purple-fill.webp" region={REGION_PURPLE} winner={outcome ? outcome === 'chat' : null} onWin={() => declareWinner('chat')} />
+          {/* Outcome banner — in the winner's own colour */}
+          <div
+            className="mt-5 flex flex-wrap items-center justify-center gap-4 px-6 py-4 text-center transition-all"
+            style={{
+              clipPath: smallCut,
+              background: isWin ? `${winColor}14` : 'rgba(255,255,255,0.04)',
+              boxShadow: isWin ? `inset 0 0 0 1px ${winColor}66, 0 0 28px ${winColor}33` : 'inset 0 0 0 1px rgba(255,255,255,0.08)',
+            }}
+          >
+            {outcome === 'chat' && (
+              <span className="font-display text-[1.6rem] leading-none" style={{ color: winColor, textShadow: `0 0 16px ${winColor}66` }}>
+                🏆 Cash money AP for {chatName}
+              </span>
+            )}
+            {outcome === 'house' && (
+              <span className="font-display text-[1.6rem] leading-none" style={{ color: winColor, textShadow: `0 0 16px ${winColor}66` }}>
+                🏆 More keno money for Fin!
+              </span>
+            )}
+            {!outcome && (
+              <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
+                Tap a card to declare the winner
+              </span>
+            )}
           </div>
         </div>
-
-        {/* Outcome banner — gold whenever there's a winner */}
-        {(() => {
-          const isWin = outcome === 'chat' || outcome === 'house'
-          // Winner's own colour: green for the house, purple for chat.
-          const win = outcome === 'house'
-            ? { color: '#00ff87', bg: 'linear-gradient(135deg, #052a18 0%, #02120a 55%, #000000 100%)', border: 'rgba(0,255,135,0.6)', glow: 'rgba(0,255,135,0.28)' }
-            : { color: '#c07cff', bg: 'linear-gradient(135deg, #1d0b33 0%, #0f0619 55%, #000000 100%)', border: 'rgba(168,85,247,0.6)', glow: 'rgba(168,85,247,0.3)' }
-          return (
-            <div
-              className="mt-4 rounded-2xl px-6 py-4 flex flex-wrap items-center justify-center gap-4 transition-colors"
-              style={{
-                background: isWin ? win.bg : '#0d0a1a99',
-                border: isWin ? `1px solid ${win.border}` : '1px solid rgba(168,85,247,0.55)',
-                boxShadow: isWin ? `0 0 28px ${win.glow}` : 'none',
-              }}
-            >
-              {outcome === 'chat' && (
-                <span
-                  className="font-black uppercase tracking-wide text-lg"
-                  style={{ color: win.color, textShadow: `0 0 16px ${win.glow}` }}
-                >
-                  🏆 Cash money AP for {chatName}
-                </span>
-              )}
-              {outcome === 'house' && (
-                <span
-                  className="font-black uppercase tracking-wide text-lg"
-                  style={{ color: win.color, textShadow: `0 0 16px ${win.glow}` }}
-                >
-                  🏆 More keno money for Fin!
-                </span>
-              )}
-              {!outcome && (
-                <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#00ff87' }}>
-                  Tap a card to declare the winner
-                </span>
-              )}
-            </div>
-          )
-        })()}
-      </div>
       </Reveal>
 
       {/* How it works */}
-      <div className="max-w-5xl mx-auto">
-        <div className="flex items-center gap-3 mb-8 justify-center">
-          <div className="h-px flex-1 max-w-[80px] bg-gradient-to-r from-transparent to-[#00ff87]/40" />
-          <span className="text-[#00ff87] text-xs font-black uppercase tracking-[0.3em]">How it works</span>
-          <div className="h-px flex-1 max-w-[80px] bg-gradient-to-l from-transparent to-purple-500/40" />
-        </div>
+      <Reveal>
+        <div className="mx-auto mt-24 max-w-5xl">
+          <SectionHeading eyebrow="How it works" title={<>Four steps to a <span className="text-accent-bright">battle</span></>} className="mb-10" />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {STEPS.map((s, i) => (
-            <div
-              key={i}
-              className="group relative overflow-hidden rounded-2xl border p-5 transition-all duration-300 hover:-translate-y-1"
-              style={{
-                borderColor: `${s.color}33`,
-                background: 'linear-gradient(160deg, #150e24 0%, #0a0613 55%, #050308 100%)',
-              }}
-            >
-              {/* Top accent */}
-              <span
-                className="pointer-events-none absolute inset-x-0 top-0 h-[2px] opacity-60 transition-opacity duration-300 group-hover:opacity-100"
-                style={{ background: `linear-gradient(90deg, transparent, ${s.color}, transparent)` }}
-              />
-
-              <div className="relative">
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110"
-                  style={{ color: s.color, background: `${s.color}14`, border: `1px solid ${s.color}40` }}
-                >
-                  {s.icon}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {STEPS.map((s, i) => (
+              <Panel key={i} innerClassName="flex h-full flex-col p-6">
+                <div className="flex items-start justify-between">
+                  <span className="flex h-11 w-11 items-center justify-center bg-[#0B0E2A] text-accent-bright" style={{ clipPath: smallCut }}>
+                    {s.icon}
+                  </span>
+                  <span className="font-display text-[1.4rem] leading-none text-faint">{String(i + 1).padStart(2, '0')}</span>
                 </div>
-                <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: s.color }}>
-                  Step {String(i + 1).padStart(2, '0')}
-                </p>
-                <h3 className="text-white font-black text-base mb-2 leading-tight">{s.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
-              </div>
-            </div>
-          ))}
+                <h3 className="font-display mt-5 text-[1.6rem] leading-none text-white">{s.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{s.desc}</p>
+              </Panel>
+            ))}
+          </div>
         </div>
-      </div>
+      </Reveal>
     </div>
   )
 }

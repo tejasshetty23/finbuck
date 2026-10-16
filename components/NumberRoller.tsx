@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Button from './Button'
+import Modal from './Modal'
 
 /**
  * Slot-machine picker for a whole number in [min, max].
@@ -23,6 +25,10 @@ import { useEffect, useRef, useState } from 'react'
 // middle row for the result to land in, with its neighbours peeking in above
 // and below to sell the reel.
 const CELL_H = 64
+
+// Cut corners for the reel window, outer edge and inner fill.
+const REEL_CUT = 'polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)'
+const REEL_CUT_INNER = 'polygon(9.5px 0,100% 0,100% calc(100% - 9.5px),calc(100% - 9.5px) 100%,0 100%,0 9.5px)'
 const VISIBLE = 3
 
 // Fixed strip length, independent of the range: the cells hold a consecutive
@@ -208,34 +214,24 @@ export default function NumberRoller({
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="w-full flex justify-end">
-        <button
-          onClick={openEditor}
-          disabled={rolling}
-          className="border border-purple-500/40 text-purple-300 hover:text-white hover:border-purple-400 hover:bg-purple-500/10 font-semibold py-1.5 px-3 rounded-lg uppercase tracking-widest text-[10px] transition-all disabled:opacity-40"
-        >
-          Set Range
-        </button>
+      <div className="flex w-full justify-end">
+        <Button onClick={openEditor} disabled={rolling} variant="ghost" size="xs">
+          Set range
+        </Button>
       </div>
 
-      {/* Reel window */}
+      {/* Reel window: a cut-corner tile lit along its edge, like the countdown */}
       <div
-        className="relative w-full max-w-[180px] overflow-hidden rounded-xl p-[2px]"
-        style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a, #00ff87)' }}
+        className="relative w-full max-w-[180px] overflow-hidden p-px"
+        style={{ clipPath: REEL_CUT, background: 'linear-gradient(180deg, rgba(0,255,135,0.85), rgba(0,255,135,0.25) 45%, rgba(255,255,255,0.06))' }}
       >
-        <div className="relative overflow-hidden rounded-[10px] bg-[#050409]" style={{ height: CELL_H * VISIBLE }}>
+        <div className="relative overflow-hidden bg-[#080A20]" style={{ height: CELL_H * VISIBLE, clipPath: REEL_CUT_INNER }}>
           <div ref={stripRef} className="will-change-transform">
             {strip.map((n, i) => (
               <div
                 key={i}
-                className="flex items-center justify-center font-black tabular-nums"
-                style={{
-                  height: CELL_H,
-                  // Only the middle row is fully lit; the rows either side are
-                  // dimmed so the eye is pulled to where the result lands.
-                  fontSize: 'clamp(28px, 6vw, 40px)',
-                  color: '#e6ffe9',
-                }}
+                className="font-display flex items-center justify-center tabular-nums text-white"
+                style={{ height: CELL_H, fontSize: 'clamp(34px, 7vw, 48px)' }}
               >
                 {n}
               </div>
@@ -248,7 +244,7 @@ export default function NumberRoller({
             className="pointer-events-none absolute inset-0"
             style={{
               background:
-                'linear-gradient(180deg, rgba(5,4,9,0.92) 0%, rgba(5,4,9,0.45) 22%, rgba(5,4,9,0) 40%, rgba(5,4,9,0) 60%, rgba(5,4,9,0.45) 78%, rgba(5,4,9,0.92) 100%)',
+                'linear-gradient(180deg, rgba(8,10,32,0.92) 0%, rgba(8,10,32,0.45) 22%, rgba(8,10,32,0) 40%, rgba(8,10,32,0) 60%, rgba(8,10,32,0.45) 78%, rgba(8,10,32,0.92) 100%)',
             }}
           />
           <div
@@ -269,77 +265,47 @@ export default function NumberRoller({
         </div>
       </div>
 
-      <p className="text-gray-600 text-[10px] uppercase tracking-[0.25em] font-bold">
+      <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-faint">
         {rolling ? 'Rolling…' : landed !== null ? 'Locked in' : `${min}–${max}`}
       </p>
 
-      <button
-        onClick={roll}
-        disabled={rolling}
-        className="text-black font-black py-2 px-6 rounded-lg uppercase tracking-widest text-xs transition-transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
-        style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)' }}
-      >
+      <Button onClick={roll} disabled={rolling} className="min-w-[160px]">
         {rolling ? 'Rolling…' : landed !== null ? 'Roll again' : 'Roll'}
-      </button>
+      </Button>
 
       {editing && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/75 backdrop-blur-sm"
-          onClick={() => setEditing(false)}
-        >
-          <div
-            className="relative max-w-sm w-full rounded-2xl border border-purple-700/40 bg-[#0d0a1a] p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-white font-black uppercase tracking-widest text-sm">Set Range</h4>
-              <button
-                onClick={() => setEditing(false)}
-                className="text-gray-500 hover:text-white transition-colors"
-                aria-label="Close"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="flex items-end gap-3">
-              <label className="flex-1">
-                <span className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">From</span>
-                <input
-                  type="number"
-                  value={draft.min}
-                  autoFocus
-                  onChange={(e) => setDraft((d) => ({ ...d, min: e.target.value }))}
-                  onKeyDown={(e) => e.key === 'Enter' && saveRange()}
-                  className="w-full bg-[#07050f] border border-purple-700/50 rounded-lg px-3 py-2 text-sm text-white tabular-nums focus:outline-none focus:border-[#00ff87]"
-                />
-              </label>
-              <span className="pb-2 text-gray-600 font-black">–</span>
-              <label className="flex-1">
-                <span className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">To</span>
-                <input
-                  type="number"
-                  value={draft.max}
-                  onChange={(e) => setDraft((d) => ({ ...d, max: e.target.value }))}
-                  onKeyDown={(e) => e.key === 'Enter' && saveRange()}
-                  className="w-full bg-[#07050f] border border-purple-700/50 rounded-lg px-3 py-2 text-sm text-white tabular-nums focus:outline-none focus:border-[#00ff87]"
-                />
-              </label>
-            </div>
-
-            {rangeError && <p className="mt-3 text-[11px] text-red-400">{rangeError}</p>}
-
-            <button
-              onClick={saveRange}
-              className="w-full mt-4 text-black font-black py-2.5 rounded-lg uppercase tracking-widest text-xs"
-              style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)' }}
-            >
-              Done
-            </button>
+        <Modal onClose={() => setEditing(false)} title="Set range" size="sm">
+          <div className="flex items-end gap-3">
+            <label className="flex-1">
+              <span className="mb-2 block text-[11px] font-bold uppercase tracking-[0.3em] text-faint">From</span>
+              <input
+                type="number"
+                value={draft.min}
+                autoFocus
+                onChange={(e) => setDraft((d) => ({ ...d, min: e.target.value }))}
+                onKeyDown={(e) => e.key === 'Enter' && saveRange()}
+                className="field tabular-nums"
+              />
+            </label>
+            <span className="pb-3 font-bold text-faint">–</span>
+            <label className="flex-1">
+              <span className="mb-2 block text-[11px] font-bold uppercase tracking-[0.3em] text-faint">To</span>
+              <input
+                type="number"
+                value={draft.max}
+                onChange={(e) => setDraft((d) => ({ ...d, max: e.target.value }))}
+                onKeyDown={(e) => e.key === 'Enter' && saveRange()}
+                className="field tabular-nums"
+              />
+            </label>
           </div>
-        </div>
+
+          {rangeError && <p className="mt-3 text-[11px] text-red-300">{rangeError}</p>}
+
+          <Button onClick={saveRange} className="mt-5 w-full">
+            Done
+          </Button>
+        </Modal>
       )}
     </div>
   )

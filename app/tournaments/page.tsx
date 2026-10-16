@@ -1,7 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import FloatingDecor from '../../components/FloatingDecor'
+import Button from '../../components/Button'
+import Modal from '../../components/Modal'
+import PageHeader from '../../components/PageHeader'
+import Panel from '../../components/Panel'
 import Reveal from '../../components/Reveal'
 
 type Slot = string | null
@@ -42,6 +45,8 @@ function roundLabel(i: number, finalIdx: number): string {
   if (i === finalIdx - 3) return 'Quarterfinals'
   return `Round ${i + 1}`
 }
+
+const smallCut = 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)'
 
 export default function TournamentsPage() {
   const [count, setCount] = useState(8)
@@ -123,270 +128,215 @@ export default function TournamentsPage() {
   const championIndex = rounds && champion ? rounds[0].findIndex((n) => n === champion) : -1
   const championSlot = championIndex >= 0 ? (slots[championIndex]?.trim() || `Slot ${championIndex + 1}`) : ''
 
+  const stepBtn =
+    'flex h-11 w-11 items-center justify-center bg-white/[0.07] text-xl font-bold text-white transition-colors hover:bg-white/[0.12]'
+
   return (
-    <div className="min-h-screen pt-28 pb-20 px-4 sm:px-6 relative">
-      {/* Background */}
-      <div className="fixed inset-0 -z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/background.webp" alt="" className="w-full h-full object-cover object-center" style={{ filter: 'brightness(0.2) saturate(1.1)' }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#07050f]/70 via-[#07050f]/50 to-[#07050f]" />
-      </div>
+    <div className="px-6 pb-24 pt-[72px]">
+      <PageHeader eyebrow="Bracket" title="Tournaments">
+        Build a single-elimination bracket and crown a champion.
+      </PageHeader>
 
-      {/* Header */}
-      <Reveal>
-      <div className="relative max-w-4xl mx-auto mb-10 text-center">
-        <FloatingDecor height="h-[280px] sm:h-[340px]" className="!top-[38%]" />
-        <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 text-purple-400">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" />
-          </svg>
-          <span className="text-purple-400 text-sm font-semibold tracking-widest uppercase">Bracket</span>
-        </div>
-
-        <h1 className="relative z-10 text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight text-white mb-4">
-          <span className="animated-gradient-text">Tournaments</span>
-        </h1>
-        <p className="text-gray-500 text-base max-w-md mx-auto">
-          Build a single-elimination bracket and crown a champion.
-        </p>
-      </div>
-      </Reveal>
-
-      {/* Setup screen */}
+      {/* Setup */}
       {!rounds && (
-        <div className="max-w-lg mx-auto">
-          {/* Frame sits on its own element so its border-image can't fight the
-              card's own border/background. */}
-          <div className="tourney-frame">
-            <div className="rounded-2xl border border-purple-900/40 bg-[#0d0a1a]/70 backdrop-blur-sm p-6 sm:p-8">
-            <label className="block text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
-              Number of Entrants
-            </label>
+        <Reveal>
+          <div className="mx-auto mt-12 max-w-md">
+            <Panel tone="accent" innerClassName="p-7 text-center sm:p-9">
+              <label className="block text-[11px] font-bold uppercase tracking-[0.3em] text-faint">Number of entrants</label>
 
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <button
-                onClick={() => setCount((c) => Math.max(2, c - 1))}
-                className="w-10 h-10 rounded-lg border border-purple-700/50 text-purple-300 hover:bg-purple-500/10 hover:border-purple-400 transition-colors text-xl font-bold"
-              >
-                −
-              </button>
-              <input
-                type="number"
-                min={2}
-                max={32}
-                value={count}
-                onChange={(e) => setCount(Math.min(32, Number(e.target.value)))}
-                className="w-24 text-center bg-[#07050f] border border-purple-700/50 rounded-lg px-3 py-2 text-2xl font-black text-white focus:outline-none focus:border-[#00ff87]"
-              />
-              <button
-                onClick={() => setCount((c) => Math.min(32, c + 1))}
-                className="w-10 h-10 rounded-lg border border-purple-700/50 text-purple-300 hover:bg-purple-500/10 hover:border-purple-400 transition-colors text-xl font-bold"
-              >
-                +
-              </button>
-            </div>
-
-            <div className="flex items-center justify-center gap-2 mb-8">
-              {[4, 8, 16, 32].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setCount(n)}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors border ${
-                    count === n
-                      ? 'border-[#00ff87] text-[#00ff87] bg-[#00ff87]/10'
-                      : 'border-purple-900/40 text-gray-400 hover:border-purple-500'
-                  }`}
-                >
-                  {n}
+              <div className="mt-5 flex items-center justify-center gap-3">
+                <button type="button" onClick={() => setCount((c) => Math.max(2, c - 1))} className={stepBtn} style={{ clipPath: smallCut }} aria-label="Fewer">
+                  −
                 </button>
-              ))}
-            </div>
+                <input
+                  type="number"
+                  min={2}
+                  max={32}
+                  value={count}
+                  onChange={(e) => setCount(Math.min(32, Number(e.target.value)))}
+                  className="field font-display !h-14 !w-28 text-center !text-[2.4rem] leading-none"
+                />
+                <button type="button" onClick={() => setCount((c) => Math.min(32, c + 1))} className={stepBtn} style={{ clipPath: smallCut }} aria-label="More">
+                  +
+                </button>
+              </div>
 
-            <button
-              onClick={createBracket}
-              className="w-full text-black font-black py-4 rounded-xl uppercase tracking-widest text-sm transition-all shadow-[0_0_20px_rgba(0,255,135,0.3)] hover:shadow-[0_0_40px_rgba(0,255,135,0.5)]"
-              style={{ background: 'linear-gradient(135deg, #00ff87, #4ade80, #00c96a)' }}
-            >
-              Create Bracket
-            </button>
-            <p className="text-gray-600 text-xs text-center mt-3">
-              2–32 players · byes are added automatically
-            </p>
-            </div>
+              <div className="mt-5 flex items-center justify-center gap-2">
+                {[4, 8, 16, 32].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setCount(n)}
+                    className={`h-9 w-14 text-sm font-bold transition-colors ${
+                      count === n ? 'bg-accent text-[#0B0E2A]' : 'bg-white/[0.07] text-muted hover:bg-white/[0.12] hover:text-white'
+                    }`}
+                    style={{ clipPath: smallCut }}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+
+              <Button onClick={createBracket} className="mt-8 w-full">
+                Create bracket
+              </Button>
+              <p className="mt-3 text-xs text-faint">2–32 players · byes are added automatically</p>
+            </Panel>
           </div>
-        </div>
+        </Reveal>
       )}
 
       {/* Bracket */}
       {rounds && (
         <Reveal>
-        <div className="max-w-7xl mx-auto">
-          {/* Controls */}
-          <div className="flex items-center justify-center gap-3 mb-8 flex-wrap">
-            <button
-              onClick={undo}
-              disabled={!history.length}
-              className="inline-flex items-center gap-2 border border-purple-500/40 text-purple-300 hover:text-white hover:border-purple-400 hover:bg-purple-500/10 font-semibold px-5 py-2.5 rounded-xl text-sm uppercase tracking-widest transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-              </svg>
-              Undo
-            </button>
-            <button
-              onClick={newBracket}
-              className="inline-flex items-center gap-2 border border-[#00ff87]/30 text-[#00ff87] hover:bg-[#00ff87]/10 font-semibold px-5 py-2.5 rounded-xl text-sm uppercase tracking-widest transition-all"
-            >
-              New Bracket
-            </button>
-            {champion && (
-              <button
-                onClick={() => setShowWin(true)}
-                className="inline-flex items-center gap-2 border border-yellow-400/40 text-yellow-300 hover:bg-yellow-400/10 font-semibold px-5 py-2.5 rounded-xl text-sm uppercase tracking-widest transition-all"
-              >
-                🏆 {champion}
-              </button>
-            )}
-          </div>
-
-          {/* Bracket grid */}
-          <div className="overflow-x-auto pb-4">
-            <div className="relative min-h-[480px] px-2">
-              {/* Bracket rounds — centered as the core */}
-              <div className="relative flex gap-10 items-stretch min-h-[480px] w-max mx-auto translate-x-12">
-              {/* Slot label column — hidden when more than 8 players */}
-              {slots.length <= 8 && (
-                <div className="absolute right-full top-0 bottom-0 mr-6 flex flex-col z-10" style={{ width: '190px' }}>
-                  <div className="text-center text-[10px] font-bold uppercase tracking-widest mb-3 text-purple-400">Slot</div>
-                  <div className="flex flex-col flex-1">
-                    {rounds[0].map((_, i) => (
-                      <div key={i} className="flex-1 flex items-center">
-                        <input
-                          value={slots[i] ?? ''}
-                          onChange={(e) => editSlot(i, e.target.value)}
-                          placeholder={`Slot ${i + 1}`}
-                          className="w-full rounded-lg border border-purple-900/30 bg-black px-2 py-2 text-center text-sm font-semibold text-white placeholder-gray-600 focus:outline-none focus:border-purple-500/60"
-                          style={{ minHeight: '44px', fontSize: autoFontSize(slots[i] ?? '', 20) }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+          <div className="mx-auto mt-10 max-w-7xl">
+            {/* Controls */}
+            <div className="mb-8 flex flex-wrap items-center justify-center gap-3">
+              <Button onClick={undo} disabled={!history.length} variant="ghost" size="sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                </svg>
+                Undo
+              </Button>
+              <Button onClick={newBracket} variant="outline" size="sm">
+                New bracket
+              </Button>
+              {champion && (
+                <Button onClick={() => setShowWin(true)} variant="gold" size="sm">
+                  🏆 {champion}
+                </Button>
               )}
+            </div>
 
-              {rounds.map((round, r) => (
-                <div key={r} className="bk-round">
-                  <div className="text-center text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: r === finalIdx ? '#FFD700' : '#a855f7' }}>
-                    {roundLabel(r, finalIdx)}
-                  </div>
-                  <div className="flex flex-col flex-1">
-                    {round.map((slot, i) => {
-                      const isChampionBox = r === finalIdx
-                      const canAdvance = r < finalIdx && !!slot
-                      const isBye = slot === null
-                      return (
-                        <div key={i} className="bk-match">
-                          {r > 0 && <span className="bk-in" />}
-                          <div
-                            className="relative w-full rounded-lg border flex items-center"
-                            style={{
-                              background: isChampionBox ? 'linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.04))' : '#000000',
-                              borderColor: isChampionBox ? 'rgba(255,215,0,0.6)' : isBye ? 'rgba(168,85,247,0.15)' : 'rgba(168,85,247,0.4)',
-                              boxShadow: isChampionBox && slot ? '0 0 18px rgba(255,215,0,0.35)' : 'none',
-                              minHeight: '44px',
-                            }}
-                          >
-                            {r === 0 ? (
-                              isBye ? (
-                                <span className="px-3 py-2 text-sm text-gray-600 italic">BYE</span>
-                              ) : (
-                                <input
-                                  value={slot ?? ''}
-                                  onChange={(e) => editName(i, e.target.value)}
-                                  placeholder={`Bucker ${i + 1}`}
-                                  className="w-full min-w-0 bg-transparent px-3 py-2 text-sm text-white font-semibold placeholder-gray-600 focus:outline-none"
-                                  style={{ fontSize: autoFontSize(slot ?? '', 16) }}
-                                />
-                              )
-                            ) : (
-                              <span
-                                style={{ fontSize: autoFontSize(slot ?? '', 14) }}
-                                className={`flex-1 px-3 py-2 text-sm font-bold truncate ${
-                                  slot ? (isChampionBox ? 'text-yellow-300' : 'text-white') : 'text-gray-700'
-                                }`}
-                              >
-                                {slot ?? '—'}
-                              </span>
-                            )}
-
-                            {canAdvance && (
-                              <button
-                                onClick={() => advance(r, i)}
-                                title="Advance winner"
-                                className="shrink-0 mr-1 w-7 h-7 flex items-center justify-center rounded-md text-[#00ff87] hover:bg-[#00ff87]/15 transition-colors"
-                              >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-4 h-4">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
-                              </button>
-                            )}
+            {/* Bracket grid */}
+            <div className="overflow-x-auto pb-4">
+              <div className="relative min-h-[480px] px-2">
+                <div className="relative mx-auto flex min-h-[480px] w-max translate-x-12 items-stretch gap-10">
+                  {/* Slot label column — hidden when more than 8 players */}
+                  {slots.length <= 8 && (
+                    <div className="absolute bottom-0 right-full top-0 z-10 mr-6 flex flex-col" style={{ width: '190px' }}>
+                      <div className="mb-3 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-faint">Slot</div>
+                      <div className="flex flex-1 flex-col">
+                        {rounds[0].map((_, i) => (
+                          <div key={i} className="flex flex-1 items-center">
+                            <input
+                              value={slots[i] ?? ''}
+                              onChange={(e) => editSlot(i, e.target.value)}
+                              placeholder={`Slot ${i + 1}`}
+                              className="field !h-11 text-center text-sm font-semibold"
+                              style={{ fontSize: autoFontSize(slots[i] ?? '', 20) }}
+                            />
                           </div>
-                        </div>
-                      )
-                    })}
-                  </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {rounds.map((round, r) => (
+                    <div key={r} className="bk-round">
+                      <div
+                        className={`mb-3 text-center text-[10px] font-bold uppercase tracking-[0.3em] ${
+                          r === finalIdx ? 'text-gold' : 'text-accent-bright'
+                        }`}
+                      >
+                        {roundLabel(r, finalIdx)}
+                      </div>
+                      <div className="flex flex-1 flex-col">
+                        {round.map((slot, i) => {
+                          const isChampionBox = r === finalIdx
+                          const canAdvance = r < finalIdx && !!slot
+                          const isBye = slot === null
+                          return (
+                            <div key={i} className="bk-match">
+                              {r > 0 && <span className="bk-in" />}
+                              <div
+                                className="relative flex min-h-[44px] w-full items-center rounded-lg border"
+                                style={{
+                                  background: isChampionBox
+                                    ? 'linear-gradient(135deg, rgba(255,200,61,0.16), rgba(255,200,61,0.04))'
+                                    : '#080A20',
+                                  borderColor: isChampionBox
+                                    ? 'rgba(255,200,61,0.6)'
+                                    : isBye
+                                      ? 'rgba(255,255,255,0.05)'
+                                      : 'rgba(255,255,255,0.12)',
+                                  boxShadow: isChampionBox && slot ? '0 0 18px rgba(255,200,61,0.35)' : 'none',
+                                }}
+                              >
+                                {r === 0 ? (
+                                  isBye ? (
+                                    <span className="px-3 py-2 text-sm italic text-faint">BYE</span>
+                                  ) : (
+                                    <input
+                                      value={slot ?? ''}
+                                      onChange={(e) => editName(i, e.target.value)}
+                                      placeholder={`Bucker ${i + 1}`}
+                                      className="w-full min-w-0 bg-transparent px-3 py-2 text-sm font-semibold text-white placeholder:text-faint focus:outline-none"
+                                      style={{ fontSize: autoFontSize(slot ?? '', 16) }}
+                                    />
+                                  )
+                                ) : (
+                                  <span
+                                    style={{ fontSize: autoFontSize(slot ?? '', 14) }}
+                                    className={`flex-1 truncate px-3 py-2 text-sm font-bold ${
+                                      slot ? (isChampionBox ? 'text-gold' : 'text-white') : 'text-white/20'
+                                    }`}
+                                  >
+                                    {slot ?? '—'}
+                                  </span>
+                                )}
+
+                                {canAdvance && (
+                                  <button
+                                    type="button"
+                                    onClick={() => advance(r, i)}
+                                    title="Advance winner"
+                                    className="mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-accent-bright transition-colors hover:bg-accent/15"
+                                  >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="h-4 w-4">
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
               </div>
             </div>
-          </div>
 
-          <p className="text-center text-gray-600 text-xs mt-4">
-            Tap the <span className="text-[#00ff87]">›</span> arrow next to a player to advance them to the next round.
-          </p>
-        </div>
+            <p className="mt-4 text-center text-xs text-faint">
+              Tap the <span className="text-accent-bright">›</span> arrow next to a player to advance them to the next round.
+            </p>
+          </div>
         </Reveal>
       )}
 
       {/* Champion popup */}
       {showWin && champion && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/75 backdrop-blur-sm" onClick={() => setShowWin(false)}>
-          <div
-            className="relative max-w-sm w-full rounded-3xl border p-8 text-center"
-            style={{
-              background: 'linear-gradient(160deg, #1c1500 0%, #0a0700 60%, #000000 100%)',
-              borderColor: 'rgba(255,215,0,0.6)',
-              boxShadow: '0 0 60px rgba(255,215,0,0.35)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/finbuck-update.webp"
-              alt="Champion"
-              className="mx-auto mb-4 max-h-40 w-auto object-contain"
-              style={{ filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.55)) drop-shadow(0 0 22px rgba(255,215,0,0.35))' }}
-            />
-            <p className="text-xs font-black uppercase tracking-[0.3em] mb-1 text-white">
-              Bracket Champion
-            </p>
-            <p className="text-3xl sm:text-4xl font-black mb-2 break-words" style={{ color: '#FFD700', textShadow: '0 0 18px rgba(255,215,0,0.5)' }}>
-              {champion}
-            </p>
-            <p className="mb-6 leading-relaxed">
-              <span className="uppercase tracking-widest text-white font-bold text-[11px]">Won with the slot</span>
-              <br />
-              <span className="font-black text-lg break-words" style={{ color: '#FFD700' }}>{championSlot}</span>
-            </p>
-            <button
-              onClick={() => setShowWin(false)}
-              className="w-full text-black font-black py-3 rounded-xl uppercase tracking-widest text-sm transition-all hover:brightness-110"
-              style={{ background: 'linear-gradient(135deg, #fff3a0, #ffd700, #c8920a)' }}
-            >
-              Let&apos;s Go 🎉
-            </button>
-          </div>
-        </div>
+        <Modal onClose={() => setShowWin(false)} tone="gold" size="sm" innerClassName="p-8 text-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/finbuck-update.webp"
+            alt="Champion"
+            className="mx-auto mb-4 max-h-40 w-auto object-contain"
+            style={{ filter: 'drop-shadow(0 6px 14px rgba(0,0,0,0.55)) drop-shadow(0 0 22px rgba(255,200,61,0.35))' }}
+          />
+          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold">Bracket champion</p>
+          <p className="font-display mt-2 break-words text-[3rem] leading-none text-white">{champion}</p>
+          <p className="mt-4 leading-relaxed">
+            <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-faint">Won with the slot</span>
+            <br />
+            <span className="font-display break-words text-[1.8rem] leading-none text-gold">{championSlot}</span>
+          </p>
+          <Button onClick={() => setShowWin(false)} variant="gold" className="mt-7 w-full">
+            Let&apos;s go 🎉
+          </Button>
+        </Modal>
       )}
     </div>
   )

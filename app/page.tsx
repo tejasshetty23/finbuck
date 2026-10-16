@@ -186,10 +186,16 @@ export default async function Home() {
                     </Button>
                   </div>
 
-                  {/* The code as a chip: a cut-corner tile with a glossy top.
-                      The wrapper bounces it in place; the tilt stays on the
-                      tile so the two transforms don't overwrite each other. */}
-                  <div className="code-bounce hidden sm:block">
+                  {/* The code as a chip: a cut-corner tile with a glossy top,
+                      hovering over a soft shadow that tightens as it rises.
+                      The float sits on a wrapper so it doesn't overwrite the
+                      tile's own tilt. */}
+                  <div className="relative hidden sm:block">
+                  <div
+                    aria-hidden
+                    className="code-hover-shadow absolute -bottom-7 left-1/2 h-5 w-[70%] -translate-x-1/2 rounded-[50%] bg-[#0B0E2A]/45 blur-md"
+                  />
+                  <div className="code-hover">
                   <div
                     className="relative flex h-48 w-48 rotate-[8deg] flex-col items-center justify-center bg-[#0B0E2A] shadow-[0_30px_60px_rgba(11,14,42,0.45)] lg:h-52 lg:w-52"
                     style={{ clipPath: chamfer }}
@@ -203,6 +209,7 @@ export default async function Home() {
                     <span className="font-display relative text-[3.5rem] leading-none text-accent-bright [text-shadow:0_0_24px_rgba(0,255,135,0.5)] lg:text-[3.9rem]">
                       {CODE}
                     </span>
+                  </div>
                   </div>
                   </div>
                 </div>

@@ -77,7 +77,7 @@ export default async function Home() {
           }}
         />
 
-        <div className="relative z-10 mx-auto flex min-h-[600px] max-w-5xl flex-col items-center justify-center px-6 py-24 text-center md:min-h-[680px]">
+        <div className="relative z-10 mx-auto flex min-h-[540px] max-w-5xl flex-col items-center justify-center px-6 py-20 text-center md:min-h-[600px]">
           <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.32em] text-muted">
             <span className="h-px w-8 bg-white/15" />
             Official partner
@@ -85,11 +85,11 @@ export default async function Home() {
             <span className="h-px w-8 bg-white/15" />
           </div>
 
-          {/* The headline fills its width at every size: FINBUCKS is set on
-              the viewport, REWARDS a step down. Both are green with a faint
+          {/* The headline scales with the viewport up to a capped size:
+              FINBUCKS leads, REWARDS sits a step down. Both are green with a faint
               outlined copy offset behind, for a printed, double-struck depth. */}
-          <h1 className="font-display mt-6 leading-[0.82]">
-            <span className="relative block text-[clamp(4.5rem,19vw,13rem)] text-accent-bright [text-shadow:0_0_40px_rgba(0,255,135,0.35)]">
+          <h1 className="font-display mt-5 leading-[0.86]">
+            <span className="relative block text-[clamp(4rem,15vw,8.5rem)] text-accent-bright [text-shadow:0_0_32px_rgba(0,255,135,0.32)]">
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-0 translate-x-[0.04em] translate-y-[0.06em] text-transparent"
@@ -99,7 +99,7 @@ export default async function Home() {
               </span>
               <span className="relative">FinBucks</span>
             </span>
-            <span className="relative block text-[clamp(3rem,12.5vw,8.5rem)] text-accent-bright [text-shadow:0_0_40px_rgba(0,255,135,0.35)]">
+            <span className="relative block text-[clamp(2.6rem,9.5vw,5.5rem)] text-accent-bright [text-shadow:0_0_32px_rgba(0,255,135,0.32)]">
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-0 translate-x-[0.04em] translate-y-[0.06em] text-transparent"
@@ -111,12 +111,12 @@ export default async function Home() {
             </span>
           </h1>
 
-          <p className="mt-7 max-w-lg text-base leading-relaxed text-muted sm:text-lg">
+          <p className="mt-6 max-w-lg text-base leading-relaxed text-muted sm:text-lg">
             Climb the monthly leaderboard, win stream giveaways and unlock exclusive rewards. Use code{' '}
             <span className="font-bold text-accent-bright">{CODE}</span> on {PARTNER.name}.
           </p>
 
-          <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
             <Button href={SOCIALS.kick.href} external icon={kickMark}>
               Watch live
             </Button>

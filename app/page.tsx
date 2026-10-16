@@ -86,10 +86,19 @@ export default async function Home() {
           </div>
 
           {/* The headline fills its width at every size: FINBUCKS is set on
-              the viewport, REWARDS a step down and green. The faint outlined
-              copy behind REWARDS gives it a printed, double-struck depth. */}
+              the viewport, REWARDS a step down. Both are green with a faint
+              outlined copy offset behind, for a printed, double-struck depth. */}
           <h1 className="font-display mt-6 leading-[0.82]">
-            <span className="block text-[clamp(4.5rem,19vw,13rem)] text-white">FinBucks</span>
+            <span className="relative block text-[clamp(4.5rem,19vw,13rem)] text-accent-bright [text-shadow:0_0_40px_rgba(0,255,135,0.35)]">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 translate-x-[0.04em] translate-y-[0.06em] text-transparent"
+                style={{ WebkitTextStroke: '1.5px rgba(0,255,135,0.35)' }}
+              >
+                FinBucks
+              </span>
+              <span className="relative">FinBucks</span>
+            </span>
             <span className="relative block text-[clamp(3rem,12.5vw,8.5rem)] text-accent-bright [text-shadow:0_0_40px_rgba(0,255,135,0.35)]">
               <span
                 aria-hidden

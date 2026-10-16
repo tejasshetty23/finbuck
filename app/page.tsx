@@ -89,7 +89,7 @@ export default async function Home() {
               FINBUCKS leads, REWARDS sits a step down. Both are green with a faint
               outlined copy offset behind, for a printed, double-struck depth. */}
           <h1 className="font-display mt-5 leading-[0.86]">
-            <span className="relative block text-[clamp(4rem,15vw,8.5rem)] text-accent-bright [text-shadow:0_0_32px_rgba(0,255,135,0.32)]">
+            <span className="relative block text-[clamp(4.5rem,17vw,10rem)] text-accent-bright [text-shadow:0_0_32px_rgba(0,255,135,0.32)]">
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-0 translate-x-[0.04em] translate-y-[0.06em] text-transparent"
@@ -99,7 +99,7 @@ export default async function Home() {
               </span>
               <span className="relative">FinBucks</span>
             </span>
-            <span className="relative block text-[clamp(2.6rem,9.5vw,5.5rem)] text-accent-bright [text-shadow:0_0_32px_rgba(0,255,135,0.32)]">
+            <span className="relative block text-[clamp(2.9rem,10.5vw,6.5rem)] text-accent-bright [text-shadow:0_0_32px_rgba(0,255,135,0.32)]">
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-0 translate-x-[0.04em] translate-y-[0.06em] text-transparent"

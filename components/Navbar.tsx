@@ -119,11 +119,11 @@ export function Lockup({ size = 'md' }: { size?: 'md' | 'sm' }) {
   )
 }
 
-export function CodeButton({ className = '' }: { className?: string }) {
+export function CodeButton({ className = '', size = 'sm' }: { className?: string; size?: 'sm' | 'xs' }) {
   return (
     // The same cut-corner button as the rest of the site, minus the trailing
     // ↗ — the code is the point here, not the fact that it opens a new tab.
-    <Button href={SIGNUP_URL} external sponsored size="sm" className={`[&>svg]:hidden ${className}`}>
+    <Button href={SIGNUP_URL} external sponsored size={size} className={`[&>svg]:hidden ${className}`}>
       <span className="font-semibold">Use code</span>
       <span className="font-extrabold">{CODE}</span>
     </Button>
@@ -253,7 +253,7 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <CodeButton className="hidden sm:inline-flex" />
+          <CodeButton size="xs" className="hidden sm:inline-flex" />
           <button
             className="xl:hidden rounded-full p-2 text-muted hover:text-white hover:bg-white/[0.05] transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}

@@ -59,12 +59,13 @@ export default function Button({
   external?: boolean
   /** Affiliate link — adds rel="sponsored". */
   sponsored?: boolean
-  size?: 'md' | 'sm'
+  /** 'xs' keeps the 'sm' text size on a shorter, tighter box (the header's code button). */
+  size?: 'md' | 'sm' | 'xs'
   className?: string
 }) {
   const v = VARIANT[variant]
   const cls = `group inline-flex items-center justify-center gap-2 font-bold tracking-[0.01em] whitespace-nowrap transition-[transform,filter,background-color] duration-150 hover:-translate-y-px active:translate-y-px ${
-    size === 'md' ? 'h-12 px-6 text-[15px]' : 'h-10 px-4 text-sm'
+    size === 'md' ? 'h-12 px-6 text-[15px]' : size === 'sm' ? 'h-10 px-4 text-sm' : 'h-[34px] px-3.5 text-sm'
   } ${v.cls} ${className}`
   const style = v.bg ? { clipPath: clip, background: v.bg } : { clipPath: clip }
   const inner = (

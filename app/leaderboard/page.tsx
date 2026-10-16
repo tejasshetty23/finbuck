@@ -59,12 +59,12 @@ export default async function LeaderboardPage() {
           <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
           <span className="h-px flex-1 bg-gradient-to-l from-transparent to-accent/50" />
         </p>
-        <h1 className="font-display relative mt-4 leading-[0.85]">
-          <span className="block text-[clamp(4rem,16vw,9rem)] text-gold [text-shadow:0_0_40px_rgba(255,196,77,0.3)]">
+        <h1 className="font-display relative mt-6">
+          <span className="block text-[clamp(4rem,16vw,9rem)] leading-[1] text-gold [text-shadow:0_0_40px_rgba(255,196,77,0.3)]">
             <CountUp value={race.prizePool} />
           </span>
           <span
-            className="block text-[clamp(2.75rem,11vw,6.5rem)] text-accent-bright"
+            className="mt-1 block text-[clamp(2.75rem,11vw,6.5rem)] leading-[0.9] text-accent-bright sm:mt-2"
             style={{ textShadow: '0 0 44px rgba(0,255,135,0.35)' }}
           >
             Leaderboard
@@ -72,7 +72,7 @@ export default async function LeaderboardPage() {
         </h1>
         {/* A plain paragraph, not a flex row: as flex, the copy button forced a
             wrap that stranded "Play with code BUCK" on a line of its own. */}
-        <p className="relative mx-auto mt-5 max-w-xl text-sm sm:text-base leading-relaxed text-muted">
+        <p className="relative mx-auto mt-6 max-w-xl text-sm sm:text-base leading-relaxed text-muted">
           Play with code <span className="font-bold text-accent-bright">{CODE}</span>{' '}
           <span className="inline-block align-middle -mt-1">
             <CopyButton code={CODE} />

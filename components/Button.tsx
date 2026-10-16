@@ -48,7 +48,6 @@ export default function Button({
   external = false,
   sponsored = false,
   size = 'md',
-  shape = 'cut',
   className = '',
 }: {
   href: string
@@ -61,16 +60,13 @@ export default function Button({
   /** Affiliate link — adds rel="sponsored". */
   sponsored?: boolean
   size?: 'md' | 'sm'
-  /** 'pill' rounds the ends, for sitting inside a rounded container like the header. */
-  shape?: 'cut' | 'pill'
   className?: string
 }) {
   const v = VARIANT[variant]
   const cls = `group inline-flex items-center justify-center gap-2 font-bold tracking-[0.01em] whitespace-nowrap transition-[transform,filter,background-color] duration-150 hover:-translate-y-px active:translate-y-px ${
     size === 'md' ? 'h-12 px-6 text-[15px]' : 'h-10 px-4 text-sm'
   } ${v.cls} ${className}`
-  const clipPath = shape === 'pill' ? 'inset(0 round 9999px)' : clip
-  const style = v.bg ? { clipPath, background: v.bg } : { clipPath }
+  const style = v.bg ? { clipPath: clip, background: v.bg } : { clipPath: clip }
   const inner = (
     <>
       {icon}

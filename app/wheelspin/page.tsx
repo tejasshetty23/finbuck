@@ -7,6 +7,11 @@ import Reveal from '../../components/Reveal'
 import SectionHeading from '../../components/SectionHeading'
 import SpinWheel from '../../components/SpinWheel'
 import { SOCIALS } from '../../lib/site'
+import { getStandings, maskName, prizeFor } from '../../lib/leaderboard'
+
+// The number roller shows who holds the drawn place on the leaderboard, so
+// re-read the race CSV at most once a minute, like the leaderboard itself.
+export const revalidate = 60
 
 const PRIZE_DEFAULTS = ['10$', '50$ Buy In', '20$', '10$ Buy In', '50$', '20$ Buy In']
 
@@ -48,16 +53,25 @@ const CLAIM_STEPS = [
 
 const smallCut = 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)'
 
-export default function WheelSpinPage() {
+export default async function WheelSpinPage() {
+  const race = await getStandings()
+  // Names are masked here, server-side, so the full usernames never reach the
+  // browser (the repo and the site are public).
+  const places = race.competitors.map((c) => ({
+    position: c.position,
+    name: maskName(c.name),
+    wagered: c.wagered,
+    prize: prizeFor(race.prizes, c.position),
+  }))
   return (
     <div className="px-6 pb-24 pt-[72px]">
       <div className="mx-auto max-w-6xl">
         <Suspense fallback={null}>
           <LiveSubscriberWheel
             numberPicker={
-              <div className="mx-auto w-full max-w-md">
-                <Panel tone="accent" innerClassName="p-8 sm:p-10">
-                  <NumberRoller min={1} max={20} />
+              <div className="mx-auto w-full max-w-2xl">
+                <Panel tone="accent" innerClassName="p-7 sm:p-10">
+                  <NumberRoller min={1} max={race.prizes.length} places={places} paidPlaces={race.prizes.length} />
                 </Panel>
               </div>
             }

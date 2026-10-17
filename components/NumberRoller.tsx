@@ -24,12 +24,22 @@ import Modal from './Modal'
 // One cell's height, and how many the window shows. Odd count so there's a true
 // middle row for the result to land in, with its neighbours peeking in above
 // and below to sell the reel.
-const CELL_H = 64
+const CELL_H = 72
+
+// Cut corners for the holder card.
+const HOLDER_CUT = 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)'
+
+const ordinalSuffix = (n: number) => {
+  const v = Math.abs(n) % 100
+  if (v >= 11 && v <= 13) return 'th'
+  return ['th', 'st', 'nd', 'rd'][Math.abs(n) % 10] ?? 'th'
+}
+const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US')
 
 // Cut corners for the reel window, outer edge and inner fill.
 const REEL_CUT = 'polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)'
 const REEL_CUT_INNER = 'polygon(9.5px 0,100% 0,100% calc(100% - 9.5px),calc(100% - 9.5px) 100%,0 100%,0 9.5px)'
-const VISIBLE = 3
+const VISIBLE = 5
 
 // Fixed strip length, independent of the range: the cells hold a consecutive
 // run ending on the winner, so a 1-10 range and a 1-10,000 range cost the same
@@ -92,12 +102,20 @@ function buildStrip(winner: number, lo: number, span: number) {
   return out
 }
 
+export type Place = { position: number; name: string; wagered: number; prize: number | null }
+
 export default function NumberRoller({
   min: minProp = 1,
   max: maxProp = 20,
+  places,
+  paidPlaces = 0,
 }: {
   min?: number
   max?: number
+  /** Leaderboard standings, masked. When given, the drawn number is read as a place and its holder is shown. */
+  places?: Place[]
+  /** How many places are paid, so the holder card can say whether the spot is in the money. */
+  paidPlaces?: number
 }) {
   // The props are the starting range; the picker owns it after that so it can
   // be changed from the UI.
@@ -212,66 +230,187 @@ export default function NumberRoller({
     setEditing(true)
   }
 
+  // The leaderboard holder of the drawn place, when standings were given.
+  const holder = landed !== null && places ? places.find((pl) => pl.position === landed) ?? null : null
+  const linked = !!places
+
+  // Where the result sits in the range, for the gauge under the big number.
+  const pos = landed === null ? null : span <= 1 ? 50 : ((landed - min) / (max - min)) * 100
+
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="flex w-full justify-end">
-        <Button onClick={openEditor} disabled={rolling} variant="ghost" size="xs">
-          Set range
-        </Button>
-      </div>
+    <div className="grid items-center gap-8 sm:grid-cols-[240px_1fr] sm:gap-10">
+      {/* ── The drum ── */}
+      <div className="mx-auto w-full max-w-[240px]">
+        <div
+          className={`relative overflow-hidden p-[2px] ${landed !== null ? 'reel-landed' : ''}`}
+          style={{
+            clipPath: REEL_CUT,
+            background: 'linear-gradient(180deg, rgba(0,255,135,0.9), rgba(0,255,135,0.3) 40%, rgba(255,255,255,0.08) 60%, rgba(0,255,135,0.3))',
+          }}
+        >
+          <div className="relative overflow-hidden bg-[#06081C]" style={{ height: CELL_H * VISIBLE, clipPath: REEL_CUT_INNER }}>
+            {/* Hairlines between rows, so the drum reads as segmented */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{ backgroundImage: `repeating-linear-gradient(180deg, rgba(255,255,255,0.05) 0 1px, transparent 1px ${CELL_H}px)` }}
+            />
 
-      {/* Reel window: a cut-corner tile lit along its edge, like the countdown */}
-      <div
-        className="relative w-full max-w-[180px] overflow-hidden p-px"
-        style={{ clipPath: REEL_CUT, background: 'linear-gradient(180deg, rgba(0,255,135,0.85), rgba(0,255,135,0.25) 45%, rgba(255,255,255,0.06))' }}
-      >
-        <div className="relative overflow-hidden bg-[#080A20]" style={{ height: CELL_H * VISIBLE, clipPath: REEL_CUT_INNER }}>
-          <div ref={stripRef} className="will-change-transform">
-            {strip.map((n, i) => (
-              <div
-                key={i}
-                className="font-display flex items-center justify-center tabular-nums text-white"
-                style={{ height: CELL_H, fontSize: 'clamp(34px, 7vw, 48px)' }}
-              >
-                {n}
-              </div>
-            ))}
+            <div
+              ref={stripRef}
+              className="will-change-transform"
+              style={{ filter: rolling ? 'blur(0.7px)' : 'none', transition: 'filter 300ms ease' }}
+            >
+              {strip.map((n, i) => (
+                <div
+                  key={i}
+                  className={`font-display flex items-center justify-center tabular-nums transition-colors duration-300 ${
+                    landed !== null && i === WIN_INDEX ? 'text-accent-bright [text-shadow:0_0_24px_rgba(0,255,135,0.55)]' : 'text-white'
+                  }`}
+                  style={{ height: CELL_H, fontSize: 'clamp(40px, 8vw, 54px)' }}
+                >
+                  {n}
+                </div>
+              ))}
+            </div>
+
+            {/* Cylinder shading: the rows curve away above and below the window */}
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(180deg, rgba(6,8,28,0.96) 0%, rgba(6,8,28,0.6) 18%, rgba(6,8,28,0.15) 36%, rgba(6,8,28,0) 42%, rgba(6,8,28,0) 58%, rgba(6,8,28,0.15) 64%, rgba(6,8,28,0.6) 82%, rgba(6,8,28,0.96) 100%)',
+              }}
+            />
+            {/* Glass gloss across the top half */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 h-1/2"
+              style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.0))' }}
+            />
+
+            {/* The payline window */}
+            <div
+              className="reel-window pointer-events-none absolute inset-x-0"
+              style={{
+                top: CELL_H * Math.floor(VISIBLE / 2),
+                height: CELL_H,
+                borderTop: '1px solid rgba(0,255,135,0.45)',
+                borderBottom: '1px solid rgba(0,255,135,0.45)',
+                background: landed !== null ? 'rgba(0,255,135,0.10)' : 'rgba(0,255,135,0.04)',
+                boxShadow:
+                  landed !== null
+                    ? 'inset 0 0 30px rgba(0,255,135,0.35), 0 0 26px rgba(0,255,135,0.25)'
+                    : 'inset 0 0 18px rgba(0,255,135,0.10)',
+                transition: 'background 220ms ease, box-shadow 220ms ease',
+              }}
+            >
+              {/* Side pointers into the window */}
+              <svg className="absolute left-0 top-1/2 -translate-y-1/2" width="10" height="16" viewBox="0 0 10 16" aria-hidden>
+                <path d="M0 0 L10 8 L0 16 Z" fill="#00FF87" />
+              </svg>
+              <svg className="absolute right-0 top-1/2 -translate-y-1/2" width="10" height="16" viewBox="0 0 10 16" aria-hidden>
+                <path d="M10 0 L0 8 L10 16 Z" fill="#00FF87" />
+              </svg>
+            </div>
           </div>
+        </div>
 
-          {/* Shade the outer rows and mark the middle one. Sits above the strip
-              and ignores pointer events so it never blocks the reel. */}
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                'linear-gradient(180deg, rgba(8,10,32,0.92) 0%, rgba(8,10,32,0.45) 22%, rgba(8,10,32,0) 40%, rgba(8,10,32,0) 60%, rgba(8,10,32,0.45) 78%, rgba(8,10,32,0.92) 100%)',
-            }}
-          />
-          <div
-            className="pointer-events-none absolute inset-x-0"
-            style={{
-              top: CELL_H,
-              height: CELL_H,
-              borderTop: '1px solid rgba(0,255,135,0.35)',
-              borderBottom: '1px solid rgba(0,255,135,0.35)',
-              background: landed !== null ? 'rgba(0,255,135,0.10)' : 'rgba(0,255,135,0.04)',
-              boxShadow:
-                landed !== null
-                  ? 'inset 0 0 26px rgba(0,255,135,0.35), 0 0 22px rgba(0,255,135,0.25)'
-                  : 'inset 0 0 18px rgba(0,255,135,0.10)',
-              transition: 'background 220ms ease, box-shadow 220ms ease',
-            }}
-          />
+        {/* Range bookends under the drum */}
+        <div className="mt-3 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.3em] text-faint">
+          <span>Min <span className="font-display ml-1 text-[1rem] tracking-normal text-white">{min}</span></span>
+          <span className="h-px flex-1 mx-3 bg-white/10" />
+          <span><span className="font-display mr-1 text-[1rem] tracking-normal text-white">{max}</span> Max</span>
         </div>
       </div>
 
-      <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-faint">
-        {rolling ? 'Rolling…' : landed !== null ? 'Locked in' : `${min}–${max}`}
-      </p>
+      {/* ── The result ── */}
+      <div className="flex flex-col text-center sm:text-left">
+        <div className="flex items-center justify-between gap-3">
+          <p className="flex items-center gap-2 whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
+            <span className={`h-1.5 w-1.5 rotate-45 bg-accent ${rolling ? 'animate-pulse' : ''}`} />
+            {rolling ? 'Rolling' : landed !== null ? (linked ? 'Leaderboard place' : 'Locked in') : linked ? 'Pick a place' : 'Ready'}
+          </p>
+          <Button onClick={openEditor} disabled={rolling} variant="ghost" size="xs">
+            Set range
+          </Button>
+        </div>
 
-      <Button onClick={roll} disabled={rolling} className="min-w-[160px]">
-        {rolling ? 'Rolling…' : landed !== null ? 'Roll again' : 'Roll'}
-      </Button>
+        {/* The number, huge; a dash until the reel stops */}
+        <p
+          key={landed ?? 'none'}
+          className={`font-display mt-3 leading-none tabular-nums ${landed !== null ? 'pop-in text-accent-bright [text-shadow:0_0_40px_rgba(0,255,135,0.35)]' : 'text-white/20'}`}
+          style={{ fontSize: 'clamp(5rem, 16vw, 8rem)' }}
+          aria-live="polite"
+        >
+          {landed !== null ? (
+            <>
+              {landed}
+              {linked && <span className="text-[0.4em] text-white/60">{ordinalSuffix(landed)}</span>}
+            </>
+          ) : rolling ? '···' : '—'}
+        </p>
+        <p className="mt-1 text-sm text-muted">
+          {landed !== null ? (
+            <>
+              Drawn from <span className="font-bold text-white">{min}–{max}</span>
+            </>
+          ) : linked ? (
+            <>
+              Draws a place from <span className="font-bold text-white">{min}–{max}</span> on the monthly leaderboard
+            </>
+          ) : (
+            <>
+              A whole number from <span className="font-bold text-white">{min}–{max}</span>
+            </>
+          )}
+        </p>
+
+        {/* Who holds that place on the board */}
+        {linked && landed !== null && (
+          <div className="pop-in mt-4 flex items-center gap-4 bg-[#0B0E2A] px-4 py-3 text-left" style={{ clipPath: HOLDER_CUT }}>
+            <span className="font-display flex h-11 w-11 shrink-0 items-center justify-center bg-accent/[0.12] text-[1.4rem] leading-none text-accent-bright" style={{ clipPath: HOLDER_CUT }}>
+              {holder ? holder.name[0]?.toUpperCase() : '·'}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="font-display block truncate text-[1.5rem] leading-none text-white">
+                {holder ? holder.name : 'Open spot'}
+              </span>
+              <span className="mt-1 block text-xs text-muted">
+                {holder
+                  ? `${usd(holder.wagered)} wagered${holder.prize !== null ? ` · ${usd(holder.prize)} prize` : ''}`
+                  : landed <= paidPlaces
+                    ? 'Nobody holds this place yet'
+                    : 'Outside the paid places'}
+              </span>
+            </span>
+            <a href="/leaderboard" className="shrink-0 text-xs font-bold text-accent-bright hover:text-white">
+              Board →
+            </a>
+          </div>
+        )}
+
+        {/* Range gauge: where the draw fell */}
+        <div className="relative mt-5 h-5">
+          <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-white/[0.08]" />
+          {pos !== null && (
+            <>
+              <div
+                className="absolute left-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-accent/50 transition-[width] duration-500 ease-out"
+                style={{ width: `${pos}%` }}
+              />
+              <div
+                className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-accent shadow-[0_0_14px_rgba(0,255,135,0.8)] transition-[left] duration-500 ease-out"
+                style={{ left: `${pos}%` }}
+              />
+            </>
+          )}
+        </div>
+
+        <Button onClick={roll} disabled={rolling} className="mt-5 w-full sm:w-auto sm:min-w-[200px] sm:self-start">
+          {rolling ? 'Rolling…' : landed !== null ? 'Roll again' : 'Roll'}
+        </Button>
+      </div>
 
       {editing && (
         <Modal onClose={() => setEditing(false)} title="Set range" size="sm">

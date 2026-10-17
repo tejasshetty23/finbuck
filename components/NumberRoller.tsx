@@ -107,7 +107,7 @@ export type Place = { position: number; name: string; wagered: number; prize: nu
 export default function NumberRoller({
   min: minProp = 1,
   max: maxProp = 20,
-  places,
+  places: placesProp,
   paidPlaces = 0,
 }: {
   min?: number
@@ -230,9 +230,34 @@ export default function NumberRoller({
     setEditing(true)
   }
 
+  // Live standings. The server-rendered list is the first paint; after that
+  // the roller polls /api/standings once a minute, and again as each roll
+  // starts, so a long stream shows current ranks without a reload.
+  const [places, setPlaces] = useState<Place[] | undefined>(placesProp)
+  const linked = !!placesProp
+  useEffect(() => {
+    if (!linked) return
+    let alive = true
+    const refresh = async () => {
+      try {
+        const res = await fetch('/api/standings', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = (await res.json()) as { places: Place[] }
+        if (alive && Array.isArray(data.places)) setPlaces(data.places)
+      } catch {
+        /* keep what we have; the next tick retries */
+      }
+    }
+    refresh()
+    const iv = setInterval(refresh, 60_000)
+    return () => {
+      alive = false
+      clearInterval(iv)
+    }
+  }, [linked, rollSeq])
+
   // The leaderboard holder of the drawn place, when standings were given.
   const holder = landed !== null && places ? places.find((pl) => pl.position === landed) ?? null : null
-  const linked = !!places
 
   // Where the result sits in the range, for the gauge under the big number.
   const pos = landed === null ? null : span <= 1 ? 50 : ((landed - min) / (max - min)) * 100

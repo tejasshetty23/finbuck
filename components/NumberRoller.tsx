@@ -112,7 +112,7 @@ export default function NumberRoller({
 }: {
   min?: number
   max?: number
-  /** Leaderboard standings, masked. When given, the drawn number is read as a place and its holder is shown. */
+  /** Leaderboard standings. When given, the drawn number is read as a place and its holder is shown. */
   places?: Place[]
   /** How many places are paid, so the holder card can say whether the spot is in the money. */
   paidPlaces?: number

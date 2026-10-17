@@ -7,7 +7,7 @@ import Reveal from '../../components/Reveal'
 import SectionHeading from '../../components/SectionHeading'
 import SpinWheel from '../../components/SpinWheel'
 import { SOCIALS } from '../../lib/site'
-import { getStandings, maskName, prizeFor } from '../../lib/leaderboard'
+import { getStandings, prizeFor } from '../../lib/leaderboard'
 
 // The number roller shows who holds the drawn place on the leaderboard, so
 // re-read the race CSV at most once a minute, like the leaderboard itself.
@@ -55,11 +55,11 @@ const smallCut = 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 10
 
 export default async function WheelSpinPage() {
   const race = await getStandings()
-  // Names are masked here, server-side, so the full usernames never reach the
-  // browser (the repo and the site are public).
+  // Full usernames, unmasked: the roller is a stream tool and the drawn
+  // place's holder is read out on air. (The leaderboard page still masks.)
   const places = race.competitors.map((c) => ({
     position: c.position,
-    name: maskName(c.name),
+    name: c.name,
     wagered: c.wagered,
     prize: prizeFor(race.prizes, c.position),
   }))

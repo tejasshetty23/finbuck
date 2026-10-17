@@ -4,9 +4,9 @@ import { useState, useId, useEffect } from 'react'
 import Button from './Button'
 import Modal from './Modal'
 
-// Green and the cards' raised navy, alternating; a second pair a shade off so
-// four slices in a row still read as four.
-const COLORS = ['#00FF87', '#2A2F6E', '#00D974', '#3B4190']
+// Green and a bright violet (the giveaway roller's), alternating; a second
+// pair a shade off so four slices in a row still read as four.
+const COLORS = ['#00FF87', '#7B6CFF', '#00D974', '#6A5AF0']
 
 function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
   const a = ((angleDeg - 90) * Math.PI) / 180

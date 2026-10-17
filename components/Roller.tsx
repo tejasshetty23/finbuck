@@ -4,8 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Button from './Button'
 import Modal from './Modal'
 
-// Two-tone: the site's green and the raised navy of its cards, alternating.
-const COLORS = ['#00FF87', '#2A2F6E']
+// Two-tone: the site's green and a bright violet, alternating.
+const COLORS = ['#00FF87', '#7B6CFF']
 
 // Cut corners, same as the buttons.
 const CARD_CUT = 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)'

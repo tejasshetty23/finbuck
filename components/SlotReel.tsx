@@ -91,8 +91,8 @@ const SlotReel = forwardRef<
 >(function SlotReel({ onSpinStart, onLand, actions, onCatalogue }, ref) {
   const [cat, setCat] = useState<Catalogue | null>(null)
   const [loadError, setLoadError] = useState('')
-  // Starts on Stake's own "Only on Stake" games; the toggle opens up the full catalogue.
-  const [onlyStake, setOnlyStake] = useState(true)
+  // Starts on the full catalogue; the toggle narrows it to Stake's own "Only on Stake" games.
+  const [onlyStake, setOnlyStake] = useState(false)
   const [selected, setSelected] = useState<Set<number>>(() => new Set())
   const [query, setQuery] = useState('')
   const [showFilter, setShowFilter] = useState(false)

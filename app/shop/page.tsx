@@ -172,14 +172,18 @@ export default function ShopPage() {
                 </Button>
               </div>
             </div>
-            <div className="grid divide-y divide-white/[0.06] sm:grid-cols-2 sm:divide-y-0">
-              {EARN.map((e, i) => (
-                <div key={e.title} className={`flex gap-4 p-6 ${i < 2 ? 'sm:border-b sm:border-white/[0.06]' : ''} ${i % 2 === 0 ? 'sm:border-r sm:border-white/[0.06]' : ''}`}>
-                  <span className="font-display shrink-0 text-[1.8rem] leading-none text-accent-bright">{e.rate}</span>
-                  <div>
-                    <h3 className="font-display text-[1.3rem] leading-none text-white">{e.title}</h3>
-                    <p className="mt-1.5 text-[13px] leading-relaxed text-muted">{e.desc}</p>
-                  </div>
+            {/* The four ways to earn, each its own tile with a gap between */}
+            <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5">
+              {EARN.map((e) => (
+                <div
+                  key={e.title}
+                  className="relative flex flex-col bg-[#161A47] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.07)]"
+                  style={{ clipPath: smallCut }}
+                >
+                  <span aria-hidden className="absolute inset-y-4 left-0 w-[3px] bg-accent" />
+                  <span className="font-display text-[1.7rem] leading-none text-accent-bright">{e.rate}</span>
+                  <h3 className="font-display mt-2 text-[1.35rem] leading-none text-white">{e.title}</h3>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-muted">{e.desc}</p>
                 </div>
               ))}
             </div>

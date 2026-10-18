@@ -517,15 +517,11 @@ export default function VsChatPage() {
               <FighterCard f={house} side="left" winner={outcome ? outcome === 'house' : null} onWin={() => declareWinner('house')} />
             </div>
 
-            {/* VS: a lit hexagonal badge */}
-            <div className="relative z-10 mx-auto flex h-28 w-28 items-center justify-center md:h-36 md:w-36">
+            {/* VS emblem — the original square tile, floats gently */}
+            <div className="relative z-10 mx-auto flex items-center justify-center md:px-4">
               <span
-                className="vs-float font-display relative flex h-20 w-20 -skew-x-[8deg] items-center justify-center bg-[#080A20] text-[2.6rem] leading-none text-white md:h-24 md:w-24 md:text-[3rem]"
-                style={{
-                  clipPath: 'polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)',
-                  boxShadow: `inset 0 0 0 2px rgba(255,255,255,0.14), 0 20px 40px rgba(0,0,0,0.5)`,
-                  textShadow: `-3px 0 ${HOUSE}, 3px 0 ${CHAT}, 0 0 20px rgba(255,255,255,0.4)`,
-                }}
+                className="vs-float font-display flex h-20 w-20 items-center justify-center bg-[#080A20] text-[2.4rem] leading-none text-accent-bright shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
+                style={{ clipPath: smallCut, textShadow: `0 0 18px ${HOUSE}66` }}
                 aria-label="versus"
               >
                 VS

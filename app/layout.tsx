@@ -4,14 +4,35 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import BackgroundCoins from '../components/BackgroundCoins'
 
+// Link previews (Discord, X, iMessage) resolve the share image against this
+// base. On Vercel it's the deployment's own production address, so a Vercel
+// link previews with the image that deployment actually serves; everywhere
+// else (the VPS) it's finbuck.bet.
+const SITE_URL = process.env.VERCEL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL}`
+  : 'https://finbuck.bet'
+
+const SHARE = {
+  title: 'FinBuck × Stake — Rewards',
+  description: 'Official FinBuck × Stake rewards: the $5,000 monthly leaderboard, live Kick giveaways and exclusive perks with code BUCK.',
+  image: { url: '/og-image.jpg', width: 1200, height: 630, alt: 'FinBuck × Stake — FinBucks Rewards' },
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://finbuck.bet'),
+  metadataBase: new URL(SITE_URL),
   title: 'FinBuck — Kick Streamer',
-  description: 'Official website of FinBuck — Casino, Gaming & Entertainment on Kick.',
+  description: SHARE.description,
   openGraph: {
-    title: 'FinBuck',
-    description: 'Official website of FinBuck — Casino, Gaming & Entertainment on Kick.',
-    images: ['/logo.jpg'],
+    title: SHARE.title,
+    description: SHARE.description,
+    images: [SHARE.image],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SHARE.title,
+    description: SHARE.description,
+    images: [SHARE.image],
   },
 }
 

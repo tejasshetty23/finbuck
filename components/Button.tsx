@@ -34,7 +34,7 @@ const VARIANT: Record<Variant, { cls: string; bg?: string }> = {
   },
   // For use on the green banner: dark fill, green text.
   dark: {
-    cls: 'bg-[#0B0E2A] text-accent-bright hover:bg-[#151A45]',
+    cls: 'bg-[#0B0E2A] text-accent-bright hover:bg-[#1E2357]',
   },
   // Champion / prize moments only.
   gold: {

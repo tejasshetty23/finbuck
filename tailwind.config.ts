@@ -18,8 +18,8 @@ const config: Config = {
         ink: {
           DEFAULT: '#0B0E2A', // page — deep blue-violet navy
           deep: '#080A20', // header bar, footer
-          raised: '#131740', // cards
-          high: '#1A1F4E', // hovered / nested cards
+          raised: '#22285F', // cards
+          high: '#2B3275', // hovered / nested cards
         },
         accent: {
           DEFAULT: '#00FF87', // FinBuck neon — buttons, fills, borders
@@ -30,7 +30,7 @@ const config: Config = {
         },
         // Greys tinted toward the violet ground so they don't read as cold.
         muted: '#B3AED0',
-        faint: '#908AB8', // >=4.5:1 on cards as well as the page: it carries the small labels
+        faint: '#A39DC8', // >=4.5:1 on the lighter cards as well as the page: it carries the small labels
         gold: '#FFC83D',
         silver: '#D3DBE6',
         bronze: '#E8935F',

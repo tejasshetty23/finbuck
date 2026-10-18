@@ -57,7 +57,7 @@ export default function Countdown({
             >
               <span
                 className="font-display flex min-w-[64px] items-center justify-center px-2 py-1 text-[2.6rem] leading-none tabular-nums text-white sm:min-w-[80px] sm:text-[3.4rem]"
-                style={{ clipPath: chamfer, background: 'linear-gradient(180deg, #181D4A, #0F1338)' }}
+                style={{ clipPath: chamfer, background: 'linear-gradient(180deg, #272D6C, #1E2357)' }}
               >
                 {parts ? String(parts[i]).padStart(2, '0') : '--'}
               </span>

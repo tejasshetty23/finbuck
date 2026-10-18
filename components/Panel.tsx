@@ -20,16 +20,16 @@ const chamfer = (c: number) =>
 const TONE: Record<Tone, { edge: string; fill: string }> = {
   default: {
     edge: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.07) 35%, rgba(255,255,255,0.04) 100%)',
-    fill: 'linear-gradient(180deg, #181D4A 0%, #121640 55%, #0F1338 100%)',
+    fill: 'linear-gradient(180deg, #272D6C 0%, #22285F 55%, #1E2357 100%)',
   },
   // A green lit edge, for the panel that holds the code.
   accent: {
     edge: 'linear-gradient(180deg, rgba(0,255,135,0.85) 0%, rgba(0,255,135,0.25) 45%, rgba(255,255,255,0.05) 100%)',
-    fill: 'radial-gradient(90% 60% at 50% 0%, rgba(0,255,135,0.10), transparent 70%), linear-gradient(180deg, #181D4A 0%, #121640 55%, #0F1338 100%)',
+    fill: 'radial-gradient(90% 60% at 50% 0%, rgba(0,255,135,0.10), transparent 70%), linear-gradient(180deg, #272D6C 0%, #22285F 55%, #1E2357 100%)',
   },
   gold: {
     edge: 'linear-gradient(180deg, rgba(255,196,77,0.85) 0%, rgba(255,196,77,0.25) 45%, rgba(255,255,255,0.05) 100%)',
-    fill: 'radial-gradient(90% 60% at 50% 0%, rgba(255,196,77,0.10), transparent 70%), linear-gradient(180deg, #181D4A 0%, #121640 55%, #0F1338 100%)',
+    fill: 'radial-gradient(90% 60% at 50% 0%, rgba(255,196,77,0.10), transparent 70%), linear-gradient(180deg, #272D6C 0%, #22285F 55%, #1E2357 100%)',
   },
 }
 

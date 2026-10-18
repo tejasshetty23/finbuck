@@ -63,7 +63,7 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
           className={`flex flex-col items-center px-4 text-center ${first ? 'pb-7 pt-8 sm:pt-9' : 'pb-6 pt-7'}`}
           style={{
             clipPath: chamfer(CUT - (2 - Math.SQRT2) * B),
-            background: `radial-gradient(70% 45% at 50% 22%, rgba(${t.rgb},0.10), transparent 70%), linear-gradient(180deg, #191E52 0%, #12163F 50%, #0D1032 100%)`,
+            background: `radial-gradient(70% 45% at 50% 22%, rgba(${t.rgb},0.10), transparent 70%), linear-gradient(180deg, #282E6E 0%, #22285F 50%, #1D2255 100%)`,
           }}
         >
           {/* Avatar: soft glow, thick dark ring, thin metal ring, tinted icon */}
@@ -77,7 +77,7 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
               style={{ boxShadow: `0 0 ${first ? 26 : 20}px rgba(${t.rgb},${first ? 0.45 : 0.32})` }}
             >
               <div
-                className="flex h-full w-full items-center justify-center rounded-full border-2 bg-[#121843]"
+                className="flex h-full w-full items-center justify-center rounded-full border-2 bg-[#1E2357]"
                 style={{ borderColor: t.color }}
               >
                 {/* The partner icon recoloured to the metal: a CSS mask of

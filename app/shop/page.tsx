@@ -38,8 +38,8 @@ function formatPoints(n: number): string {
 }
 
 const ITEMS: ShopItem[] = [
-  { name: '$20 Bonus Buy', desc: 'Redeem a $20 bonus buy of your choice', points: 7500, command: '!BonusBuy', lead: '$20', sub: 'Bonus buy', tone: 'green' },
-  { name: 'Spin the Wheel', desc: 'Guaranteed spin of the sub wheel', points: 15000, command: '!shop buy SpinWheel', lead: 'Spin', sub: 'Sub wheel', tone: 'violet', flag: 'Fan favourite' },
+  { name: '$20 Bonus Buy', desc: 'Redeem a $20 bonus buy of your choice', points: 7500, command: '!BonusBuy', lead: '$20', sub: 'Bonus buy', tone: 'green', flag: 'Fan favourite' },
+  { name: 'Spin the Wheel', desc: 'Guaranteed spin of the sub wheel', points: 15000, command: '!shop buy SpinWheel', lead: 'Spin', sub: 'Sub wheel', tone: 'violet' },
   { name: '$50 Bonus Buy', desc: 'Redeem a $50 bonus buy of your choice', points: 20000, command: '!SuperBonusBuy', lead: '$50', sub: 'Super bonus buy', tone: 'gold' },
   { name: 'Naked Timmy Stream', desc: "Na3's wet dream", points: 1000000, command: '!TimmyStream', lead: '👀', sub: 'If you dare', tone: 'red', flag: 'Legendary' },
 ]

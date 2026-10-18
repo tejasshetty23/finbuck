@@ -74,87 +74,176 @@ interface Fighter {
 const smallCut = 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)'
 const btnCut = 'polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)'
 
-function FighterCard({ f, winner, onWin }: { f: Fighter; winner: boolean | null; onWin: () => void }) {
+/**
+ * A fighter's corner on the fight card. The slot's cover art fills the
+ * whole card as a backdrop (a tinted wash of the side's colour until one is
+ * picked), with the avatar, name and slot stacked over it. The card leans
+ * toward the VS in the middle; `side` picks the lean and which edge the
+ * stripe runs down. Winning lights the whole card in the side's colour and
+ * stamps it; losing knocks it back, greyed and tilted away.
+ */
+function FighterCard({
+  f,
+  side,
+  winner,
+  onWin,
+}: {
+  f: Fighter
+  side: 'left' | 'right'
+  winner: boolean | null
+  onWin: () => void
+}) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const glow = winner === true
+  const won = winner === true
+  const lost = winner === false
   const handle = (file?: File) => { if (file) f.setImg(URL.createObjectURL(file)) }
+  const lean = side === 'left' ? 'md:[transform:perspective(1200px)_rotateY(10deg)]' : 'md:[transform:perspective(1200px)_rotateY(-10deg)]'
+  const cut = side === 'left'
+    ? 'polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 26px 100%, 0 calc(100% - 26px))'
+    : 'polygon(26px 0, 100% 0, 100% calc(100% - 26px), calc(100% - 26px) 100%, 0 100%, 0 26px)'
 
   return (
     <div
-      className="w-full transition-all duration-300"
-      style={{ filter: glow ? `drop-shadow(0 0 26px ${f.color}80)` : 'none', opacity: winner === false ? 0.6 : 1 }}
+      className={`fighter group relative w-full transition-[transform,filter,opacity] duration-500 ${lean} ${won ? 'fighter-win' : ''} ${
+        lost ? 'fighter-lose' : ''
+      }`}
+      style={{ filter: won ? `drop-shadow(0 0 34px ${f.color}99)` : lost ? 'grayscale(0.8) brightness(0.55)' : 'none' }}
     >
-      <Panel innerClassName="flex flex-col items-center p-6 text-center sm:p-7">
-        {/* This side's colour, as a lit edge along the top */}
-        <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[3px]" style={{ background: `linear-gradient(90deg, transparent, ${f.color}, transparent)` }} />
-
-        <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: f.color }}>{f.role}</p>
-
-        {/* Avatar: click or drop to replace */}
-        <div
-          onClick={() => inputRef.current?.click()}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => { e.preventDefault(); handle(e.dataTransfer.files?.[0]) }}
-          className="mt-4 flex h-28 w-28 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-[#080A20] sm:h-32 sm:w-32"
-          style={{ boxShadow: `0 0 0 3px #0B0E2A, 0 0 0 5px ${f.color}` }}
-          title="Click or drop an image"
-        >
-          {f.img ? (
+      {/* Edge: a thick glow in the side's colour, fading to a hairline */}
+      <div
+        className="p-[2px]"
+        style={{
+          clipPath: cut,
+          background: won
+            ? f.color
+            : `linear-gradient(${side === 'left' ? '160deg' : '200deg'}, ${f.color} 0%, ${f.color}55 40%, rgba(255,255,255,0.08) 100%)`,
+        }}
+      >
+        <div className="relative overflow-hidden bg-[#0B0E2A]" style={{ clipPath: cut, minHeight: 440 }}>
+          {/* Backdrop: the slot art, blown up and darkened, else a wash */}
+          {f.slotImg ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={f.img}
+              src={slotImage(f.slotImg, 600, 800)}
               alt=""
-              className="h-full w-full object-cover"
-              style={{ transform: `translate(${f.nudge?.x ?? 0}%, ${f.nudge?.y ?? 0}%) scale(${f.zoom ?? 1})` }}
+              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-70 blur-[1.5px] transition-transform duration-700 group-hover:scale-[1.15]"
             />
           ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-10 w-10 text-faint">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-            </svg>
-          )}
-          <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handle(e.target.files?.[0] ?? undefined)} />
-        </div>
-
-        {/* Name */}
-        <input
-          value={f.name}
-          onChange={(e) => f.setName(e.target.value)}
-          aria-label="Name"
-          className="font-display mt-4 w-full truncate bg-transparent text-center text-[2rem] leading-none text-white focus:outline-none"
-        />
-
-        {/* Slot, with its cover art when it's a game from the catalogue */}
-        <label className="mt-4 block w-full">
-          <span className="block text-[10px] font-bold uppercase tracking-[0.3em] text-faint">Slot</span>
-          <span className="mt-2 flex items-center gap-2">
-            {f.slotImg && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={slotImage(f.slotImg, 120, 160)} alt="" className="h-11 w-9 shrink-0 bg-[#131740] object-cover" style={{ clipPath: smallCut }} />
-            )}
-            <input
-              value={f.slot}
-              onChange={(e) => f.setSlot(e.target.value)}
-              placeholder="—"
-              className="field !h-11 min-w-0 flex-1 text-center text-sm font-bold"
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{ background: `radial-gradient(80% 60% at 50% 0%, ${f.color}33, transparent 70%), linear-gradient(180deg, #272D6C, #1A1F4E)` }}
             />
-          </span>
-        </label>
+          )}
+          {/* Darken the lower half so the text reads over the art */}
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-[#0B0E2A]/10 via-[#0B0E2A]/55 to-[#0B0E2A]/95" />
+          {/* Diagonal stripes, like a ring canvas */}
+          <div
+            aria-hidden
+            className="absolute inset-0 opacity-[0.07]"
+            style={{ backgroundImage: 'repeating-linear-gradient(135deg, transparent 0 10px, #fff 10px 11px)' }}
+          />
 
-        {/* Declare this side the winner */}
-        <button
-          type="button"
-          onClick={onWin}
-          className="mt-5 flex h-11 w-full items-center justify-center text-sm font-bold uppercase tracking-[0.12em] transition-[transform,filter] hover:-translate-y-px active:translate-y-px"
-          style={{
-            clipPath: btnCut,
-            background: winner === true ? f.color : `${f.color}1F`,
-            color: winner === true ? '#0B0E2A' : f.color,
-            boxShadow: winner === true ? `0 0 24px ${f.color}66` : 'none',
-          }}
-        >
-          {winner === true ? 'Winner' : 'Declare winner'}
-        </button>
-      </Panel>
+          {/* Corner tag */}
+          <span
+            className="absolute top-0 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-[#0B0E2A]"
+            style={{
+              [side]: 0,
+              background: f.color,
+              clipPath: side === 'left' ? 'polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%)' : 'polygon(0 0,100% 0,100% 100%,10px 100%)',
+            }}
+          >
+            {f.role}
+          </span>
+
+          <div className="relative flex flex-col items-center px-6 pb-6 pt-12 text-center">
+            {/* Avatar in a ringed hex-ish frame */}
+            <div
+              onClick={() => inputRef.current?.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => { e.preventDefault(); handle(e.dataTransfer.files?.[0]) }}
+              className="relative h-32 w-32 cursor-pointer sm:h-36 sm:w-36"
+              title="Click or drop an image"
+            >
+              <span aria-hidden className="absolute inset-0 rounded-full" style={{ background: `conic-gradient(from 200deg, ${f.color}, transparent 40%, ${f.color} 70%, transparent)` , filter: 'blur(6px)', opacity: 0.8 }} />
+              <span aria-hidden className="absolute inset-0 rounded-full" style={{ boxShadow: `inset 0 0 0 3px ${f.color}` }} />
+              <span className="absolute inset-[6px] flex items-center justify-center overflow-hidden rounded-full bg-[#080A20]">
+                {f.img ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={f.img}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    style={{ transform: `translate(${f.nudge?.x ?? 0}%, ${f.nudge?.y ?? 0}%) scale(${f.zoom ?? 1})` }}
+                  />
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-10 w-10 text-faint">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                )}
+              </span>
+              <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handle(e.target.files?.[0] ?? undefined)} />
+            </div>
+
+            {/* Name, slanted like the wordmark */}
+            <input
+              value={f.name}
+              onChange={(e) => f.setName(e.target.value)}
+              aria-label="Name"
+              className="font-display mt-5 w-full -skew-x-[8deg] truncate bg-transparent text-center text-[2.6rem] leading-none text-white focus:outline-none"
+              style={{ textShadow: `0 4px 24px rgba(0,0,0,0.8), 0 0 24px ${f.color}55` }}
+            />
+
+            {/* Slot plate */}
+            <label className="mt-4 block w-full">
+              <span className="block text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: f.color }}>Playing</span>
+              <span className="mt-2 flex items-center gap-2 bg-[#080A20]/85 p-1.5 backdrop-blur-sm" style={{ clipPath: smallCut }}>
+                {f.slotImg && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={slotImage(f.slotImg, 120, 160)} alt="" className="h-11 w-9 shrink-0 bg-[#131740] object-cover" style={{ clipPath: smallCut }} />
+                )}
+                <input
+                  value={f.slot}
+                  onChange={(e) => f.setSlot(e.target.value)}
+                  placeholder="No slot yet"
+                  className="h-11 min-w-0 flex-1 bg-transparent text-center text-sm font-bold text-white placeholder:text-faint focus:outline-none"
+                />
+              </span>
+            </label>
+
+            {/* Declare this side the winner */}
+            <button
+              type="button"
+              onClick={onWin}
+              className="mt-4 flex h-12 w-full items-center justify-center gap-2 text-sm font-bold uppercase tracking-[0.14em] transition-[transform,filter] hover:-translate-y-px hover:brightness-110 active:translate-y-px"
+              style={{
+                clipPath: btnCut,
+                background: won ? f.color : `${f.color}26`,
+                color: won ? '#0B0E2A' : f.color,
+                boxShadow: won ? `0 0 28px ${f.color}80` : `inset 0 0 0 1px ${f.color}66`,
+              }}
+            >
+              {won ? '🏆 Winner' : 'Declare winner'}
+            </button>
+          </div>
+
+          {/* Stamp on the result */}
+          {(won || lost) && (
+            <span
+              aria-hidden
+              className="stamp font-display pointer-events-none absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 -rotate-12 whitespace-nowrap px-5 py-1 text-[3.2rem] leading-none"
+              style={{
+                color: won ? f.color : '#FF5C5C',
+                border: `4px solid ${won ? f.color : '#FF5C5C'}`,
+                textShadow: '0 0 24px rgba(0,0,0,0.9)',
+                background: 'rgba(11,14,42,0.55)',
+              }}
+            >
+              {won ? 'Winner' : 'K.O.'}
+            </span>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
@@ -410,52 +499,77 @@ export default function VsChatPage() {
         </div>
       </Reveal>
 
-      {/* Arena */}
+      {/* Arena: a fight card. The two corners lean in toward a lit VS, over
+          a spotlit floor; the result bar below is the ring announcer. */}
       <Reveal>
-        <div className="mx-auto mt-14 max-w-4xl">
-          <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:items-stretch md:gap-6">
-            <div className="w-full max-w-[340px] md:flex-1">
-              <FighterCard f={house} winner={outcome ? outcome === 'house' : null} onWin={() => declareWinner('house')} />
+        <div className="relative mx-auto mt-14 max-w-5xl">
+          {/* Spotlight floor behind the cards */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-1/2 h-[120%] -translate-y-1/2"
+            style={{
+              background: `radial-gradient(50% 45% at 25% 50%, ${HOUSE}1A, transparent 70%), radial-gradient(50% 45% at 75% 50%, ${CHAT}1F, transparent 70%)`,
+            }}
+          />
+
+          <div className="relative grid items-center gap-6 md:grid-cols-[1fr_auto_1fr] md:gap-0">
+            <div className="mx-auto w-full max-w-[380px] md:mr-[-14px]">
+              <FighterCard f={house} side="left" winner={outcome ? outcome === 'house' : null} onWin={() => declareWinner('house')} />
             </div>
 
-            {/* VS emblem — floats gently */}
-            <div className="relative z-10 -my-2 flex shrink-0 items-center justify-center md:my-0">
+            {/* VS: a lit badge with rays, pulsing until a winner is declared */}
+            <div className="relative z-10 mx-auto flex h-28 w-28 items-center justify-center md:h-36 md:w-36">
               <span
-                className="vs-float font-display flex h-20 w-20 items-center justify-center bg-[#080A20] text-[2.4rem] leading-none text-white shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
-                style={{ clipPath: smallCut, textShadow: `0 0 18px ${HOUSE}66` }}
+                aria-hidden
+                className={`absolute inset-0 rounded-full ${outcome ? '' : 'vs-pulse'}`}
+                style={{
+                  background: `conic-gradient(from 0deg, ${HOUSE}66 0 12deg, transparent 12deg 30deg, ${CHAT}66 30deg 42deg, transparent 42deg 60deg)`,
+                  WebkitMaskImage: 'radial-gradient(circle, transparent 36%, #000 40%, #000 60%, transparent 72%)',
+                  maskImage: 'radial-gradient(circle, transparent 36%, #000 40%, #000 60%, transparent 72%)',
+                }}
+              />
+              <span
+                className="vs-float font-display relative flex h-20 w-20 -skew-x-[8deg] items-center justify-center bg-[#080A20] text-[2.6rem] leading-none text-white md:h-24 md:w-24 md:text-[3rem]"
+                style={{
+                  clipPath: 'polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)',
+                  boxShadow: `inset 0 0 0 2px rgba(255,255,255,0.14), 0 20px 40px rgba(0,0,0,0.5)`,
+                  textShadow: `-3px 0 ${HOUSE}, 3px 0 ${CHAT}, 0 0 20px rgba(255,255,255,0.4)`,
+                }}
                 aria-label="versus"
               >
                 VS
               </span>
             </div>
 
-            <div className="w-full max-w-[340px] md:flex-1">
-              <FighterCard f={chat} winner={outcome ? outcome === 'chat' : null} onWin={() => declareWinner('chat')} />
+            <div className="mx-auto w-full max-w-[380px] md:ml-[-14px]">
+              <FighterCard f={chat} side="right" winner={outcome ? outcome === 'chat' : null} onWin={() => declareWinner('chat')} />
             </div>
           </div>
 
-          {/* Outcome banner — in the winner's own colour */}
+          {/* Announcer bar */}
           <div
-            className="mt-5 flex flex-wrap items-center justify-center gap-4 px-6 py-4 text-center transition-all"
+            className="relative mt-6 flex flex-wrap items-center justify-center gap-4 px-6 py-4 text-center transition-all"
             style={{
               clipPath: smallCut,
-              background: isWin ? `${winColor}14` : 'rgba(255,255,255,0.04)',
-              boxShadow: isWin ? `inset 0 0 0 1px ${winColor}66, 0 0 28px ${winColor}33` : 'inset 0 0 0 1px rgba(255,255,255,0.08)',
+              background: isWin ? `linear-gradient(90deg, ${winColor}0A, ${winColor}2E, ${winColor}0A)` : 'rgba(255,255,255,0.04)',
+              boxShadow: isWin ? `inset 0 0 0 1px ${winColor}80, 0 0 34px ${winColor}33` : 'inset 0 0 0 1px rgba(255,255,255,0.08)',
             }}
           >
             {outcome === 'chat' && (
-              <span className="font-display text-[1.6rem] leading-none" style={{ color: winColor, textShadow: `0 0 16px ${winColor}66` }}>
+              <span className="font-display -skew-x-[8deg] text-[1.9rem] leading-none" style={{ color: winColor, textShadow: `0 0 18px ${winColor}80` }}>
                 🏆 Cash money AP for {chatName}
               </span>
             )}
             {outcome === 'house' && (
-              <span className="font-display text-[1.6rem] leading-none" style={{ color: winColor, textShadow: `0 0 16px ${winColor}66` }}>
+              <span className="font-display -skew-x-[8deg] text-[1.9rem] leading-none" style={{ color: winColor, textShadow: `0 0 18px ${winColor}80` }}>
                 🏆 More keno money for Fin!
               </span>
             )}
             {!outcome && (
-              <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
+              <span className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
+                <span className="h-1.5 w-1.5 rotate-45 bg-accent" />
                 Tap a card to declare the winner
+                <span className="h-1.5 w-1.5 rotate-45 bg-accent" />
               </span>
             )}
           </div>

@@ -415,13 +415,6 @@ textarea.field { height: auto; padding: 0.75rem 1rem; line-height: 1.5; resize: 
 }
 
 /* ── Slot Battles fight card ── */
-/* The VS rays spin slowly until a winner is declared. */
-@keyframes vs-pulse {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-.vs-pulse { animation: vs-pulse 14s linear infinite; }
-
 /* Winner: a quick hit-flash as the card lights up. Loser: knocked back. */
 @keyframes fighter-win {
   0%   { transform: scale(1); }
@@ -441,5 +434,5 @@ textarea.field { height: auto; padding: 0.75rem 1rem; line-height: 1.5; resize: 
 .stamp { animation: stamp 420ms cubic-bezier(0.22, 0.61, 0.36, 1) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .vs-pulse, .fighter-win, .stamp { animation: none; }
+  .fighter-win, .stamp { animation: none; }
 }

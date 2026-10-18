@@ -151,7 +151,8 @@ function FighterCard({
                   <img
                     src={f.img}
                     alt=""
-                    className="h-full w-full object-cover"
+                    // A logo (the Kick K) sits centred inside the ring; a photo fills it.
+                    className={f.img.endsWith('-logo.webp') ? 'h-full w-full object-contain p-[24%]' : 'h-full w-full object-cover'}
                     style={{ transform: `translate(${f.nudge?.x ?? 0}%, ${f.nudge?.y ?? 0}%) scale(${f.zoom ?? 1})` }}
                   />
                 ) : (
@@ -232,7 +233,7 @@ export default function VsChatPage() {
   const [houseName, setHouseName] = useState('FinBuck')
   const [houseSlot, setHouseSlot] = useState('')
 
-  const [chatImg, setChatImg] = useState('/deer.webp')
+  const [chatImg, setChatImg] = useState('/kick-logo.webp')
   const [chatName, setChatName] = useState('Chat')
   const [chatSlot, setChatSlot] = useState('')
 
@@ -420,83 +421,6 @@ export default function VsChatPage() {
         </div>
       </Reveal>
 
-      {/* Arena: a fight card. The two corners lean in toward a lit VS, over
-          a spotlit floor; the result bar below is the ring announcer. */}
-      <Reveal>
-        <div className="relative mx-auto mt-8 max-w-5xl">
-          {/* Spotlight floor behind the cards */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-1/2 h-[120%] -translate-y-1/2"
-            style={{
-              background: `radial-gradient(50% 45% at 25% 50%, ${HOUSE}1A, transparent 70%), radial-gradient(50% 45% at 75% 50%, ${CHAT}1F, transparent 70%)`,
-            }}
-          />
-
-          <div className="relative grid items-center gap-6 md:grid-cols-[1fr_auto_1fr] md:gap-0">
-            <div className="mx-auto w-full max-w-[380px] md:mr-[-14px]">
-              <FighterCard f={house} side="left" winner={outcome ? outcome === 'house' : null} onWin={() => declareWinner('house')} />
-            </div>
-
-            {/* VS: a lit badge with rays, pulsing until a winner is declared */}
-            <div className="relative z-10 mx-auto flex h-28 w-28 items-center justify-center md:h-36 md:w-36">
-              <span
-                aria-hidden
-                className={`absolute inset-0 rounded-full ${outcome ? '' : 'vs-pulse'}`}
-                style={{
-                  background: `conic-gradient(from 0deg, ${HOUSE}66 0 12deg, transparent 12deg 30deg, ${CHAT}66 30deg 42deg, transparent 42deg 60deg)`,
-                  WebkitMaskImage: 'radial-gradient(circle, transparent 36%, #000 40%, #000 60%, transparent 72%)',
-                  maskImage: 'radial-gradient(circle, transparent 36%, #000 40%, #000 60%, transparent 72%)',
-                }}
-              />
-              <span
-                className="vs-float font-display relative flex h-20 w-20 -skew-x-[8deg] items-center justify-center bg-[#080A20] text-[2.6rem] leading-none text-white md:h-24 md:w-24 md:text-[3rem]"
-                style={{
-                  clipPath: 'polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)',
-                  boxShadow: `inset 0 0 0 2px rgba(255,255,255,0.14), 0 20px 40px rgba(0,0,0,0.5)`,
-                  textShadow: `-3px 0 ${HOUSE}, 3px 0 ${CHAT}, 0 0 20px rgba(255,255,255,0.4)`,
-                }}
-                aria-label="versus"
-              >
-                VS
-              </span>
-            </div>
-
-            <div className="mx-auto w-full max-w-[380px] md:ml-[-14px]">
-              <FighterCard f={chat} side="right" winner={outcome ? outcome === 'chat' : null} onWin={() => declareWinner('chat')} />
-            </div>
-          </div>
-
-          {/* Announcer bar */}
-          <div
-            className="relative mt-6 flex flex-wrap items-center justify-center gap-4 px-6 py-4 text-center transition-all"
-            style={{
-              clipPath: smallCut,
-              background: isWin ? `linear-gradient(90deg, ${winColor}0A, ${winColor}2E, ${winColor}0A)` : 'rgba(255,255,255,0.04)',
-              boxShadow: isWin ? `inset 0 0 0 1px ${winColor}80, 0 0 34px ${winColor}33` : 'inset 0 0 0 1px rgba(255,255,255,0.08)',
-            }}
-          >
-            {outcome === 'chat' && (
-              <span className="font-display -skew-x-[8deg] text-[1.9rem] leading-none" style={{ color: winColor, textShadow: `0 0 18px ${winColor}80` }}>
-                🏆 Cash money AP for {chatName}
-              </span>
-            )}
-            {outcome === 'house' && (
-              <span className="font-display -skew-x-[8deg] text-[1.9rem] leading-none" style={{ color: winColor, textShadow: `0 0 18px ${winColor}80` }}>
-                🏆 More keno money for Fin!
-              </span>
-            )}
-            {!outcome && (
-              <span className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
-                <span className="h-1.5 w-1.5 rotate-45 bg-accent" />
-                Tap a card to declare the winner
-                <span className="h-1.5 w-1.5 rotate-45 bg-accent" />
-              </span>
-            )}
-          </div>
-        </div>
-      </Reveal>
-
       {/* ── Control dock + slot reel ──
           The dock holds the round controls; the reel sits in a drawer below
           it so the random pick lands right under the fight card. */}
@@ -572,6 +496,74 @@ export default function VsChatPage() {
               }
             />
           </Panel>
+        </div>
+      </Reveal>
+
+      {/* Arena: a fight card. The two corners lean in toward a lit VS, over
+          a spotlit floor; the result bar below is the ring announcer. */}
+      <Reveal>
+        <div className="relative mx-auto mt-8 max-w-5xl">
+          {/* Spotlight floor behind the cards */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-1/2 h-[120%] -translate-y-1/2"
+            style={{
+              background: `radial-gradient(50% 45% at 25% 50%, ${HOUSE}1A, transparent 70%), radial-gradient(50% 45% at 75% 50%, ${CHAT}1F, transparent 70%)`,
+            }}
+          />
+
+          <div className="relative grid items-center gap-6 md:grid-cols-[1fr_auto_1fr] md:gap-0">
+            <div className="mx-auto w-full max-w-[380px] md:mr-[-14px]">
+              <FighterCard f={house} side="left" winner={outcome ? outcome === 'house' : null} onWin={() => declareWinner('house')} />
+            </div>
+
+            {/* VS: a lit hexagonal badge */}
+            <div className="relative z-10 mx-auto flex h-28 w-28 items-center justify-center md:h-36 md:w-36">
+              <span
+                className="vs-float font-display relative flex h-20 w-20 -skew-x-[8deg] items-center justify-center bg-[#080A20] text-[2.6rem] leading-none text-white md:h-24 md:w-24 md:text-[3rem]"
+                style={{
+                  clipPath: 'polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)',
+                  boxShadow: `inset 0 0 0 2px rgba(255,255,255,0.14), 0 20px 40px rgba(0,0,0,0.5)`,
+                  textShadow: `-3px 0 ${HOUSE}, 3px 0 ${CHAT}, 0 0 20px rgba(255,255,255,0.4)`,
+                }}
+                aria-label="versus"
+              >
+                VS
+              </span>
+            </div>
+
+            <div className="mx-auto w-full max-w-[380px] md:ml-[-14px]">
+              <FighterCard f={chat} side="right" winner={outcome ? outcome === 'chat' : null} onWin={() => declareWinner('chat')} />
+            </div>
+          </div>
+
+          {/* Announcer bar */}
+          <div
+            className="relative mt-6 flex flex-wrap items-center justify-center gap-4 px-6 py-4 text-center transition-all"
+            style={{
+              clipPath: smallCut,
+              background: isWin ? `linear-gradient(90deg, ${winColor}0A, ${winColor}2E, ${winColor}0A)` : 'rgba(255,255,255,0.04)',
+              boxShadow: isWin ? `inset 0 0 0 1px ${winColor}80, 0 0 34px ${winColor}33` : 'inset 0 0 0 1px rgba(255,255,255,0.08)',
+            }}
+          >
+            {outcome === 'chat' && (
+              <span className="font-display -skew-x-[8deg] text-[1.9rem] leading-none" style={{ color: winColor, textShadow: `0 0 18px ${winColor}80` }}>
+                🏆 Cash money AP for {chatName}
+              </span>
+            )}
+            {outcome === 'house' && (
+              <span className="font-display -skew-x-[8deg] text-[1.9rem] leading-none" style={{ color: winColor, textShadow: `0 0 18px ${winColor}80` }}>
+                🏆 More keno money for Fin!
+              </span>
+            )}
+            {!outcome && (
+              <span className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
+                <span className="h-1.5 w-1.5 rotate-45 bg-accent" />
+                Tap a card to declare the winner
+                <span className="h-1.5 w-1.5 rotate-45 bg-accent" />
+              </span>
+            )}
+          </div>
         </div>
       </Reveal>
 

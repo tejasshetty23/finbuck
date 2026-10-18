@@ -3,10 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import SlotReel, { slotImage, type Slot, type SlotReelHandle } from '../../components/SlotReel'
 import Button from '../../components/Button'
-import PageHeader from '../../components/PageHeader'
 import Panel from '../../components/Panel'
 import Reveal from '../../components/Reveal'
-import SectionHeading from '../../components/SectionHeading'
 
 // The two sides' colours: the site's green for the house, a soft violet
 // for the challenger so the pair still reads as two without leaving the
@@ -18,38 +16,18 @@ const STEPS = [
   {
     title: 'Chat gets picked',
     desc: 'A viewer is pulled from chat — they become the challenger.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-      </svg>
-    ),
   },
   {
     title: 'Slots locked in',
     desc: 'A viewer and FinBuck get their slots picked randomly.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
-      </svg>
-    ),
   },
   {
     title: 'Spin it out',
     desc: 'Both run live at the same bet. Highest multiplier takes it.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.306a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-      </svg>
-    ),
   },
   {
     title: 'Winner takes it',
     desc: 'If chat wins → the prize is paid out on stream.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" />
-      </svg>
-    ),
   },
 ]
 
@@ -392,117 +370,60 @@ export default function VsChatPage() {
 
   return (
     <div className="px-6 pb-24 pt-[72px]">
-      <PageHeader eyebrow="Live slot duel" live title={<>Slot <span className="text-accent-bright">battles</span></>}>
-        A viewer takes on the house. Both spin a slot — highest multiplier wins. Beat FinBuck, take the prize.
-      </PageHeader>
-
-      {/* Running score — persisted in this browser only, survives a refresh */}
+      {/* ── Broadcast bar: title on the left, the running score as a scoreboard on the right ── */}
       <Reveal>
-        <div className="mt-8 flex justify-center">
-          <Panel innerClassName="flex items-center gap-6 px-7 py-4">
-            <div className="text-center">
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: HOUSE }}>FinBuck</p>
-              <p className="font-display text-[2.6rem] leading-none tabular-nums" style={{ color: HOUSE }}>{score.house}</p>
+        <div className="mx-auto mt-6 max-w-5xl">
+          <Panel innerClassName="flex flex-col gap-5 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+            <div>
+              <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-70" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+                </span>
+                Live slot duel
+              </p>
+              <h1 className="font-display mt-2 -skew-x-[8deg] text-[clamp(2.8rem,8vw,4.5rem)] leading-[0.9]">
+                Slot <span className="text-accent-bright">battles</span>
+              </h1>
+              <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">
+                A viewer takes on the house. Both spin a slot — highest multiplier wins. Beat FinBuck, take the prize.
+              </p>
             </div>
-            <span className="h-8 w-px bg-white/10" />
-            <div className="text-center">
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: CHAT }}>Chat</p>
-              <p className="font-display text-[2.6rem] leading-none tabular-nums" style={{ color: CHAT }}>{score.chat}</p>
+
+            {/* Scoreboard, persisted in this browser only */}
+            <div className="flex items-center gap-4 self-center sm:self-auto">
+              <div className="flex items-stretch bg-[#080A20]" style={{ clipPath: smallCut }}>
+                <div className="flex flex-col items-center px-5 py-3">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: HOUSE }}>FinBuck</span>
+                  <span className="font-display text-[3rem] leading-none tabular-nums text-white">{score.house}</span>
+                </div>
+                <span className="font-display self-center text-[1.4rem] text-faint">:</span>
+                <div className="flex flex-col items-center px-5 py-3">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: CHAT }}>Chat</span>
+                  <span className="font-display text-[3rem] leading-none tabular-nums text-white">{score.chat}</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={resetScore}
+                title="Reset score to 0-0"
+                className="flex h-9 w-9 items-center justify-center bg-white/[0.06] text-faint transition-colors hover:bg-white/[0.1] hover:text-red-300"
+                style={{ clipPath: smallCut }}
+                aria-label="Reset score"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={resetScore}
-              title="Reset score to 0-0"
-              className="ml-1 text-faint transition-colors hover:text-red-300"
-              aria-label="Reset score"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-              </svg>
-            </button>
           </Panel>
-        </div>
-      </Reveal>
-
-      {/* Random slot picker */}
-      <Reveal>
-        <div className="mx-auto mt-14 max-w-4xl">
-          <p className="mx-auto flex max-w-xs items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
-            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-accent/50" />
-            <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
-            <span className="whitespace-nowrap">Random slot picker</span>
-            <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
-            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-accent/50" />
-          </p>
-
-          <Panel className="mt-6" innerClassName="overflow-hidden">
-            <SlotReel
-              ref={reelRef}
-              onSpinStart={() => {
-                setRolling(true)
-                setLanded(null)
-                // Clear the previous round's winner banner as the next roll starts.
-                setOutcome(null)
-              }}
-              onLand={(slot) => {
-                setRolling(false)
-                setLanded(slot)
-              }}
-              onCatalogue={(slots) => {
-                artRef.current = new Map(slots.map((g) => [g.name.toLowerCase(), g.img]))
-              }}
-              actions={
-                landed && (
-                  <>
-                    <Button onClick={() => setHouseSlot(landed.name)} variant="outline" size="sm">→ FinBuck</Button>
-                    <button
-                      type="button"
-                      onClick={() => setChatSlot(landed.name)}
-                      className="inline-flex h-10 items-center justify-center px-4 text-sm font-bold transition-[transform,background-color] hover:-translate-y-px"
-                      style={{ clipPath: btnCut, background: `${CHAT}1F`, color: CHAT }}
-                    >
-                      → Chat
-                    </button>
-                  </>
-                )
-              }
-            />
-          </Panel>
-
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-            <Button
-              onClick={outcome ? resetRound : randomize}
-              disabled={!outcome && rolling}
-              variant={outcome ? 'ghost' : 'primary'}
-              title={outcome ? 'Clear the board for the next battle — the score is kept' : undefined}
-              className="min-w-[150px]"
-            >
-              {outcome ? 'Reset' : rolling ? 'Rolling…' : 'Randomize'}
-            </Button>
-            <Button
-              onClick={undoLastRound}
-              disabled={history.length === 0}
-              variant="ghost"
-              title={
-                history.length
-                  ? 'Undo the last declared winner — takes the point back and restores that round’s slots'
-                  : 'Nothing to undo yet'
-              }
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 14L4 9l5-5" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 9h11a5 5 0 010 10h-3" />
-              </svg>
-              Undo
-            </Button>
-          </div>
         </div>
       </Reveal>
 
       {/* Arena: a fight card. The two corners lean in toward a lit VS, over
           a spotlit floor; the result bar below is the ring announcer. */}
       <Reveal>
-        <div className="relative mx-auto mt-14 max-w-5xl">
+        <div className="relative mx-auto mt-8 max-w-5xl">
           {/* Spotlight floor behind the cards */}
           <div
             aria-hidden
@@ -576,25 +497,105 @@ export default function VsChatPage() {
         </div>
       </Reveal>
 
-      {/* How it works */}
+      {/* ── Control dock + slot reel ──
+          The dock holds the round controls; the reel sits in a drawer below
+          it so the random pick lands right under the fight card. */}
       <Reveal>
-        <div className="mx-auto mt-24 max-w-5xl">
-          <SectionHeading eyebrow="How it works" title={<>Four steps to a <span className="text-accent-bright">battle</span></>} className="mb-10" />
+        <div className="mx-auto mt-6 max-w-5xl">
+          <Panel innerClassName="overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.06] px-5 py-4 sm:px-6">
+              <div className="flex items-center gap-3">
+                <span className="font-display text-[1.5rem] leading-none text-white">Random slot picker</span>
+                <span className="hidden text-xs text-muted sm:inline">Roll a slot, then hand it to a corner.</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  onClick={outcome ? resetRound : randomize}
+                  disabled={!outcome && rolling}
+                  variant={outcome ? 'ghost' : 'primary'}
+                  size="sm"
+                  title={outcome ? 'Clear the board for the next battle — the score is kept' : undefined}
+                  className="min-w-[130px]"
+                >
+                  {outcome ? 'Next round' : rolling ? 'Rolling…' : 'Randomize'}
+                </Button>
+                <Button
+                  onClick={undoLastRound}
+                  disabled={history.length === 0}
+                  variant="ghost"
+                  size="sm"
+                  className="!bg-[#7B6CFF] !text-white hover:!bg-[#8D80FF] disabled:!opacity-50"
+                  title={
+                    history.length
+                      ? 'Undo the last declared winner — takes the point back and restores that round’s slots'
+                      : 'Nothing to undo yet'
+                  }
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 14L4 9l5-5" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 9h11a5 5 0 010 10h-3" />
+                  </svg>
+                  Undo
+                </Button>
+              </div>
+            </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <SlotReel
+              ref={reelRef}
+              onSpinStart={() => {
+                setRolling(true)
+                setLanded(null)
+                // Clear the previous round's winner banner as the next roll starts.
+                setOutcome(null)
+              }}
+              onLand={(slot) => {
+                setRolling(false)
+                setLanded(slot)
+              }}
+              onCatalogue={(slots) => {
+                artRef.current = new Map(slots.map((g) => [g.name.toLowerCase(), g.img]))
+              }}
+              actions={
+                landed && (
+                  <>
+                    <Button onClick={() => setHouseSlot(landed.name)} variant="outline" size="sm">→ FinBuck</Button>
+                    <button
+                      type="button"
+                      onClick={() => setChatSlot(landed.name)}
+                      className="inline-flex h-10 items-center justify-center px-4 text-sm font-bold transition-[transform,background-color] hover:-translate-y-px"
+                      style={{ clipPath: btnCut, background: `${CHAT}1F`, color: CHAT }}
+                    >
+                      → Chat
+                    </button>
+                  </>
+                )
+              }
+            />
+          </Panel>
+        </div>
+      </Reveal>
+
+      {/* ── How it works: one strip, four steps in a row ── */}
+      <Reveal>
+        <div className="mx-auto mt-16 max-w-5xl">
+          <p className="mx-auto flex max-w-xs items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent to-accent/50" />
+            <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
+            <span className="whitespace-nowrap">How it works</span>
+            <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent to-accent/50" />
+          </p>
+          <Panel className="mt-6" innerClassName="grid divide-y divide-white/[0.06] sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
             {STEPS.map((s, i) => (
-              <Panel key={i} innerClassName="flex h-full flex-col p-6">
-                <div className="flex items-start justify-between">
-                  <span className="flex h-11 w-11 items-center justify-center bg-[#0B0E2A] text-accent-bright" style={{ clipPath: smallCut }}>
-                    {s.icon}
-                  </span>
-                  <span className="font-display text-[1.4rem] leading-none text-faint">{String(i + 1).padStart(2, '0')}</span>
+              <div key={i} className="flex gap-4 p-5">
+                <span className="font-display shrink-0 text-[2.4rem] leading-none text-accent-bright">{String(i + 1).padStart(2, '0')}</span>
+                <div className="min-w-0">
+                  <h3 className="font-display text-[1.4rem] leading-none text-white">{s.title}</h3>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-muted">{s.desc}</p>
                 </div>
-                <h3 className="font-display mt-5 text-[1.6rem] leading-none text-white">{s.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{s.desc}</p>
-              </Panel>
+              </div>
             ))}
-          </div>
+          </Panel>
         </div>
       </Reveal>
     </div>

@@ -223,7 +223,7 @@ export default function TournamentsPage() {
                               value={slots[i] ?? ''}
                               onChange={(e) => editSlot(i, e.target.value)}
                               placeholder={`Slot ${i + 1}`}
-                              className="field !h-11 text-center text-sm font-semibold"
+                              className="field !h-11 !border-accent/40 !bg-[#22285F] text-center text-sm font-semibold"
                               style={{ fontSize: autoFontSize(slots[i] ?? '', 20) }}
                             />
                           </div>
@@ -254,12 +254,15 @@ export default function TournamentsPage() {
                                 style={{
                                   background: isChampionBox
                                     ? 'linear-gradient(135deg, rgba(255,200,61,0.16), rgba(255,200,61,0.04))'
-                                    : '#080A20',
+                                    : r === 0 && isBye
+                                      ? 'rgba(34,40,95,0.45)'
+                                      : '#22285F',
+                                  // A green edge on every box; byes in round one get a faint one.
                                   borderColor: isChampionBox
                                     ? 'rgba(255,200,61,0.6)'
-                                    : isBye
-                                      ? 'rgba(255,255,255,0.05)'
-                                      : 'rgba(255,255,255,0.12)',
+                                    : r === 0 && isBye
+                                      ? 'rgba(255,255,255,0.10)'
+                                      : 'rgba(0,255,135,0.40)',
                                   boxShadow: isChampionBox && slot ? '0 0 18px rgba(255,200,61,0.35)' : 'none',
                                 }}
                               >

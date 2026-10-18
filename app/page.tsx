@@ -249,7 +249,7 @@ export default async function Home() {
               eyebrow={race.upcoming ? 'First race starts 25 October' : 'Live race'}
               title={
                 <>
-                  <span className="block text-[4.5rem] text-accent-bright [text-shadow:0_0_36px_rgba(0,255,135,0.3)] sm:text-[8rem]">
+                  <span className="block text-[4.5rem] text-white sm:text-[8rem]">
                     <CountUp value={race.prizePool} />
                   </span>
                   <span className="block text-white">Leaderboard</span>

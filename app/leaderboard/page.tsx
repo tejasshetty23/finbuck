@@ -63,7 +63,7 @@ export default async function LeaderboardPage() {
         <h1 className="font-display relative mt-6">
           <span className="relative inline-block">
           <HeadingGifts size="lg" variant={1} />
-          <span className="block text-[clamp(4rem,16vw,9rem)] leading-[1] text-gold [text-shadow:0_0_40px_rgba(255,196,77,0.3)]">
+          <span className="block text-[clamp(4rem,16vw,9rem)] leading-[1] text-white">
             <CountUp value={race.prizePool} />
           </span>
           <span

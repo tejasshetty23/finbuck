@@ -191,18 +191,29 @@ export default function TournamentsPage() {
         <Reveal>
           <div className="mx-auto mt-10 max-w-7xl">
             {/* Controls */}
+            {/* Full-size buttons: Undo as a solid light-navy block with an
+                edge, New bracket in the primary green. Undo stays readable
+                when there's nothing to undo yet, just dimmed. */}
             <div className="mb-8 flex flex-wrap items-center justify-center gap-3">
-              <Button onClick={undo} disabled={!history.length} variant="ghost" size="sm">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} className="h-4 w-4" aria-hidden>
+              <Button
+                onClick={undo}
+                disabled={!history.length}
+                variant="ghost"
+                className="min-w-[150px] !bg-[#2B3275] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.28)] hover:!bg-[#353D8A] disabled:!opacity-60"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} className="h-[18px] w-[18px]" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
                 </svg>
                 Undo
               </Button>
-              <Button onClick={newBracket} variant="outline" size="sm">
+              <Button onClick={newBracket} className="min-w-[170px]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} className="h-[18px] w-[18px]" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14" />
+                </svg>
                 New bracket
               </Button>
               {champion && (
-                <Button onClick={() => setShowWin(true)} variant="gold" size="sm">
+                <Button onClick={() => setShowWin(true)} variant="gold">
                   🏆 {champion}
                 </Button>
               )}

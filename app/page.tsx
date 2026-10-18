@@ -85,29 +85,12 @@ export default async function Home() {
             <span className="h-px w-8 bg-white/15" />
           </div>
 
-          {/* The headline scales with the viewport up to a capped size:
-              FINBUCKS leads, REWARDS sits a step down. Both are green with a faint
-              outlined copy offset behind, for a printed, double-struck depth. */}
+          {/* The headline, set like the header wordmark: same face, same 8°
+              slant. FINBUCKS in white, REWARDS a step down in green. */}
           <h1 className="font-display mt-5 -skew-x-[8deg] leading-[0.86] tracking-[0.02em]">
-            <span className="relative block text-[clamp(4.5rem,17vw,10rem)] text-accent-bright [text-shadow:0_0_32px_rgba(0,255,135,0.32)]">
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 translate-x-[0.04em] translate-y-[0.06em] text-transparent"
-                style={{ WebkitTextStroke: '1.5px rgba(0,255,135,0.35)' }}
-              >
-                FinBucks
-              </span>
-              <span className="relative">FinBucks</span>
-            </span>
-            <span className="relative block text-[clamp(2.9rem,10.5vw,6.5rem)] text-accent-bright [text-shadow:0_0_32px_rgba(0,255,135,0.32)]">
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 translate-x-[0.04em] translate-y-[0.06em] text-transparent"
-                style={{ WebkitTextStroke: '1.5px rgba(0,255,135,0.35)' }}
-              >
-                Rewards
-              </span>
-              <span className="relative">Rewards</span>
+            <span className="block text-[clamp(4.5rem,17vw,10rem)] text-white">FinBucks</span>
+            <span className="block text-[clamp(2.9rem,10.5vw,6.5rem)] text-accent-bright [text-shadow:0_0_32px_rgba(0,255,135,0.32)]">
+              Rewards
             </span>
           </h1>
 

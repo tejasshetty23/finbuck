@@ -246,24 +246,42 @@ export default function TournamentsPage() {
                           const isChampionBox = r === finalIdx
                           const canAdvance = r < finalIdx && !!slot
                           const isBye = slot === null
+                          // Has this match been decided? Read straight off the next
+                          // round, so Undo and New bracket clear it with no extra state.
+                          const next = r < finalIdx ? rounds[r + 1][Math.floor(i / 2)] : null
+                          const opponent = round[i ^ 1]
+                          const decided = !!next
+                          // If both players share a name, the upper one takes the win.
+                          const won = decided && !!slot && slot === next && !(i % 2 === 1 && opponent === slot)
+                          const lost = decided && !!slot && !won
                           return (
                             <div key={i} className="bk-match">
                               {r > 0 && <span className="bk-in" />}
                               <div
-                                className="relative flex min-h-[44px] w-full items-center rounded-lg border"
+                                className={`relative flex min-h-[44px] w-full items-center rounded-lg border transition-[background,border-color,box-shadow,opacity] duration-300 ${
+                                  lost ? 'opacity-60' : ''
+                                }`}
                                 style={{
                                   background: isChampionBox
                                     ? 'linear-gradient(135deg, rgba(255,200,61,0.16), rgba(255,200,61,0.04))'
-                                    : r === 0 && isBye
+                                    : won
+                                      ? 'linear-gradient(135deg, rgba(0,255,135,0.24), rgba(0,255,135,0.08)), #22285F'
+                                      : r === 0 && isBye
                                       ? 'rgba(34,40,95,0.45)'
                                       : '#22285F',
                                   // A green edge on every box; byes in round one get a faint one.
                                   borderColor: isChampionBox
                                     ? 'rgba(255,200,61,0.6)'
-                                    : r === 0 && isBye
-                                      ? 'rgba(255,255,255,0.10)'
-                                      : 'rgba(0,255,135,0.40)',
-                                  boxShadow: isChampionBox && slot ? '0 0 18px rgba(255,200,61,0.35)' : 'none',
+                                    : won
+                                      ? '#00FF87'
+                                      : r === 0 && isBye
+                                        ? 'rgba(255,255,255,0.10)'
+                                        : 'rgba(0,255,135,0.40)',
+                                  boxShadow: isChampionBox && slot
+                                    ? '0 0 18px rgba(255,200,61,0.35)'
+                                    : won
+                                      ? '0 0 18px rgba(0,255,135,0.35)'
+                                      : 'none',
                                 }}
                               >
                                 {r === 0 ? (
@@ -274,7 +292,9 @@ export default function TournamentsPage() {
                                       value={slot ?? ''}
                                       onChange={(e) => editName(i, e.target.value)}
                                       placeholder={`Bucker ${i + 1}`}
-                                      className="w-full min-w-0 bg-transparent px-3 py-2 text-sm font-semibold text-white placeholder:text-faint focus:outline-none"
+                                      className={`w-full min-w-0 bg-transparent px-3 py-2 text-sm font-semibold placeholder:text-faint focus:outline-none ${
+                                        lost ? 'text-white/60 line-through decoration-white decoration-2' : 'text-white'
+                                      }`}
                                       style={{ fontSize: autoFontSize(slot ?? '', 16) }}
                                     />
                                   )
@@ -282,7 +302,13 @@ export default function TournamentsPage() {
                                   <span
                                     style={{ fontSize: autoFontSize(slot ?? '', 14) }}
                                     className={`flex-1 truncate px-3 py-2 text-sm font-bold ${
-                                      slot ? (isChampionBox ? 'text-gold' : 'text-white') : 'text-white/20'
+                                      slot
+                                        ? isChampionBox
+                                          ? 'text-gold'
+                                          : lost
+                                            ? 'text-white/60 line-through decoration-white decoration-2'
+                                            : 'text-white'
+                                        : 'text-white/20'
                                     }`}
                                   >
                                     {slot ?? '—'}

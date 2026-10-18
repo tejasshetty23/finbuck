@@ -22,8 +22,8 @@ type Perk = {
   lead: string
   title: string
   desc: string
-  /** Three short steps, shown as a checklist. */
-  steps: [string, string, string]
+  /** Short steps, shown as a checklist. */
+  steps: string[]
   /** The claim button. Without an href it goes to the sign-up link. */
   cta?: string
   href?: string
@@ -39,18 +39,18 @@ type Perk = {
 // isn't a link elsewhere goes to the sign-up with code BUCK.
 const PERKS: Perk[] = [
   {
-    tag: 'Every wager',
-    lead: '15%',
-    title: 'Affiliate commission',
-    desc: 'A cut of the house edge on everything you wager under code BUCK, on top of what Stake already gives back.',
-    steps: [`Sign up with code ${CODE}`, 'Play on Stake as usual', 'Commission builds as you wager'],
+    tag: 'Every week',
+    lead: '2x',
+    title: 'Double weeklies',
+    desc: "Your Stake weekly bonus is doubled while you play under code BUCK: twice the weekly reload, every week, just for playing.",
+    steps: ['Wager through the week', 'Claim your doubled weekly'],
   },
   {
     tag: 'Every rank-up',
     lead: '100%',
     title: 'Rank up bonus boost',
     desc: 'Every level-up bonus Stake pays you is doubled while you play under code BUCK.',
-    steps: [`Play under code ${CODE}`, "Climb Stake's VIP ranks", 'Each rank-up bonus doubled'],
+    steps: ["Climb Stake's VIP ranks", 'Each rank-up bonus doubled'],
     gold: true,
     ribbon: 'Top perk',
   },
@@ -59,7 +59,7 @@ const PERKS: Perk[] = [
     lead: 'Exclusive',
     title: 'Stream giveaways',
     desc: 'Live draws on stream, open to anyone playing under the code. Type the keyword in chat to enter.',
-    steps: [`Play under code ${CODE}`, 'Join the stream on Kick', 'Type the keyword to enter'],
+    steps: ['Join the stream on Kick', 'Type the keyword to enter'],
     cta: 'Watch live',
     href: SOCIALS.kick.href,
   },
@@ -68,7 +68,7 @@ const PERKS: Perk[] = [
     lead: 'Exclusive',
     title: 'Code drops',
     desc: 'Bonus codes dropped in chat and on Discord, with code-holders first in line.',
-    steps: [`Play under code ${CODE}`, 'Watch chat and Discord', 'Redeem before it runs out'],
+    steps: ['Watch chat and Discord', 'Redeem before it runs out'],
     gold: true,
   },
   {
@@ -76,16 +76,16 @@ const PERKS: Perk[] = [
     lead: 'Discord',
     title: 'Channel access',
     desc: 'The affiliate channels on the FinBuckers Discord: drops, giveaway tickets and the mod team.',
-    steps: [`Sign up with code ${CODE}`, 'Join the FinBuckers Discord', 'Unlock the affiliate channels'],
+    steps: ['Join the FinBuckers Discord', 'Unlock the affiliate channels'],
     cta: 'Join Discord',
     href: SOCIALS.discord.href,
   },
   {
-    tag: 'Every week',
+    tag: 'As you climb',
     lead: 'VIP',
     title: `${PARTNER.name} VIP club`,
     desc: 'Rakeback, level-up bonuses and weekly and monthly boosts that grow as you climb.',
-    steps: [`Play under code ${CODE}`, "Rise through Stake's VIP tiers", 'Collect rakeback and boosts'],
+    steps: ["Rise through Stake's VIP tiers", 'Collect rakeback and boosts'],
     cta: 'VIP club',
     href: `${PARTNER.url}/vip-club`,
     sponsored: true,
@@ -99,8 +99,8 @@ export default function RewardsPage() {
   return (
     <div className="px-6 pb-24 pt-[72px]">
       <PageHeader eyebrow={`FinBuck × ${PARTNER.name}`} title={<>Rewards <span className="text-accent-bright">&amp; perks</span></>}>
-        Everything you unlock playing under code {CODE}: the monthly leaderboard, affiliate commission, boosted
-        bonuses and the stream giveaways.
+        Everything you unlock playing under code {CODE}: the monthly leaderboard, double weeklies, boosted
+        rank-ups and the stream giveaways.
       </PageHeader>
 
       {/* The two calls to action share a row: the headline prize and the

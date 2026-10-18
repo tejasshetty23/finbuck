@@ -324,7 +324,7 @@ export default async function Home() {
                 Rewards <span className="text-accent-bright">&amp; perks</span>
               </h2>
               <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-muted sm:text-base">
-                Affiliate commission, rank up boosts, exclusive giveaways and drops, and the {usd(race.prizePool)} monthly
+                Double weeklies, rank up boosts, exclusive giveaways and drops, and the {usd(race.prizePool)} monthly
                 leaderboard — everything you unlock playing under code {CODE}.
               </p>
               <Button href="/rewards" className="mt-8">

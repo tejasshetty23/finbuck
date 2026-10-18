@@ -19,9 +19,11 @@ export const SIGNUP_URL = `${PARTNER.url}/?c=${CODE}`
 export const RACE = {
   firstStart: Date.UTC(2026, 9, 25), // 25 Oct 2026, 00:00 UTC (months are 0-based)
   dayOfMonth: 25,
-  prizePool: 10_000,
-  /** Share of the pool per place, 1st to 20th. Sums to 100. */
-  split: [30, 15, 10, 5.5, 5, 4.5, 4, 3.5, 3.25, 3, 2.75, 2.5, 2.25, 2, 1.75, 1.5, 1.25, 1, 0.75, 0.5],
+  /** Prize per place in USD, 1st to 10th. The pool is their sum. */
+  prizes: [2000, 1000, 600, 320, 275, 225, 180, 155, 135, 110],
+  get prizePool() {
+    return this.prizes.reduce((a: number, b: number) => a + b, 0)
+  },
 } as const
 
 export const SOCIALS = {

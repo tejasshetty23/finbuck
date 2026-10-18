@@ -1,4 +1,5 @@
 import Button from '../components/Button'
+import HeadingGifts from '../components/HeadingGifts'
 import CopyButton from '../components/CopyButton'
 import CountUp from '../components/CountUp'
 import Panel from '../components/Panel'
@@ -87,7 +88,10 @@ export default async function Home() {
 
           {/* The headline, set like the header wordmark: same face, same 8°
               slant. FINBUCKS in white, REWARDS a step down in green. */}
-          <h1 className="font-display mt-5 -skew-x-[8deg] leading-[0.86] tracking-[0.02em]">
+          <h1 className="font-display relative mt-5 -skew-x-[8deg] leading-[0.86] tracking-[0.02em]">
+            <span aria-hidden className="pointer-events-none absolute inset-0 skew-x-[8deg]">
+              <HeadingGifts size="lg" />
+            </span>
             <span className="block text-[clamp(4.5rem,17vw,10rem)] text-white">FinBucks</span>
             <span className="block text-[clamp(2.9rem,10.5vw,6.5rem)] text-accent-bright [text-shadow:0_0_32px_rgba(0,255,135,0.32)]">
               Rewards
@@ -116,7 +120,7 @@ export default async function Home() {
             <b className="text-white">{usd(RACE.prizePool)}</b> monthly prize pool
           </>,
           <>
-            Top <b className="text-white">{RACE.split.length}</b> places paid
+            Top <b className="text-white">{RACE.prizes.length}</b> places paid
           </>,
           <>
             Use code <b className="text-accent-bright">{CODE}</b> on {PARTNER.name}

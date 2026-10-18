@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import HeadingGifts from './HeadingGifts'
 
 /**
  * Section opener. A tracked eyebrow set between two rules with a green
@@ -25,7 +26,12 @@ export default function SectionHeading({
         <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
         <span className="h-px flex-1 bg-gradient-to-l from-transparent to-accent/50" />
       </p>
-      <h2 className="font-display mt-4 text-[2.75rem] leading-[0.9] sm:text-7xl">{title}</h2>
+      <h2 className="font-display mt-4 text-[2.75rem] leading-[0.9] sm:text-7xl">
+        <span className="relative inline-block">
+          {title}
+          <HeadingGifts variant={eyebrow.length} />
+        </span>
+      </h2>
       {children && <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-muted sm:text-base">{children}</p>}
     </div>
   )

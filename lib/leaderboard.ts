@@ -40,10 +40,7 @@ const DATA_DIR = path.join(process.cwd(), 'data')
 const REAL = path.join(DATA_DIR, 'leaderboard.csv')
 const SAMPLE = path.join(DATA_DIR, 'leaderboard.sample.csv')
 
-export const PRIZES: Prize[] = RACE.split.map((pct, i) => ({
-  position: i + 1,
-  amount: Math.round((RACE.prizePool * pct) / 100),
-}))
+export const PRIZES: Prize[] = RACE.prizes.map((amount, i) => ({ position: i + 1, amount }))
 
 /** The race running at `now`: the 25th to the 25th, never before the first one. */
 export function raceWindow(now = Date.now()) {

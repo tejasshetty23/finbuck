@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import HeadingGifts from './HeadingGifts'
 
 /**
  * The opener every inner page shares: a tracked eyebrow between two rules, the
@@ -41,7 +42,12 @@ export default function PageHeader({
         <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
         <span className="h-px flex-1 bg-gradient-to-l from-transparent to-accent/50" />
       </p>
-      <h1 className="font-display relative mt-5 text-[clamp(3.25rem,11vw,6.5rem)] leading-[0.9]">{title}</h1>
+      <h1 className="font-display relative mt-5 text-[clamp(3.25rem,11vw,6.5rem)] leading-[0.9]">
+        <span className="relative inline-block">
+          {title}
+          <HeadingGifts variant={eyebrow.length} />
+        </span>
+      </h1>
       {children && (
         <p className="relative mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-muted sm:text-base">{children}</p>
       )}

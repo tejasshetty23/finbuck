@@ -42,7 +42,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Film grain over the lot. */}
         <div aria-hidden className="grain pointer-events-none fixed inset-0 -z-10 opacity-[0.07]" />
         <Navbar />
-        <main className="flex-1">{children}</main>
+        {/* Clipped sideways so decoration hanging past a heading (the gifts)
+            can never widen the page; clip, not hidden, so nothing becomes a
+            scroll container. */}
+        <main className="flex-1 overflow-x-clip">{children}</main>
         <Footer />
       </body>
     </html>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Button from '../../components/Button'
 import CopyButton from '../../components/CopyButton'
 import CountUp from '../../components/CountUp'
+import HeadingGifts from '../../components/HeadingGifts'
 import PageHeader from '../../components/PageHeader'
 import Panel from '../../components/Panel'
 import Reveal from '../../components/Reveal'
@@ -113,7 +114,7 @@ export default function RewardsPage() {
             </p>
             <h2 className="font-display mt-3 text-[2rem] leading-none text-white">Monthly leaderboard</h2>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted">
-              Wager under code {CODE} and climb the board. Top {RACE.split.length} paid, every month.
+              Wager under code {CODE} and climb the board. Top {RACE.prizes.length} paid, every month.
             </p>
             <Button href="/leaderboard" variant="ghost" className="mt-7">
               View leaderboard
@@ -152,7 +153,10 @@ export default function RewardsPage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="font-display text-[clamp(2.8rem,7vw,4.5rem)] leading-[0.9] text-white">
-                Perks that <span className="text-accent-bright">pay out</span>
+                <span className="relative inline-block">
+                  Perks that <span className="text-accent-bright">pay out</span>
+                  <HeadingGifts side="right" variant={2} />
+                </span>
               </h2>
               <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-muted sm:text-base">
                 Stacked on top of {PARTNER.name}&apos;s own rewards, only for players under code {CODE}.

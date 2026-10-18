@@ -436,12 +436,19 @@ export default function VsChatPage() {
                 <Button
                   onClick={outcome ? resetRound : randomize}
                   disabled={!outcome && rolling}
-                  variant={outcome ? 'ghost' : 'primary'}
+                  variant={outcome ? 'gold' : 'primary'}
                   size="sm"
                   title={outcome ? 'Clear the board for the next battle — the score is kept' : undefined}
-                  className="min-w-[130px]"
+                  className={`min-w-[130px] ${outcome ? 'next-round' : ''}`}
                 >
-                  {outcome ? 'Next round' : rolling ? 'Rolling…' : 'Randomize'}
+                  {outcome ? (
+                    <>
+                      Next round
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6} className="h-4 w-4" aria-hidden>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
+                    </>
+                  ) : rolling ? 'Rolling…' : 'Randomize'}
                 </Button>
                 <Button
                   onClick={undoLastRound}

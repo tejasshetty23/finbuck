@@ -436,3 +436,13 @@ textarea.field { height: auto; padding: 0.75rem 1rem; line-height: 1.5; resize: 
 @media (prefers-reduced-motion: reduce) {
   .fighter-win, .stamp { animation: none; }
 }
+
+/* Slot Battles: "Next round" pulses a gold glow until it's pressed. */
+@keyframes next-round {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(255,200,61,0)); }
+  50%      { filter: drop-shadow(0 0 14px rgba(255,200,61,0.75)); }
+}
+.next-round { animation: next-round 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .next-round { animation: none; filter: drop-shadow(0 0 10px rgba(255,200,61,0.6)); }
+}

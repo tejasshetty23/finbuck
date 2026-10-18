@@ -88,7 +88,7 @@ export default async function Home() {
           {/* The headline scales with the viewport up to a capped size:
               FINBUCKS leads, REWARDS sits a step down. Both are green with a faint
               outlined copy offset behind, for a printed, double-struck depth. */}
-          <h1 className="font-display mt-5 leading-[0.86]">
+          <h1 className="font-display mt-5 -skew-x-[8deg] leading-[0.86] tracking-[0.02em]">
             <span className="relative block text-[clamp(4.5rem,17vw,10rem)] text-accent-bright [text-shadow:0_0_32px_rgba(0,255,135,0.32)]">
               <span
                 aria-hidden

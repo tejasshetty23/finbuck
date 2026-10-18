@@ -9,7 +9,7 @@ import SpinWheel from '../../components/SpinWheel'
 import { SOCIALS } from '../../lib/site'
 import { getStandings, prizeFor } from '../../lib/leaderboard'
 
-// The number roller shows who holds the drawn place on the leaderboard, so
+// The leaderboard roller shows who holds the drawn place on the leaderboard, so
 // re-read the race CSV at most once a minute, like the leaderboard itself.
 export const revalidate = 60
 

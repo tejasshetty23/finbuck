@@ -285,9 +285,9 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
       lede: 'Spin the wheel to see what the winner takes home.',
     },
     number: {
-      eyebrow: 'Pick a number',
-      title: <>Number <span className="text-accent-bright">roller</span></>,
-      lede: 'A whole number from the range, drawn like a slot reel.',
+      eyebrow: 'Pick a place',
+      title: <>Leaderboard <span className="text-accent-bright">roller</span></>,
+      lede: 'Rolls a place on the monthly leaderboard and shows who holds it.',
     },
   }
   const t = titles[view]
@@ -301,7 +301,7 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
       </PageHeader>
 
       {/* Chat controls belong to the giveaway picker only — the prize wheel and
-          number roller draw from nothing chat-related. Hidden rather than
+          leaderboard roller draw from nothing chat-related. Hidden rather than
           unmounted so the typed keyword survives switching away and back. */}
       <div className={`mx-auto mb-6 w-full max-w-md ${view === 'giveaway' ? '' : 'hidden'}`}>
         <Panel innerClassName="p-5 sm:p-6">
@@ -393,7 +393,7 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
           </Panel>
         </div>
 
-        {/* Prize wheel and number roller come from the page */}
+        {/* Prize wheel and leaderboard roller come from the page */}
         <div className={view === 'prize' ? '' : 'hidden'}>{prizeWheel}</div>
         <div className={view === 'number' ? '' : 'hidden'}>{numberPicker}</div>
       </div>

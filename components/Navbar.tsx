@@ -36,7 +36,6 @@ const icons = {
   trophy: svg(<path d="M8 21h8m-4 0v-4m-7-13h14v3a7 7 0 01-14 0V4zm14 1h2.5a2.5 2.5 0 01-2.5 4.5M5 5H2.5A2.5 2.5 0 005 9.5" />),
   swords: svg(<path d="M14.5 14.5L20 20m0-16l-9 9m-1.5 1.5L4 20m3-6L3 4l4 1 10 10m0 0l1 4-4-1" />),
   gift: svg(<path d="M12 8v13m0-13a4 4 0 10-4-4 4 4 0 004 4zm0 0a4 4 0 114-4 4 4 0 01-4 4zM4 12h16M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />),
-  hash: svg(<path d="M5 9h14M5 15h14M10 3L8 21M16 3l-2 18" />),
   kick: (
     <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]">
       <path d="M4 3h5v5h2V6h2V4h2V3h5v6h-2v2h-2v2h2v2h2v6h-5v-1h-2v-2h-2v-2H9v5H4z" />
@@ -71,7 +70,7 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       { href: '/wheelspin?picker=giveaway', label: 'Giveaway Picker', icon: icons.ticket },
       { href: '/wheelspin?picker=prize', label: 'Prize Picker', icon: icons.gift },
-      { href: '/wheelspin?picker=number', label: 'Number Roller', icon: icons.hash },
+      { href: '/wheelspin?picker=number', label: 'Leaderboard Roller', icon: icons.podium },
     ],
   },
   { href: '/shop', label: 'Shop', icon: icons.bag },

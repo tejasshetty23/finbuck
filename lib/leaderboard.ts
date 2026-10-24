@@ -30,8 +30,6 @@ export type Standings = {
   /** Current race window, epoch ms UTC. */
   startsAt: number
   endsAt: number
-  /** True before the first race has begun. */
-  upcoming: boolean
   /** When the standings were last refreshed (API fetch, or CSV replaced), epoch ms. */
   updatedAt: number | null
   /** Placeholder data is showing — no API data and no real CSV. */
@@ -46,19 +44,15 @@ const SAMPLE = path.join(DATA_DIR, 'leaderboard.sample.csv')
 
 export const PRIZES: Prize[] = RACE.prizes.map((amount, i) => ({ position: i + 1, amount }))
 
-/** The race running at `now`: the 25th to the 25th, never before the first one. */
+/** The race running at `now`: the 25th to the 25th. */
 export function raceWindow(now = Date.now()) {
-  if (now < RACE.firstStart) {
-    const s = new Date(RACE.firstStart)
-    return { startsAt: RACE.firstStart, endsAt: Date.UTC(s.getUTCFullYear(), s.getUTCMonth() + 1, RACE.dayOfMonth), upcoming: true }
-  }
   const d = new Date(now)
   const y = d.getUTCFullYear()
   let m = d.getUTCMonth()
   if (d.getUTCDate() < RACE.dayOfMonth) m -= 1 // still in the race that began last month
   const startsAt = Date.UTC(y, m, RACE.dayOfMonth)
   const endsAt = Date.UTC(y, m + 1, RACE.dayOfMonth)
-  return { startsAt, endsAt, upcoming: false }
+  return { startsAt, endsAt }
 }
 
 /** Splits one CSV line, honouring "quoted, fields". */
@@ -101,13 +95,10 @@ export function parseCsv(text: string): Competitor[] {
 export async function getStandings(): Promise<Standings> {
   const race = raceWindow()
 
-  // Live from Stake when the API is configured and answers; before the first
-  // race starts there's nothing to fetch yet.
-  if (!race.upcoming) {
-    const live = await fetchStakeStandings(race.startsAt, race.endsAt)
-    if (live) {
-      return { prizePool: RACE.prizePool, prizes: PRIZES, competitors: live, updatedAt: Date.now(), isSample: false, source: 'api', ...race }
-    }
+  // Live from Stake when the API is configured and answers.
+  const live = await fetchStakeStandings(race.startsAt, race.endsAt)
+  if (live) {
+    return { prizePool: RACE.prizePool, prizes: PRIZES, competitors: live, updatedAt: Date.now(), isSample: false, source: 'api', ...race }
   }
 
   let competitors: Competitor[] = []

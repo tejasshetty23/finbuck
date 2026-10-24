@@ -103,13 +103,9 @@ export default async function LeaderboardPage() {
         <Podium entries={top3} prizes={top3Prizes} />
       </section>
 
-      {/* Countdown — to the start while the first race is still ahead */}
+      {/* Countdown to the end of the current race */}
       <section className="mx-auto mt-14 max-w-5xl">
-        <Countdown
-          endsAt={race.upcoming ? race.startsAt : race.endsAt}
-          label={race.upcoming ? 'First race starts in' : 'Race ends in'}
-          endedLabel={race.upcoming ? 'Race is live' : 'Race finished'}
-        />
+        <Countdown endsAt={race.endsAt} label="Race ends in" endedLabel="Race finished" />
       </section>
 
       {/* Standings table */}

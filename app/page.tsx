@@ -246,7 +246,7 @@ export default async function Home() {
         <Reveal>
           <div className="mx-auto max-w-5xl">
             <SectionHeading
-              eyebrow={race.upcoming ? 'First race starts 25 October' : 'Live race'}
+              eyebrow="Live race"
               title={
                 <>
                   <span className="block text-[4.5rem] text-white sm:text-[8rem]">

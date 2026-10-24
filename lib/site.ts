@@ -8,8 +8,11 @@ export const PARTNER = {
 /** FinBuck's Stake code — shown on the header button and wherever a code is printed. */
 export const CODE = 'BUCK'
 
-/** Stake's referral links take the code as `?c=`. */
-export const SIGNUP_URL = `${PARTNER.url}/?c=${CODE}`
+/**
+ * FinBuck's Stake.com referral link: `c` is the affiliate referral id and
+ * `offer` applies code BUCK on sign-up.
+ */
+export const SIGNUP_URL = `${PARTNER.url}/?c=pzt7XHW3&offer=${CODE.toLowerCase()}`
 
 /** Stake.us, the US social casino. Same code, same referral link format. */
 export const PARTNER_US = {

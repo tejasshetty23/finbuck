@@ -29,8 +29,6 @@ type Perk = {
   cta?: string
   href?: string
   sponsored?: boolean
-  /** Gold instead of green, to alternate across the grid. */
-  gold?: boolean
   /** The ribbon in the corner. One card at most. */
   ribbon?: string
 }
@@ -52,7 +50,6 @@ const PERKS: Perk[] = [
     title: 'Rakeback',
     desc: 'A share of every bet you place comes back to you, on everything you play under code BUCK.',
     steps: ['Play any game on Stake', 'Rakeback builds as you bet'],
-    gold: true,
   },
   {
     tag: 'Every rank-up',
@@ -60,7 +57,6 @@ const PERKS: Perk[] = [
     title: 'Rank up bonus boost',
     desc: 'Every level-up bonus Stake pays you is doubled while you play under code BUCK.',
     steps: ["Climb Stake's VIP ranks", 'Each rank-up bonus doubled'],
-    gold: true,
     ribbon: 'Top perk',
   },
   {
@@ -78,7 +74,6 @@ const PERKS: Perk[] = [
     title: 'Code drops',
     desc: 'Bonus codes dropped in chat and on Discord, with code-holders first in line.',
     steps: ['Watch chat and Discord', 'Redeem before it runs out'],
-    gold: true,
   },
   {
     tag: 'Community',
@@ -98,11 +93,125 @@ const PERKS: Perk[] = [
     cta: 'VIP club',
     href: `${PARTNER.url}/vip-club`,
     sponsored: true,
-    gold: true,
   },
 ]
 
 const smallCut = 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)'
+
+/** The perk cards. Shared by both sides: each passes its own perks and sign-up link. */
+function PerkGrid({
+  perks,
+  site,
+  signupUrl,
+  showLeaderboard = false,
+}: {
+  perks: Perk[]
+  site: string
+  signupUrl: string
+  /** The $5,000 race runs on Stake.com, so only that side links to it. */
+  showLeaderboard?: boolean
+}) {
+  return (
+      <div className="mx-auto mt-20 max-w-6xl">
+        <Reveal>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 className="font-display text-[clamp(2.8rem,7vw,4.5rem)] leading-[0.9] text-white">
+                <span className="relative inline-block">
+                  Perks that <span className="text-accent-bright">pay out</span>
+                  <HeadingGifts side="right" variant={2} />
+                </span>
+              </h2>
+              <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-muted sm:text-base">
+                Stacked on top of {site}&apos;s own rewards, only for players under code {CODE}.
+              </p>
+            </div>
+            {showLeaderboard && (
+            <a
+              href="/leaderboard"
+              className="group inline-flex shrink-0 items-center gap-2 text-sm font-bold text-accent-bright transition-colors hover:text-white"
+            >
+              View leaderboard
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+            )}
+          </div>
+        </Reveal>
+
+        <div className="mt-10 flex flex-wrap justify-center gap-5">
+          {perks.map((p, i) => {
+            // Strictly alternating by position: green, gold, green, gold...
+            const gold = i % 2 === 1
+            const c = gold
+              ? { text: 'text-gold', chip: 'bg-gold/[0.12] text-gold', tick: 'bg-gold/[0.14] text-gold', glow: 'rgba(255,200,61,0.10)', ribbon: '#FFC83D' }
+              : { text: 'text-accent-bright', chip: 'bg-accent/[0.12] text-accent-bright', tick: 'bg-accent/[0.14] text-accent-bright', glow: 'rgba(0,255,135,0.09)', ribbon: '#00FF87' }
+            return (
+              <Reveal key={p.title} delay={(i % 3) * 80} className="w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)]">
+                <Panel tone={p.ribbon ? (gold ? 'gold' : 'accent') : 'default'} className="h-full" innerClassName="flex h-full flex-col p-7 sm:p-8">
+                  {/* A soft wash of the card's colour from the top */}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0"
+                    style={{ background: `radial-gradient(90% 55% at 30% 0%, ${c.glow}, transparent 70%)` }}
+                  />
+
+                  {p.ribbon && (
+                    <span
+                      className="absolute right-0 top-0 px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#0B0E2A]"
+                      style={{ background: c.ribbon, clipPath: 'polygon(10px 0,100% 0,100% 100%,0 100%,0 100%)' }}
+                    >
+                      {p.ribbon}
+                    </span>
+                  )}
+
+                  <div className="relative flex h-full flex-col">
+                    <span className={`self-start px-3 py-1 text-[12px] font-bold ${c.chip}`} style={{ clipPath: smallCut }}>
+                      {p.tag}
+                    </span>
+
+                    <span className={`font-display mt-6 text-[3.6rem] leading-none ${c.text}`}>{p.lead}</span>
+                    <h3 className="font-display mt-2 text-[2rem] leading-none text-white">{p.title}</h3>
+                    <p className="mt-4 text-[15px] leading-relaxed text-muted">{p.desc}</p>
+
+                    <ul className="mt-6 space-y-3.5">
+                      {p.steps.map((s) => (
+                        <li key={s} className="flex items-center gap-3 text-[15px] text-white">
+                          <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${c.tick}`}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} className="h-3 w-3" aria-hidden>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </span>
+                          {s}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mt-auto pt-8">
+                      <Button
+                        href={p.href ?? signupUrl}
+                        external
+                        sponsored={p.href ? p.sponsored : true}
+                        variant={gold ? 'gold' : 'primary'}
+                        className="w-full [&>svg:last-child]:hidden"
+                      >
+                        {p.cta ?? 'Claim now'}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-[18px] w-[18px]" aria-hidden>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
+                        </svg>
+                      </Button>
+                    </div>
+                  </div>
+                </Panel>
+              </Reveal>
+            )
+          })}
+        </div>
+      </div>
+  )
+}
 
 /** Shown on both the Stake.com and Stake.us sides: help setting up an account. */
 function AccountHelp({ site }: { site: string }) {
@@ -146,6 +255,14 @@ function StakeUsWordmark({ className = 'h-10' }: { className?: string }) {
     </span>
   )
 }
+
+// The same perks on Stake.us. Rakeback is left out here because it's already
+// one of the three welcome offers above; the VIP card points at Stake.us.
+const US_PERKS: Perk[] = PERKS.filter((p) => p.title !== 'Rakeback').map((p) =>
+  p.title === `${PARTNER.name} VIP club`
+    ? { ...p, title: `${PARTNER_US.name} VIP club`, href: SIGNUP_URL_US, steps: ["Rise through Stake.us's VIP tiers", 'Collect rakeback and boosts'] }
+    : p,
+)
 
 function StakeUsRewards() {
   return (
@@ -230,6 +347,8 @@ function StakeUsRewards() {
         </div>
       </div>
 
+      <PerkGrid perks={US_PERKS} site={PARTNER_US.name} signupUrl={SIGNUP_URL_US} />
+
       <AccountHelp site={PARTNER_US.name} />
 
       <Reveal>
@@ -298,101 +417,7 @@ export default function RewardsPage() {
         </div>
       </Reveal>
 
-      {/* The perks */}
-      <div className="mx-auto mt-20 max-w-6xl">
-        <Reveal>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="font-display text-[clamp(2.8rem,7vw,4.5rem)] leading-[0.9] text-white">
-                <span className="relative inline-block">
-                  Perks that <span className="text-accent-bright">pay out</span>
-                  <HeadingGifts side="right" variant={2} />
-                </span>
-              </h2>
-              <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-muted sm:text-base">
-                Stacked on top of {PARTNER.name}&apos;s own rewards, only for players under code {CODE}.
-              </p>
-            </div>
-            <a
-              href="/leaderboard"
-              className="group inline-flex shrink-0 items-center gap-2 text-sm font-bold text-accent-bright transition-colors hover:text-white"
-            >
-              View leaderboard
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </a>
-          </div>
-        </Reveal>
-
-        <div className="mt-10 flex flex-wrap justify-center gap-5">
-          {PERKS.map((p, i) => {
-            const c = p.gold
-              ? { text: 'text-gold', chip: 'bg-gold/[0.12] text-gold', tick: 'bg-gold/[0.14] text-gold', glow: 'rgba(255,200,61,0.10)', ribbon: '#FFC83D' }
-              : { text: 'text-accent-bright', chip: 'bg-accent/[0.12] text-accent-bright', tick: 'bg-accent/[0.14] text-accent-bright', glow: 'rgba(0,255,135,0.09)', ribbon: '#00FF87' }
-            return (
-              <Reveal key={p.title} delay={(i % 3) * 80} className="w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)]">
-                <Panel tone={p.ribbon ? (p.gold ? 'gold' : 'accent') : 'default'} className="h-full" innerClassName="flex h-full flex-col p-7 sm:p-8">
-                  {/* A soft wash of the card's colour from the top */}
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0"
-                    style={{ background: `radial-gradient(90% 55% at 30% 0%, ${c.glow}, transparent 70%)` }}
-                  />
-
-                  {p.ribbon && (
-                    <span
-                      className="absolute right-0 top-0 px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[#0B0E2A]"
-                      style={{ background: c.ribbon, clipPath: 'polygon(10px 0,100% 0,100% 100%,0 100%,0 100%)' }}
-                    >
-                      {p.ribbon}
-                    </span>
-                  )}
-
-                  <div className="relative flex h-full flex-col">
-                    <span className={`self-start px-3 py-1 text-[12px] font-bold ${c.chip}`} style={{ clipPath: smallCut }}>
-                      {p.tag}
-                    </span>
-
-                    <span className={`font-display mt-6 text-[3.6rem] leading-none ${c.text}`}>{p.lead}</span>
-                    <h3 className="font-display mt-2 text-[2rem] leading-none text-white">{p.title}</h3>
-                    <p className="mt-4 text-[15px] leading-relaxed text-muted">{p.desc}</p>
-
-                    <ul className="mt-6 space-y-3.5">
-                      {p.steps.map((s) => (
-                        <li key={s} className="flex items-center gap-3 text-[15px] text-white">
-                          <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${c.tick}`}>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} className="h-3 w-3" aria-hidden>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                          </span>
-                          {s}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="mt-auto pt-8">
-                      <Button
-                        href={p.href ?? SIGNUP_URL}
-                        external
-                        sponsored={p.href ? p.sponsored : true}
-                        variant={p.gold ? 'gold' : 'primary'}
-                        className="w-full [&>svg:last-child]:hidden"
-                      >
-                        {p.cta ?? 'Claim now'}
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-[18px] w-[18px]" aria-hidden>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
-                        </svg>
-                      </Button>
-                    </div>
-                  </div>
-                </Panel>
-              </Reveal>
-            )
-          })}
-        </div>
-      </div>
+      <PerkGrid perks={PERKS} site={PARTNER.name} signupUrl={SIGNUP_URL} showLeaderboard />
 
       <AccountHelp site={PARTNER.name} />
 

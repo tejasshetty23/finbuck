@@ -14,12 +14,13 @@ export const CODE = 'BUCK'
  */
 export const SIGNUP_URL = `${PARTNER.url}/?c=pzt7XHW3&offer=${CODE.toLowerCase()}`
 
-/** Stake.us, the US social casino. Same code, same referral link format. */
+/** Stake.us, the US social casino. */
 export const PARTNER_US = {
   name: 'Stake.us',
   url: 'https://stake.us',
 } as const
-export const SIGNUP_URL_US = `${PARTNER_US.url}/?c=${CODE}`
+/** FinBuck's Stake.us sign-up link: `offer` applies code BUCK. */
+export const SIGNUP_URL_US = `${PARTNER_US.url}/?offer=${CODE.toLowerCase()}`
 
 /**
  * The monthly race. FinBuck's Stake partnership starts on the 25th of October

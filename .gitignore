@@ -20,7 +20,7 @@ node_modules/
 npm-debug.log*
 
 # local env files. The trailing-* forms matter: `.env*.local` alone does not
-# cover `.env.local.bak`, and this file carries the never-pick list on a public
+# cover `.env.local.bak`, and this file carries the Stake API key on a public
 # repo.
 .env*.local
 .env

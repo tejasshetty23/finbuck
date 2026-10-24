@@ -251,9 +251,7 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
   async function roll(exclude?: string | null) {
     if (rolling || busyRef.current || pool.length < 2) return
 
-    // The winner is drawn on the server, so the never-pick list stays off the
-    // client entirely. Ineligible names still ride the strip, they just can't
-    // be selected.
+    // The winner is drawn on the server (/api/roll), uniformly at random.
     busyRef.current = true
     setPickError('')
     let winnerName: string

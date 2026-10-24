@@ -16,9 +16,6 @@ import Roller from './Roller'
 // Fixed to FinBuck's channel.
 const CHANNEL = 'finbuck'
 
-// Accounts that may enter but can never win are configured server-side via the
-// NEVER_PICK_USERS env var and applied in /api/roll, so the list never reaches
-// the browser or the repo.
 
 type Status = 'idle' | 'connecting' | 'connected' | 'error'
 

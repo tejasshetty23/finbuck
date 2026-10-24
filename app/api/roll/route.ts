@@ -2,18 +2,9 @@ import { NextResponse } from 'next/server'
 import { randomInt } from 'crypto'
 
 /**
- * Picks the giveaway winner on the server so the never-pick list never reaches
- * the browser. Set NEVER_PICK_USERS in the server's .env (newline or comma
- * separated usernames, case-insensitive) — it is never committed.
+ * Picks the giveaway winner from the entrants, uniformly at random. Every
+ * entrant can win.
  */
-function neverPickSet(): Set<string> {
-  return new Set(
-    (process.env.NEVER_PICK_USERS ?? '')
-      .split(/[\n,]/)
-      .map((s) => s.trim().toLowerCase())
-      .filter(Boolean)
-  )
-}
 
 export async function POST(req: Request) {
   try {
@@ -26,15 +17,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Not enough entrants.' }, { status: 400 })
     }
 
-    const blocked = neverPickSet()
-    let candidates = blocked.size
-      ? entrants.filter((n) => !blocked.has(n.trim().toLowerCase()))
-      : entrants
-
-    // Fail closed: never fall back to a name on the list.
-    if (!candidates.length) {
-      return NextResponse.json({ error: 'No eligible entrants.' }, { status: 409 })
-    }
+    let candidates = entrants
 
     // Skip the previous winner on a re-roll, unless they're the only one left.
     const exclude = typeof body.exclude === 'string' ? body.exclude.toLowerCase() : null

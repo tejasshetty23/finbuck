@@ -6,7 +6,7 @@ import { fetchStakeStandings } from './stakeApi'
 // Standings for FinBuck's monthly Stake race.
 //
 // When STAKE_API_KEY is set on the server, standings come live from Stake's
-// affiliate wager-stats API (see lib/stakeApi.ts). Otherwise, or whenever
+// affiliate leaderboard API (see lib/stakeApi.ts). Otherwise, or whenever
 // that call fails, they come from FinBuck's affiliate dashboard as a CSV:
 //
 //   data/leaderboard.csv            the real file — lives on the server only

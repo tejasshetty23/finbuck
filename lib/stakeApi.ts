@@ -1,142 +1,100 @@
-// Live wager standings from Stake's affiliate wager-stats API.
+// Live standings from Stake's affiliate leaderboard API.
 //
-// Stake's affiliate manager supplied an API key but no documentation yet, so
-// the request and response shapes below are best guesses, built to be fixed
-// from the server's settings rather than code once the real docs arrive.
-// Anything that goes wrong (no key, wrong address, unexpected data) returns
-// null and the leaderboard falls back to the CSV, so a bad guess can never
-// break the page.
+// Docs: https://docs.stake.com/#tag/Affiliate/operation/LeaderboardCsv
+//
+//   GET https://api.stake.com/affiliate/leaderboard
+//       ?timePeriod=customRange&startDate=<epoch ms>&endDate=<epoch ms>
+//       &isStakeExclusive=false&limit=<rows>&offset=0
+//   x-access-token: <Affiliate API Token>
+//   Accept: text/csv
+//
+// The reply is a CSV:
+//   rank,user_name,campaign_code,total_wagered_amount (USD),total_weighted_amount (USD)
+//
+// startDate and endDate are both inclusive, so the race window (25th 00:00
+// UTC to the next 25th, end exclusive) is sent as start .. end - 1 ms.
 //
 // Server settings (.env.local on the VPS, never committed):
 //
-//   STAKE_API_KEY          the key from Stake. Turns this on; without it the
-//                          CSV is used and nothing here runs.
-//   STAKE_API_URL          the wager-stats endpoint. Defaults to a guess.
-//   STAKE_API_FROM_PARAM   query parameter for the race start (default: from)
-//   STAKE_API_TO_PARAM     query parameter for the race end   (default: to)
-//   STAKE_API_DATE_FORMAT  iso | ms | s | date               (default: iso)
-//   STAKE_API_KEY_PARAM    if the key goes in the URL rather than a header,
-//                          the parameter name for it (e.g. key or apiKey)
+//   STAKE_API_KEY            the Affiliate API Token (Affiliate Program → API).
+//                            Turns this on; without it the CSV file is used.
+//   STAKE_LEADERBOARD_AMOUNT weighted | wagered   (default: weighted, which is
+//                            what the leaderboard labels as "weighted wager")
+//   STAKE_CAMPAIGN_IDS       optional, comma-separated campaign ids to limit
+//                            the board to (default: all of FinBuck's campaigns)
+//   STAKE_API_URL            optional override of the endpoint above
 //
-// By default the key is sent in the common auth headers (Authorization:
-// Bearer, x-api-key, x-access-token), so most APIs accept it without any
-// extra setting.
+// If anything goes wrong (no key, network, Stake error, unexpected CSV) this
+// returns null and the leaderboard falls back to data/leaderboard.csv, so a
+// problem here can never break the page.
 
 import type { Competitor } from './leaderboard'
 
-const DEFAULT_URL = 'https://stake.com/_api/affiliate/wagers' // a guess: replace via STAKE_API_URL
-const TIMEOUT_MS = 8000
+const DEFAULT_URL = 'https://api.stake.com/affiliate/leaderboard'
+const ROWS = 100 // the board shows every competitor; the top 10 are paid
+const TIMEOUT_MS = 10_000
 const CACHE_MS = 60_000
 
 type Cached = { key: string; at: number; rows: Competitor[] | null }
 let cache: Cached | null = null
 let lastWarn = 0
 
-/** True once a key is configured on the server. */
+/** True once a token is configured on the server. */
 export function stakeApiEnabled() {
   return !!process.env.STAKE_API_KEY
 }
 
-function formatDate(ms: number) {
-  switch ((process.env.STAKE_API_DATE_FORMAT || 'iso').toLowerCase()) {
-    case 'ms':
-      return String(ms)
-    case 's':
-      return String(Math.floor(ms / 1000))
-    case 'date':
-      return new Date(ms).toISOString().slice(0, 10)
-    default:
-      return new Date(ms).toISOString()
-  }
-}
-
 function warn(message: string) {
-  // At most once a minute, and never with the key or full URL in it.
+  // At most once a minute, and never with the token in it.
   if (Date.now() - lastWarn < 60_000) return
   lastWarn = Date.now()
-  console.warn(`[stake-api] ${message} — falling back to the CSV`)
+  console.warn(`[stake-api] ${message} — falling back to the CSV file`)
 }
 
-// ── Reading whatever comes back ──
-
-const NAME_KEYS = ['username', 'userName', 'user_name', 'name', 'nickname', 'displayName', 'player', 'playerName']
-const WAGER_KEYS = [
-  'wagered', 'wager', 'wagerAmount', 'wager_amount', 'wageredAmount', 'wagered_amount',
-  'totalWagered', 'total_wagered', 'totalWager', 'weightedWagered', 'weighted_wagered',
-  'volume', 'amount', 'value', 'usd',
-]
-
-function toNumber(v: unknown): number | null {
-  if (typeof v === 'number') return Number.isFinite(v) ? v : null
-  if (typeof v === 'string') {
-    const n = Number(v.replace(/[$,\s]/g, ''))
-    return Number.isFinite(n) ? n : null
+/** Splits one CSV line, honouring "quoted, fields". */
+function splitCsvLine(line: string) {
+  const out: string[] = []
+  let cur = ''
+  let quoted = false
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i]
+    if (ch === '"') {
+      if (quoted && line[i + 1] === '"') {
+        cur += '"'
+        i++
+      } else quoted = !quoted
+    } else if (ch === ',' && !quoted) {
+      out.push(cur)
+      cur = ''
+    } else cur += ch
   }
-  return null
+  out.push(cur)
+  return out.map((s) => s.trim())
 }
 
-function pickName(o: Record<string, unknown>): string | null {
-  for (const k of NAME_KEYS) {
-    const v = o[k]
-    if (typeof v === 'string' && v.trim()) return v.trim()
-  }
-  // Nested, e.g. { user: { name } }
-  for (const k of ['user', 'player', 'account']) {
-    const v = o[k]
-    if (v && typeof v === 'object') {
-      const n = pickName(v as Record<string, unknown>)
-      if (n) return n
-    }
-  }
-  return null
-}
+/**
+ * Reads Stake's leaderboard CSV. Columns are found by header name, so a
+ * reordered or extended CSV still reads correctly. Returns null if the
+ * header isn't recognisable.
+ */
+export function parseStakeLeaderboardCsv(text: string, amount: 'weighted' | 'wagered' = 'weighted'): Competitor[] | null {
+  const lines = text.replace(/^﻿/, '').split(/\r?\n/).filter((l) => l.trim())
+  if (!lines.length) return null
+  const header = splitCsvLine(lines[0]).map((h) => h.toLowerCase())
+  const nameCol = header.findIndex((h) => h === 'user_name' || h === 'username' || h === 'user')
+  const weightedCol = header.findIndex((h) => h.startsWith('total_weighted'))
+  const wageredCol = header.findIndex((h) => h.startsWith('total_wagered'))
+  const amountCol = amount === 'wagered' ? (wageredCol >= 0 ? wageredCol : weightedCol) : weightedCol >= 0 ? weightedCol : wageredCol
+  if (nameCol < 0 || amountCol < 0) return null
 
-function pickWager(o: Record<string, unknown>): number | null {
-  for (const k of WAGER_KEYS) {
-    const n = toNumber(o[k])
-    if (n !== null) return n
-  }
-  for (const k of ['stats', 'wagers', 'totals']) {
-    const v = o[k]
-    if (v && typeof v === 'object' && !Array.isArray(v)) {
-      const n = pickWager(v as Record<string, unknown>)
-      if (n !== null) return n
-    }
-  }
-  return null
-}
-
-/** The first array in the response whose items look like players. */
-function findRows(data: unknown, depth = 0): Record<string, unknown>[] | null {
-  if (depth > 5 || !data) return null
-  if (Array.isArray(data)) {
-    const objs = data.filter((x): x is Record<string, unknown> => !!x && typeof x === 'object')
-    if (objs.length && objs.some((o) => pickName(o) && pickWager(o) !== null)) return objs
-    for (const x of objs) {
-      const found = findRows(x, depth + 1)
-      if (found) return found
-    }
-    return null
-  }
-  if (typeof data === 'object') {
-    for (const v of Object.values(data as Record<string, unknown>)) {
-      const found = findRows(v, depth + 1)
-      if (found) return found
-    }
-  }
-  return null
-}
-
-export function parseStakeResponse(data: unknown): Competitor[] | null {
-  const rows = findRows(data)
-  if (!rows) return null
-  // Merge duplicate names (some APIs return one row per day or per game).
+  // Merge any repeated names (e.g. one row per campaign).
   const totals = new Map<string, number>()
-  for (const o of rows) {
-    const name = pickName(o)
-    const wager = pickWager(o)
-    if (!name || wager === null) continue
-    totals.set(name, (totals.get(name) ?? 0) + wager)
+  for (const line of lines.slice(1)) {
+    const cells = splitCsvLine(line)
+    const name = cells[nameCol]
+    const value = Number((cells[amountCol] ?? '').replace(/[$,\s]/g, ''))
+    if (!name || !Number.isFinite(value)) continue
+    totals.set(name, (totals.get(name) ?? 0) + value)
   }
   return Array.from(totals, ([name, wagered]) => ({ name, wagered }))
     .sort((a, b) => b.wagered - a.wagered)
@@ -144,45 +102,46 @@ export function parseStakeResponse(data: unknown): Competitor[] | null {
 }
 
 /**
- * Standings for the race window from Stake's API, or null to fall back to the
- * CSV. Cached for a minute so page loads and the roller's polling don't each
- * call Stake.
+ * Standings for the race window from Stake, or null to fall back to the CSV
+ * file. Cached for a minute so page loads and the roller's polling don't
+ * each call Stake.
  */
 export async function fetchStakeStandings(startsAt: number, endsAt: number): Promise<Competitor[] | null> {
-  const key = process.env.STAKE_API_KEY
-  if (!key) return null
+  const token = process.env.STAKE_API_KEY
+  if (!token) return null
 
-  const cacheKey = `${startsAt}-${endsAt}`
+  const amount = process.env.STAKE_LEADERBOARD_AMOUNT === 'wagered' ? 'wagered' : 'weighted'
+  const end = Math.min(endsAt - 1, Date.now())
+  if (end < startsAt) return null // the race hasn't started yet
+  const cacheKey = `${startsAt}-${endsAt}-${amount}`
   if (cache && cache.key === cacheKey && Date.now() - cache.at < CACHE_MS) return cache.rows
 
   const url = new URL(process.env.STAKE_API_URL || DEFAULT_URL)
-  url.searchParams.set(process.env.STAKE_API_FROM_PARAM || 'from', formatDate(startsAt))
-  url.searchParams.set(process.env.STAKE_API_TO_PARAM || 'to', formatDate(Math.min(endsAt, Date.now())))
-  if (process.env.STAKE_API_KEY_PARAM) url.searchParams.set(process.env.STAKE_API_KEY_PARAM, key)
+  url.searchParams.set('timePeriod', 'customRange')
+  url.searchParams.set('startDate', String(startsAt))
+  url.searchParams.set('endDate', String(end))
+  url.searchParams.set('isStakeExclusive', 'false')
+  url.searchParams.set('limit', String(ROWS))
+  url.searchParams.set('offset', '0')
+  if (process.env.STAKE_CAMPAIGN_IDS) url.searchParams.set('campaignIds', process.env.STAKE_CAMPAIGN_IDS)
 
-  const where = `${url.origin}${url.pathname}`
   let rows: Competitor[] | null = null
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS)
   try {
     const res = await fetch(url, {
-      headers: {
-        accept: 'application/json',
-        authorization: `Bearer ${key}`,
-        'x-api-key': key,
-        'x-access-token': key,
-      },
+      headers: { 'x-access-token': token, accept: 'text/csv' },
       cache: 'no-store',
       signal: ctrl.signal,
     })
     if (!res.ok) {
-      warn(`${where} returned HTTP ${res.status}`)
+      warn(`Stake returned HTTP ${res.status}${res.status === 401 || res.status === 403 ? ' (check STAKE_API_KEY)' : ''}`)
     } else {
-      rows = parseStakeResponse(await res.json())
-      if (!rows) warn(`${where} replied, but no player/wager list was found in the response`)
+      rows = parseStakeLeaderboardCsv(await res.text(), amount)
+      if (!rows) warn('Stake replied, but the CSV had no user_name / amount columns')
     }
   } catch (e) {
-    warn(`${where} failed: ${e instanceof Error ? e.name : 'error'}`)
+    warn(`couldn't reach Stake (${e instanceof Error ? e.name : 'error'})`)
   } finally {
     clearTimeout(timer)
   }

@@ -1,11 +1,13 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import { RACE } from './site'
+import { fetchStakeStandings } from './stakeApi'
 
-// Standings for FinBuck's monthly Stake race, read from a CSV.
+// Standings for FinBuck's monthly Stake race.
 //
-// Stake has no public race page to read from (Gamba did), so standings come
-// from FinBuck's affiliate dashboard as a CSV export:
+// When STAKE_API_KEY is set on the server, standings come live from Stake's
+// affiliate wager-stats API (see lib/stakeApi.ts). Otherwise, or whenever
+// that call fails, they come from FinBuck's affiliate dashboard as a CSV:
 //
 //   data/leaderboard.csv            the real file — lives on the server only
 //   data/leaderboard.sample.csv     placeholder names, used until it exists
@@ -30,10 +32,12 @@ export type Standings = {
   endsAt: number
   /** True before the first race has begun. */
   upcoming: boolean
-  /** When the CSV was last replaced, epoch ms. */
+  /** When the standings were last refreshed (API fetch, or CSV replaced), epoch ms. */
   updatedAt: number | null
-  /** Placeholder data is showing — the real CSV hasn't been added yet. */
+  /** Placeholder data is showing — no API data and no real CSV. */
   isSample: boolean
+  /** Where the standings came from. */
+  source: 'api' | 'csv' | 'sample'
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data')
@@ -96,6 +100,16 @@ export function parseCsv(text: string): Competitor[] {
 
 export async function getStandings(): Promise<Standings> {
   const race = raceWindow()
+
+  // Live from Stake when the API is configured and answers; before the first
+  // race starts there's nothing to fetch yet.
+  if (!race.upcoming) {
+    const live = await fetchStakeStandings(race.startsAt, race.endsAt)
+    if (live) {
+      return { prizePool: RACE.prizePool, prizes: PRIZES, competitors: live, updatedAt: Date.now(), isSample: false, source: 'api', ...race }
+    }
+  }
+
   let competitors: Competitor[] = []
   let updatedAt: number | null = null
   let isSample = false
@@ -115,7 +129,7 @@ export async function getStandings(): Promise<Standings> {
     }
   }
 
-  return { prizePool: RACE.prizePool, prizes: PRIZES, competitors, updatedAt, isSample, ...race }
+  return { prizePool: RACE.prizePool, prizes: PRIZES, competitors, updatedAt, isSample, source: isSample ? 'sample' : 'csv', ...race }
 }
 
 /**

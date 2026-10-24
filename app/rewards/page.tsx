@@ -4,15 +4,16 @@ import CopyButton from '../../components/CopyButton'
 import CountUp from '../../components/CountUp'
 import HeadingGifts from '../../components/HeadingGifts'
 import PageHeader from '../../components/PageHeader'
+import PlatformSwitch from '../../components/PlatformSwitch'
 import Panel from '../../components/Panel'
 import Reveal from '../../components/Reveal'
 import { PartnerWordmark } from '../../components/PartnerLogo'
-import { CODE, PARTNER, RACE, SIGNUP_URL, SOCIALS } from '../../lib/site'
+import { CODE, PARTNER, PARTNER_US, RACE, SIGNUP_URL, SIGNUP_URL_US, SOCIALS } from '../../lib/site'
 import { usd } from '../../lib/leaderboard'
 
 export const metadata: Metadata = {
   title: 'Rewards — FinBuck',
-  description: `Everything you unlock playing under code ${CODE} on ${PARTNER.name}.`,
+  description: `Everything you unlock playing under code ${CODE} on ${PARTNER.name} and ${PARTNER_US.name}.`,
 }
 
 type Perk = {
@@ -44,6 +45,14 @@ const PERKS: Perk[] = [
     title: 'Double weeklies',
     desc: "Your Stake weekly bonus is doubled while you play under code BUCK: twice the weekly reload, every week, just for playing.",
     steps: ['Wager through the week', 'Claim your doubled weekly'],
+  },
+  {
+    tag: 'Every bet',
+    lead: '3.5%',
+    title: 'Rakeback',
+    desc: 'A share of every bet you place comes back to you, on everything you play under code BUCK.',
+    steps: ['Play any game on Stake', 'Rakeback builds as you bet'],
+    gold: true,
   },
   {
     tag: 'Every rank-up',
@@ -95,13 +104,155 @@ const PERKS: Perk[] = [
 
 const smallCut = 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)'
 
+/** Shown on both the Stake.com and Stake.us sides: help setting up an account. */
+function AccountHelp({ site }: { site: string }) {
+  return (
+    <Reveal>
+      <div className="mx-auto mt-16 max-w-5xl">
+        <Panel innerClassName="flex flex-col items-start gap-6 p-7 sm:flex-row sm:items-center sm:p-8">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center bg-[#5865F2]/20 text-[#8B9CFF]" style={{ clipPath: smallCut }}>
+            <svg viewBox="0 0 24 24" fill="currentColor" className="h-7 w-7" aria-hidden>
+              <path d="M20.3 4.4A19.8 19.8 0 0015.4 3l-.6 1.3a18.3 18.3 0 00-5.5 0L8.7 3a19.7 19.7 0 00-4.9 1.4C.6 9-.3 13.6.1 18.1a19.9 19.9 0 006 3l1.2-2a13 13 0 01-1.9-.9l.4-.3a14.2 14.2 0 0012.1 0l.4.3c-.6.4-1.2.7-1.9.9l1.2 2a19.8 19.8 0 006-3c.5-5.2-.8-9.7-3.5-13.7zM8 15.3c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4z" />
+            </svg>
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 className="font-display text-[2rem] leading-none text-white">Need help creating your account?</h2>
+            <p className="mt-2 text-[15px] leading-relaxed text-muted">
+              Open a ticket in the FinBuckers Discord and a mod will walk you through signing up on {site} with code {CODE}.
+            </p>
+          </div>
+          <Button href={SOCIALS.discord.href} external variant="outline" className="w-full shrink-0 sm:w-auto">
+            Open a Discord ticket
+          </Button>
+        </Panel>
+      </div>
+    </Reveal>
+  )
+}
+
+// Stake.us: the social-casino side. Same code, its own sign-up offer.
+const US_OFFERS: { lead: string; title: string; desc: string; gold?: boolean }[] = [
+  { lead: '3.5%', title: 'Rakeback', desc: 'A share of every play comes back to you, on everything you play under code BUCK.' },
+  { lead: '$25', title: 'Stake Cash', desc: 'Free Stake Cash added to your account when you sign up with code BUCK.', gold: true },
+  { lead: '250K', title: 'Gold Coins', desc: 'A quarter of a million Gold Coins to play with from day one.' },
+]
+
+function StakeUsWordmark({ className = 'h-10' }: { className?: string }) {
+  return (
+    <span className="inline-flex items-end gap-1">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/stake-logo.svg" alt="Stake" className={`${className} w-auto`} />
+      <span className="font-display mb-[0.2em] text-[1.6rem] leading-none text-gold">.us</span>
+    </span>
+  )
+}
+
+function StakeUsRewards() {
+  return (
+    <>
+      {/* Hero offer: the three numbers together, with the code and sign-up */}
+      <Reveal>
+        <div className="mx-auto mt-12 max-w-5xl">
+          <Panel tone="gold" innerClassName="grid gap-8 p-8 sm:p-10 lg:grid-cols-[1.25fr_1fr] lg:items-center">
+            <div>
+              <StakeUsWordmark />
+              <h2 className="font-display mt-5 text-[clamp(2.6rem,6vw,3.6rem)] leading-[0.9] text-white">
+                Sign up with code <span className="text-gold">{CODE}</span> and get
+              </h2>
+              <div className="mt-6 grid grid-cols-3 gap-3">
+                {US_OFFERS.map((o) => (
+                  <div key={o.title} className="min-w-0 bg-[#0B0E2A] px-1.5 py-4 text-center sm:px-3" style={{ clipPath: smallCut }}>
+                    <p className={`font-display text-[clamp(2rem,5vw,2.8rem)] leading-none ${o.gold ? 'text-gold' : 'text-accent-bright'}`}>{o.lead}</p>
+                    <p className="mt-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-muted sm:text-[11px] sm:tracking-[0.18em]">{o.title}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-5">
+              <div className="flex items-center justify-between gap-3 bg-[#0B0E2A] px-5 py-4" style={{ clipPath: smallCut }}>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-faint">Use code</p>
+                  <p className="font-display text-[2.4rem] leading-none text-gold">{CODE}</p>
+                </div>
+                <CopyButton code={CODE} />
+              </div>
+              <Button href={SIGNUP_URL_US} external sponsored variant="gold" className="w-full">
+                Sign up on {PARTNER_US.name}
+              </Button>
+            </div>
+          </Panel>
+        </div>
+      </Reveal>
+
+      {/* The three offers, each as its own card */}
+      <div className="mx-auto mt-16 max-w-6xl">
+        <Reveal>
+          <h2 className="font-display text-[clamp(2.8rem,7vw,4.5rem)] leading-[0.9] text-white">
+            <span className="relative inline-block">
+              Your <span className="text-gold">{PARTNER_US.name}</span> welcome
+              <HeadingGifts side="right" variant={1} />
+            </span>
+          </h2>
+          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-muted sm:text-base">
+            All three come with code {CODE}, on top of {PARTNER_US.name}&apos;s own bonuses.
+          </p>
+        </Reveal>
+
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {US_OFFERS.map((o, i) => (
+            <Reveal key={o.title} delay={i * 80} className="h-full">
+              <Panel tone={o.gold ? 'gold' : 'default'} className="h-full" innerClassName="flex h-full flex-col p-7 sm:p-8">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0"
+                  style={{ background: `radial-gradient(90% 55% at 30% 0%, ${o.gold ? 'rgba(255,200,61,0.10)' : 'rgba(0,255,135,0.09)'}, transparent 70%)` }}
+                />
+                <div className="relative flex h-full flex-col">
+                  <span
+                    className={`self-start px-3 py-1 text-[12px] font-bold ${o.gold ? 'bg-gold/[0.12] text-gold' : 'bg-accent/[0.12] text-accent-bright'}`}
+                    style={{ clipPath: smallCut }}
+                  >
+                    With code {CODE}
+                  </span>
+                  <span className={`font-display mt-6 text-[4.2rem] leading-none ${o.gold ? 'text-gold' : 'text-accent-bright'}`}>{o.lead}</span>
+                  <h3 className="font-display mt-2 text-[2rem] leading-none text-white">{o.title}</h3>
+                  <p className="mt-4 text-[15px] leading-relaxed text-muted">{o.desc}</p>
+                  <div className="mt-auto pt-8">
+                    <Button href={SIGNUP_URL_US} external sponsored variant={o.gold ? 'gold' : 'primary'} className="w-full">
+                      Claim on {PARTNER_US.name}
+                    </Button>
+                  </div>
+                </div>
+              </Panel>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+
+      <AccountHelp site={PARTNER_US.name} />
+
+      <Reveal>
+        <p className="mx-auto mt-14 max-w-md text-center text-[12px] leading-relaxed text-faint">
+          Offers apply to {PARTNER_US.name} accounts registered under code {CODE}. {PARTNER_US.name} is a social casino. No
+          purchase necessary; void where prohibited. 18+ · Play responsibly.
+        </p>
+      </Reveal>
+    </>
+  )
+}
+
 export default function RewardsPage() {
   return (
     <div className="px-6 pb-24 pt-[72px]">
       <PageHeader eyebrow={`FinBuck × ${PARTNER.name}`} title={<>Rewards <span className="text-accent-bright">&amp; perks</span></>}>
-        Everything you unlock playing under code {CODE}: the monthly leaderboard, double weeklies, boosted
-        rank-ups and the stream giveaways.
+        Everything you unlock playing under code {CODE}. Pick your Stake below.
       </PageHeader>
+
+      <PlatformSwitch
+        us={<StakeUsRewards />}
+        com={
+          <>
 
       {/* The two calls to action share a row: the headline prize and the
           sign-up. Everything below depends on one of these two. */}
@@ -174,13 +325,13 @@ export default function RewardsPage() {
           </div>
         </Reveal>
 
-        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 flex flex-wrap justify-center gap-5">
           {PERKS.map((p, i) => {
             const c = p.gold
               ? { text: 'text-gold', chip: 'bg-gold/[0.12] text-gold', tick: 'bg-gold/[0.14] text-gold', glow: 'rgba(255,200,61,0.10)', ribbon: '#FFC83D' }
               : { text: 'text-accent-bright', chip: 'bg-accent/[0.12] text-accent-bright', tick: 'bg-accent/[0.14] text-accent-bright', glow: 'rgba(0,255,135,0.09)', ribbon: '#00FF87' }
             return (
-              <Reveal key={p.title} delay={(i % 3) * 80} className="h-full">
+              <Reveal key={p.title} delay={(i % 3) * 80} className="w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)]">
                 <Panel tone={p.ribbon ? (p.gold ? 'gold' : 'accent') : 'default'} className="h-full" innerClassName="flex h-full flex-col p-7 sm:p-8">
                   {/* A soft wash of the card's colour from the top */}
                   <div
@@ -243,6 +394,8 @@ export default function RewardsPage() {
         </div>
       </div>
 
+      <AccountHelp site={PARTNER.name} />
+
       {/* Closing line */}
       <Reveal>
         <p className="mx-auto mt-14 max-w-md text-center text-[12px] leading-relaxed text-faint">
@@ -250,6 +403,9 @@ export default function RewardsPage() {
           {RACE.dayOfMonth}th of every month. 18+ · Gamble responsibly.
         </p>
       </Reveal>
+          </>
+        }
+      />
     </div>
   )
 }

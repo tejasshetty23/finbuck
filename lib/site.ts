@@ -11,6 +11,13 @@ export const CODE = 'BUCK'
 /** Stake's referral links take the code as `?c=`. */
 export const SIGNUP_URL = `${PARTNER.url}/?c=${CODE}`
 
+/** Stake.us, the US social casino. Same code, same referral link format. */
+export const PARTNER_US = {
+  name: 'Stake.us',
+  url: 'https://stake.us',
+} as const
+export const SIGNUP_URL_US = `${PARTNER_US.url}/?c=${CODE}`
+
 /**
  * The monthly race. FinBuck's Stake partnership starts on the 25th of October
  * 2026, and each race runs from the 25th to the 25th (00:00 UTC), rolling over

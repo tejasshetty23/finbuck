@@ -14,8 +14,11 @@ export const metadata: Metadata = {
   description: `FinBuck's monthly ${PARTNER.name} leaderboard: standings, prizes and countdown.`,
 }
 
-// Re-read the CSV at most once a minute, so a new upload shows without a deploy.
-export const revalidate = 60
+// Rendered fresh on every request. Not ISR (revalidate): Next 13.5 can cache a
+// 304 from a browser's conditional request as the page itself, after which
+// every visitor gets an empty 304. Standings are still fetched from Stake at
+// most once a minute (cached in lib/stakeApi.ts), so this costs nothing.
+export const dynamic = 'force-dynamic'
 
 const dateFmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
 const updatedFmt = new Intl.DateTimeFormat('en-US', {

@@ -16,8 +16,11 @@ import { getStandings, prizeFor, usd } from '../lib/leaderboard'
 // anything you read; glow reserved for the prize. Standings come from the
 // race CSV — see lib/leaderboard.ts.
 
-// Re-read the CSV at most once a minute, so a new upload shows without a deploy.
-export const revalidate = 60
+// Rendered fresh on every request. Not ISR (revalidate): Next 13.5 can cache a
+// 304 from a browser's conditional request as the page itself, after which
+// every visitor gets an empty 304. Standings are still fetched from Stake at
+// most once a minute (cached in lib/stakeApi.ts), so this costs nothing.
+export const dynamic = 'force-dynamic'
 
 const CUT = 18
 const chamfer = `polygon(${CUT}px 0, 100% 0, 100% calc(100% - ${CUT}px), calc(100% - ${CUT}px) 100%, 0 100%, 0 ${CUT}px)`

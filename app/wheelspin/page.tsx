@@ -9,9 +9,11 @@ import SpinWheel from '../../components/SpinWheel'
 import { SOCIALS } from '../../lib/site'
 import { getStandings, prizeFor } from '../../lib/leaderboard'
 
-// The leaderboard roller shows who holds the drawn place on the leaderboard, so
-// re-read the race CSV at most once a minute, like the leaderboard itself.
-export const revalidate = 60
+// Rendered fresh on every request. Not ISR (revalidate): Next 13.5 can cache a
+// 304 from a browser's conditional request as the page itself, after which
+// every visitor gets an empty 304. Standings are still fetched from Stake at
+// most once a minute (cached in lib/stakeApi.ts), so this costs nothing.
+export const dynamic = 'force-dynamic'
 
 const PRIZE_DEFAULTS = ['10$', '50$ Buy In', '20$', '10$ Buy In', '50$', '20$ Buy In']
 

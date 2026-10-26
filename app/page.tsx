@@ -226,7 +226,18 @@ export default async function Home() {
                   <Button href={SIGNUP_URL} external sponsored variant="ghost" className="w-full">
                     Play on {PARTNER.name}.com
                   </Button>
-                  <p className="mt-4 text-center text-[11px] leading-relaxed text-faint">
+                  <p className="mt-4 text-center text-[13px] leading-relaxed text-muted">
+                    Need help with your account?{' '}
+                    <a
+                      href={SOCIALS.discord.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-accent-bright underline-offset-2 hover:underline"
+                    >
+                      Open a ticket on Discord
+                    </a>
+                  </p>
+                  <p className="mt-3 text-center text-[11px] leading-relaxed text-faint">
                     18+ · Gamble responsibly · Support at{' '}
                     <a
                       href="https://www.gamblingtherapy.org"

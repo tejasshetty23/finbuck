@@ -7,7 +7,7 @@ import HeadingGifts from '../../components/HeadingGifts'
 import Podium from '../../components/Podium'
 import Reveal from '../../components/Reveal'
 import { CODE, PARTNER, SIGNUP_URL } from '../../lib/site'
-import { getStandings, maskName, ordinal, prizeFor, usd } from '../../lib/leaderboard'
+import { getStandings, ordinal, prizeFor, usd } from '../../lib/leaderboard'
 
 export const metadata: Metadata = {
   title: 'Leaderboard — FinBuck',
@@ -139,10 +139,10 @@ export default async function LeaderboardPage() {
                 <span className="font-display text-[1.35rem] leading-none text-muted tabular-nums">{ordinal(position)}</span>
                 <span className="flex min-w-0 items-center gap-2.5">
                   <span className="hidden sm:flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink-deep text-[11px] font-bold text-faint">
-                    {entry ? (maskName(entry.name)[0] ?? '?').toUpperCase() : '·'}
+                    {entry ? (entry.name[0] ?? '?').toUpperCase() : '·'}
                   </span>
                   <span className={`truncate font-semibold ${entry ? 'text-white' : 'text-faint'}`}>
-                    {entry ? maskName(entry.name) : 'Open spot'}
+                    {entry ? entry.name : 'Open spot'}
                   </span>
                 </span>
                 <span className="text-right font-semibold tabular-nums text-white/85">

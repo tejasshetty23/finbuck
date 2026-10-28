@@ -1,5 +1,5 @@
 import CountUp from './CountUp'
-import { usd, type Competitor } from '../lib/leaderboard'
+import { maskName, usd, type Competitor } from '../lib/leaderboard'
 
 /** Podium name size: full size up to 10 characters, then scaled down to fit. */
 function nameSize(name: string, first: boolean) {
@@ -103,12 +103,13 @@ function Card({ place, entry, prize }: { place: Place; entry: Competitor | null;
             </div>
           </div>
 
-          {/* Full username; long ones step down in size so every letter fits */}
+          {/* Masked username (the leaderboard roller shows it in full); long
+              ones step down in size so they fit */}
           <p
             className="font-display mt-4 max-w-full break-all px-3 leading-none text-white"
-            style={{ fontSize: nameSize(entry ? entry.name : 'Open spot', first) }}
+            style={{ fontSize: nameSize(entry ? maskName(entry.name) : 'Open spot', first) }}
           >
-            {entry ? entry.name : 'Open spot'}
+            {entry ? maskName(entry.name) : 'Open spot'}
           </p>
 
           <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.22em] text-[#9AA0C8]">Weighted wager</p>

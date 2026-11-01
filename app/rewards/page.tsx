@@ -41,8 +41,10 @@ const PERKS: Perk[] = [
     tag: 'Every week',
     lead: '2x',
     title: 'Double weeklies',
-    desc: "Your Stake weekly bonus is doubled while you play under code BUCK: twice the weekly reload, every week, just for playing.",
-    steps: ['Wager through the week', 'Claim your doubled weekly'],
+    desc: 'Your Stake weekly bonus is doubled while you play under code BUCK. Minimum weekly $3, doubled payout capped at $500.',
+    steps: ['Minimum weekly bonus of $3', 'Doubled payout capped at $500', 'Open a Discord ticket to claim'],
+    cta: 'Claim on Discord',
+    href: SOCIALS.discord.href,
   },
   {
     tag: 'Every bet',

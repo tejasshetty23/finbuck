@@ -282,9 +282,9 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
       lede: 'Spin the wheel to see what the winner takes home.',
     },
     number: {
-      eyebrow: 'Pick a place',
+      eyebrow: 'Leaderboard draw',
       title: <>Leaderboard <span className="text-accent-bright">roller</span></>,
-      lede: 'Rolls a place on the monthly leaderboard and shows who holds it.',
+      lede: 'Roll a place on the monthly leaderboard, or draw anyone over a wager amount.',
     },
   }
   const t = titles[view]

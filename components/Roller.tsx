@@ -140,12 +140,17 @@ interface RollerProps {
   winnerMessages?: { text: string; at: number }[]
   // Called when a winner is revealed so the parent can remove them from the pool.
   onPick?: (name: string) => void
+  // Show the 30s chat presence check in the winner popup (off when the pool
+  // isn't from chat, e.g. the leaderboard roller's wager mode).
+  presenceCheck?: boolean
+  // Optional line under the winner's name, looked up by name.
+  details?: Record<string, string>
 }
 
 // Seconds the winner-presence chat window stays open.
 const WATCH_SECONDS = 30
 
-export default function Roller({ items, winWord = 'Winner', placeholderCount = 10, onWatch, winnerMessages = [], onPick }: RollerProps) {
+export default function Roller({ items, winWord = 'Winner', placeholderCount = 10, onWatch, winnerMessages = [], onPick, presenceCheck = true, details }: RollerProps) {
   const pool = items
 
   const [strip, setStrip] = useState<string[]>([])
@@ -384,7 +389,10 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
           </div>
           <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-accent-bright">{winWord}</p>
           <p className="font-display mt-1 break-words text-[2.8rem] leading-none text-white">{winner}</p>
+          {details?.[winner] && <p className="mt-2 text-sm font-semibold text-accent-bright">{details[winner]}</p>}
 
+          {presenceCheck && (
+          <>
           {/* Presence check — live chat from the winner for 30s */}
           <div className="mt-5 text-left">
             <div className="mb-2 flex items-center justify-between">
@@ -413,6 +421,8 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
               <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.2em] text-accent-bright">✓ Active in chat</p>
             )}
           </div>
+          </>
+          )}
 
           <div className="mt-5 flex gap-3">
             <Button

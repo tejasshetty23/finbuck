@@ -42,7 +42,9 @@ export default async function LeaderboardPage() {
   // Each row's bar is its wager as a share of the leader's, so the table
   // doubles as a chart of how far the field is behind.
   const topWager = competitors[0]?.wagered ?? 0
-  const lastRow = Math.max(prizes.length, competitors.length)
+  // At most the top 100: the feed can hold up to 2,000 players (for the
+  // leaderboard roller's wager mode), far more than the table should show.
+  const lastRow = Math.min(100, Math.max(prizes.length, competitors.length))
   const rows = Array.from({ length: Math.max(0, lastRow - 3) }, (_, i) => {
     const position = i + 4
     return { position, entry: competitors.find((c) => c.position === position) ?? null, prize: prizeFor(prizes, position) }

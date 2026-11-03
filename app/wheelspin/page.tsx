@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import Button from '../../components/Button'
 import LiveSubscriberWheel from '../../components/LiveSubscriberWheel'
-import NumberRoller from '../../components/NumberRoller'
+import LeaderboardRoller from '../../components/LeaderboardRoller'
 import Panel from '../../components/Panel'
 import Reveal from '../../components/Reveal'
 import SectionHeading from '../../components/SectionHeading'
@@ -71,9 +71,9 @@ export default async function WheelSpinPage() {
         <Suspense fallback={null}>
           <LiveSubscriberWheel
             numberPicker={
-              <div className="mx-auto w-full max-w-2xl">
+              <div className="mx-auto w-full max-w-3xl">
                 <Panel tone="accent" innerClassName="p-7 sm:p-10">
-                  <NumberRoller min={1} max={race.prizes.length} places={places} paidPlaces={race.prizes.length} />
+                  <LeaderboardRoller places={places} paidPlaces={race.prizes.length} />
                 </Panel>
               </div>
             }

@@ -31,7 +31,10 @@
 import type { Competitor } from './leaderboard'
 
 const DEFAULT_URL = 'https://api.stake.com/affiliate/leaderboard'
-const ROWS = 100 // the board shows every competitor; the top 10 are paid
+const ROWS = 100 // rows per page
+// Pages fetched per refresh: up to 2,000 players, so the leaderboard roller's
+// wager mode sees everyone over its threshold, not just the top 100.
+const MAX_PAGES = 20
 const TIMEOUT_MS = 10_000
 const CACHE_MS = 60_000
 
@@ -122,28 +125,49 @@ export async function fetchStakeStandings(startsAt: number, endsAt: number): Pro
   url.searchParams.set('endDate', String(end))
   url.searchParams.set('isStakeExclusive', 'false')
   url.searchParams.set('limit', String(ROWS))
-  url.searchParams.set('offset', '0')
   if (process.env.STAKE_CAMPAIGN_IDS) url.searchParams.set('campaignIds', process.env.STAKE_CAMPAIGN_IDS)
 
-  let rows: Competitor[] | null = null
-  const ctrl = new AbortController()
-  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS)
-  try {
-    const res = await fetch(url, {
-      headers: { 'x-access-token': token, accept: 'text/csv' },
-      cache: 'no-store',
-      signal: ctrl.signal,
-    })
-    if (!res.ok) {
-      warn(`Stake returned HTTP ${res.status}${res.status === 401 || res.status === 403 ? ' (check STAKE_API_KEY)' : ''}`)
-    } else {
-      rows = parseStakeLeaderboardCsv(await res.text(), amount)
-      if (!rows) warn('Stake replied, but the CSV had no user_name / amount columns')
+  // Page through the board until a short page says there's no more. The CSV
+  // pages are stitched under the first page's header and parsed once, so
+  // ranking and duplicate-merging happen across the whole list. If a later
+  // page fails, the pages already fetched are still used.
+  let header: string | null = null
+  const lines: string[] = []
+  let failed = false
+  for (let page = 0; page < MAX_PAGES; page++) {
+    url.searchParams.set('offset', String(page * ROWS))
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS)
+    try {
+      const res = await fetch(url, {
+        headers: { 'x-access-token': token, accept: 'text/csv' },
+        cache: 'no-store',
+        signal: ctrl.signal,
+      })
+      if (!res.ok) {
+        warn(`Stake returned HTTP ${res.status}${res.status === 401 || res.status === 403 ? ' (check STAKE_API_KEY)' : ''}`)
+        failed = page === 0
+        break
+      }
+      const pageLines = (await res.text()).replace(/^﻿/, '').split(/\r?\n/).filter((l) => l.trim())
+      if (!pageLines.length) break
+      if (header === null) header = pageLines[0]
+      const data = pageLines.slice(1)
+      lines.push(...data)
+      if (data.length < ROWS) break
+    } catch (e) {
+      warn(`couldn't reach Stake (${e instanceof Error ? e.name : 'error'})`)
+      failed = page === 0
+      break
+    } finally {
+      clearTimeout(timer)
     }
-  } catch (e) {
-    warn(`couldn't reach Stake (${e instanceof Error ? e.name : 'error'})`)
-  } finally {
-    clearTimeout(timer)
+  }
+
+  let rows: Competitor[] | null = null
+  if (!failed && header !== null) {
+    rows = parseStakeLeaderboardCsv([header, ...lines].join('\n'), amount)
+    if (!rows) warn('Stake replied, but the CSV had no user_name / amount columns')
   }
 
   cache = { key: cacheKey, at: Date.now(), rows }

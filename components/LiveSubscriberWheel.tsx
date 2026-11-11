@@ -385,7 +385,7 @@ export default function LiveSubscriberWheel({ prizeWheel, numberPicker }: { priz
               </Button>
             </div>
             <div className="flex w-full items-center justify-center">
-              <Roller items={rollerItems} winWord="Congrats!" onWatch={watchWinner} winnerMessages={winnerMessages} onPick={removeEntrant} />
+              <Roller items={rollerItems} winWord="Congrats!" onWatch={watchWinner} winnerMessages={winnerMessages} onPick={removeEntrant} cooldown />
             </div>
           </Panel>
         </div>

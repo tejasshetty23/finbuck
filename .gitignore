@@ -47,3 +47,6 @@ node_modules
 # rendered) on a public repo — upload it to the server, never commit it.
 # data/leaderboard.sample.csv is the committed placeholder.
 /data/leaderboard.csv
+# Giveaway picker cooldown (recent winners), written by the server at runtime.
+/data/giveaway-cooldown.json
+/data/giveaway-cooldown.json.tmp

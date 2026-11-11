@@ -145,9 +145,9 @@ interface RollerProps {
   presenceCheck?: boolean
   // Optional line under the winner's name, looked up by name.
   details?: Record<string, string>
-  // Giveaway cooldown: the server leaves out anyone who won one of the last 7
-  // giveaway rolls, and the list survives refreshes. Shown under the Roll
-  // button with a Clear option.
+  // Giveaway cooldown: the server quietly leaves out anyone who won one of
+  // the last 7 giveaway rolls; the list survives refreshes. Nothing about it
+  // is shown on the page.
   cooldown?: boolean
 }
 
@@ -165,24 +165,6 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
   const [secondsLeft, setSecondsLeft] = useState(WATCH_SECONDS)
 
   const [pickError, setPickError] = useState('')
-  // Recent giveaway winners still on cooldown (most recent last).
-  const [recent, setRecent] = useState<string[]>([])
-  useEffect(() => {
-    if (!cooldown) return
-    fetch('/api/roll', { cache: 'no-store' })
-      .then((r) => r.json())
-      .then((d: { recent?: string[] }) => Array.isArray(d.recent) && setRecent(d.recent))
-      .catch(() => {})
-  }, [cooldown])
-  async function clearRecent() {
-    try {
-      const d = (await (await fetch('/api/roll', { method: 'DELETE' })).json()) as { recent?: string[] }
-      setRecent(Array.isArray(d.recent) ? d.recent : [])
-      setPickError('')
-    } catch {
-      /* leave the list showing; try again */
-    }
-  }
   const busyRef = useRef(false)
   const stripRef = useRef<HTMLDivElement>(null)
   const startRef = useRef(0)
@@ -288,8 +270,7 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ entrants: order, exclude: exclude ?? null, cooldown }),
       })
-      const data = (await res.json()) as { winner?: string; error?: string; recent?: string[] }
-      if (Array.isArray(data.recent)) setRecent(data.recent)
+      const data = (await res.json()) as { winner?: string; error?: string }
       if (!res.ok || !data.winner) {
         busyRef.current = false
         setPickError(data.error ?? 'Could not pick a winner — check the connection and try again.')
@@ -378,28 +359,6 @@ export default function Roller({ items, winWord = 'Winner', placeholderCount = 1
       </Button>
 
       {pickError && <p className="mt-3 max-w-md text-center text-xs text-red-300">{pickError}</p>}
-
-      {cooldown && recent.length > 0 && (
-        <div className="mt-4 flex max-w-2xl flex-wrap items-center justify-center gap-2 text-xs text-muted">
-          <span className="font-bold uppercase tracking-[0.2em] text-faint">On cooldown</span>
-          {[...recent].reverse().map((name, i) => (
-            <span key={`${name}-${i}`} className="rounded-full border border-white/10 bg-[#080A20] px-2.5 py-1 text-white">
-              {name}
-            </span>
-          ))}
-          <button
-            type="button"
-            onClick={clearRecent}
-            disabled={rolling}
-            className="font-bold text-accent-bright underline-offset-2 hover:underline disabled:opacity-50"
-          >
-            Clear
-          </button>
-          <span className="w-full text-center text-[11px] text-faint">
-            Recent winners can&apos;t be drawn again until 7 more giveaway rolls have happened.
-          </span>
-        </div>
-      )}
 
       {/* Win popup */}
       {showWin && winner && (

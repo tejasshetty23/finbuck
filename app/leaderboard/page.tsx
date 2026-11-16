@@ -163,6 +163,25 @@ export default async function LeaderboardPage() {
             {race.updatedAt !== null && !race.isSample && <> · Updated {updatedFmt.format(race.updatedAt)} UTC</>}
             {' · '}Wagers as reported by {PARTNER.name}.
           </p>
+
+          {/* Terms: how wagers are counted and when prizes are paid */}
+          <div className="mx-auto mt-8 grid max-w-3xl gap-3 sm:grid-cols-2">
+            <div className="bg-ink-raised/70 p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.07)]" style={{ clipPath: 'polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)' }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-accent-bright">Weighted wagers</p>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted">
+                Rankings use {PARTNER.name}&apos;s weighted wager, not the raw amount bet. Games with a lower house edge
+                count for less of each bet than slots, so the same spend can score differently depending on what you
+                play. Weighting is calculated by {PARTNER.name}.
+              </p>
+            </div>
+            <div className="bg-ink-raised/70 p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.07)]" style={{ clipPath: 'polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)' }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gold">Prize payouts</p>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted">
+                Prizes are paid 3–5 days after the leaderboard ends, once {PARTNER.name} has completed its checks on the
+                final standings. Accounts found breaking {PARTNER.name}&apos;s terms may be disqualified.
+              </p>
+            </div>
+          </div>
         </Reveal>
       </section>
     </div>

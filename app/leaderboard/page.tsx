@@ -169,10 +169,27 @@ export default async function LeaderboardPage() {
             <div className="bg-ink-raised/70 p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.07)]" style={{ clipPath: 'polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)' }}>
               <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-accent-bright">Weighted wagers</p>
               <p className="mt-2 text-[13px] leading-relaxed text-muted">
-                Rankings use {PARTNER.name}&apos;s weighted wager, not the raw amount bet. Games with a lower house edge
-                count for less of each bet than slots, so the same spend can score differently depending on what you
-                play. Weighting is calculated by {PARTNER.name}.
+                Rankings use {PARTNER.name}&apos;s weighted wager, not the raw amount bet. How much of each bet counts
+                depends on the game&apos;s RTP:
               </p>
+              <ul className="mt-4 divide-y divide-white/[0.06] overflow-hidden rounded-lg bg-[#080A20]/70 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]">
+                {[
+                  { rtp: '≤ 98%', note: 'Standard games, full credit', credit: '100%', color: '#00FF87' },
+                  { rtp: '98% to 99%', note: 'Higher RTP, reduced credit', credit: '50%', color: '#FFC83D' },
+                  { rtp: '≥ 99%', note: 'Highest RTP, heavily reduced', credit: '10%', color: '#FF6B6B' },
+                ].map((t) => (
+                  <li key={t.rtp} className="flex items-center gap-3 px-3.5 py-3">
+                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: t.color, boxShadow: `0 0 8px ${t.color}` }} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-bold text-white">{t.rtp} RTP</span>
+                      <span className="block text-[12px] text-muted">{t.note}</span>
+                    </span>
+                    <span className="font-display shrink-0 text-[1.6rem] leading-none" style={{ color: t.color }}>
+                      {t.credit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
             <div className="bg-ink-raised/70 p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.07)]" style={{ clipPath: 'polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px)' }}>
               <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gold">Prize payouts</p>

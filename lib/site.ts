@@ -62,3 +62,6 @@ export const MILESTONES = [
   { wager: 1_000_000, reward: 1_500, tier: 'gold' },
   { wager: 2_500_000, reward: 3_000, tier: 'gold' },
 ] as const
+
+/** Total of all milestone rewards, rounded down to the nearest $500 ("over $5,500"). */
+export const MILESTONES_OVER = Math.floor(MILESTONES.reduce((a, m) => a + m.reward, 0) / 500) * 500

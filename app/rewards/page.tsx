@@ -9,7 +9,7 @@ import PlatformSwitch from '../../components/PlatformSwitch'
 import Panel from '../../components/Panel'
 import Reveal from '../../components/Reveal'
 import { PartnerWordmark } from '../../components/PartnerLogo'
-import { CODE, MILESTONES, PARTNER, PARTNER_US, RACE, SIGNUP_URL, SIGNUP_URL_US, SOCIALS } from '../../lib/site'
+import { CODE, MILESTONES, MILESTONES_OVER, PARTNER, PARTNER_US, RACE, SIGNUP_URL, SIGNUP_URL_US, SOCIALS } from '../../lib/site'
 import { usd } from '../../lib/leaderboard'
 
 export const metadata: Metadata = {
@@ -434,7 +434,7 @@ export default function RewardsPage() {
               <span className="min-w-0 flex-1">
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent-bright">New · Wager milestones</span>
                 <span className="font-display mt-1 block text-[1.9rem] leading-none text-white">
-                  Up to <span className="text-accent-bright">${MILESTONES[MILESTONES.length - 1].reward.toLocaleString('en-US')}</span> for hitting a wager target
+                  Over <span className="text-accent-bright">${MILESTONES_OVER.toLocaleString('en-US')}</span> to be claimed in wager milestones
                 </span>
                 <span className="mt-1.5 block text-sm text-muted">
                   {MILESTONES.length} cash rewards from $10K to $2.5M wagered. Resets every leaderboard month.

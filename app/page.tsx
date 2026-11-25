@@ -8,7 +8,7 @@ import Reveal from '../components/Reveal'
 import SectionHeading from '../components/SectionHeading'
 import Ticker from '../components/Ticker'
 import { PartnerWordmark } from '../components/PartnerLogo'
-import { CODE, PARTNER, RACE, SIGNUP_URL, SOCIALS } from '../lib/site'
+import { CODE, MILESTONES, MILESTONES_OVER, PARTNER, RACE, SIGNUP_URL, SOCIALS } from '../lib/site'
 import { getStandings, prizeFor, usd } from '../lib/leaderboard'
 
 // The homepage. One geometry (45° cut corners) across panels, buttons, tiles
@@ -329,27 +329,50 @@ export default async function Home() {
         </Reveal>
       </section>
 
-      {/* ── REWARDS CTA ── */}
+      {/* ── REWARDS + MILESTONES ── side by side on desktop, stacked on phones */}
       <section className="px-6 py-20">
         <Reveal>
-          <div className="mx-auto max-w-3xl">
-            <Panel tone="accent" innerClassName="p-8 text-center sm:p-12">
-              <span className="mx-auto flex h-14 w-14 items-center justify-center bg-[#0B0E2A] text-accent-bright" style={{ clipPath: smallCut }}>
+          <div className="mx-auto grid max-w-5xl gap-5 md:grid-cols-2">
+            <Panel tone="accent" className="h-full" innerClassName="flex h-full flex-col items-center p-8 text-center sm:p-10">
+              <span className="flex h-14 w-14 items-center justify-center bg-[#0B0E2A] text-accent-bright" style={{ clipPath: smallCut }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
                   <path d="M12 2l9 5v10l-9 5-9-5V7zM3 7l9 5 9-5M12 12v10" />
                 </svg>
               </span>
 
-              <h2 className="font-display mt-5 text-[3rem] leading-[0.9] sm:text-[4rem]">
+              <h2 className="font-display mt-5 text-[2.8rem] leading-[0.9] sm:text-[3.4rem]">
                 Rewards <span className="text-accent-bright">&amp; perks</span>
               </h2>
-              <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-muted sm:text-base">
+              <p className="mx-auto mt-4 max-w-sm text-[15px] leading-relaxed text-muted">
                 Double weeklies, rank up boosts, exclusive giveaways and drops, and the {usd(race.prizePool)} monthly
                 leaderboard — everything you unlock playing under code {CODE}.
               </p>
-              <Button href="/rewards" className="mt-8">
-                View rewards
-              </Button>
+              <div className="mt-auto pt-8">
+                <Button href="/rewards">View rewards</Button>
+              </div>
+            </Panel>
+
+            <Panel tone="gold" className="h-full" innerClassName="flex h-full flex-col items-center p-8 text-center sm:p-10">
+              <span className="flex h-14 items-center -space-x-3" aria-hidden>
+                {['/coin-bronze.webp', '/coin-silver.webp', '/coin-gold.webp'].map((c) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={c} src={c} alt="" className="h-12 w-12 drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]" />
+                ))}
+              </span>
+
+              <h2 className="font-display mt-5 text-[2.8rem] leading-[0.9] sm:text-[3.4rem]">
+                Wager <span className="text-gold">milestones</span>
+              </h2>
+              <p className="mx-auto mt-4 max-w-sm text-[15px] leading-relaxed text-muted">
+                Over <span className="font-bold text-gold">{usd(MILESTONES_OVER)}</span> to be claimed in wager
+                milestones. Hit a wager target, unlock a cash reward, from {usd(MILESTONES[0].wager)} to{' '}
+                {usd(MILESTONES[MILESTONES.length - 1].wager)} wagered. Resets every month.
+              </p>
+              <div className="mt-auto pt-8">
+                <Button href="/milestones" variant="gold">
+                  View milestones
+                </Button>
+              </div>
             </Panel>
           </div>
         </Reveal>

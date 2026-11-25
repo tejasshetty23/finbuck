@@ -101,6 +101,13 @@ export function parseCsv(text: string): Competitor[] {
 }
 
 export async function getStandings(): Promise<Standings> {
+  // Held: show that finished race everywhere instead of running a new one.
+  const held = heldRaceKey()
+  if (held) {
+    const standings = await getPastStandings(held)
+    if (standings) return standings
+  }
+
   const race = raceWindow()
 
   // Save the race before this one for the archive, in the background. Cheap
@@ -255,6 +262,17 @@ export async function getPastStandings(key: string): Promise<Standings | null> {
   }
 }
 
+/**
+ * Optional server setting LEADERBOARD_HOLD=YYYY-MM-DD (the start date of a
+ * finished race). While set, the site shows that race's final standings as
+ * its leaderboard and doesn't start or archive any race after it. Remove it
+ * to go back to the normal monthly cycle.
+ */
+export function heldRaceKey(): string | null {
+  const key = process.env.LEADERBOARD_HOLD?.trim()
+  return key && windowFromKey(key) ? key : null
+}
+
 /** Finished races that can be looked back on, newest first. */
 export async function listPastRaces(now = Date.now()): Promise<{ key: string; startsAt: number; endsAt: number }[]> {
   const keys = new Set<string>()
@@ -265,9 +283,12 @@ export async function listPastRaces(now = Date.now()): Promise<{ key: string; st
   }
   // The race just before the current one, even before it's been saved: with
   // Stake connected it's fetched and saved on first view.
-  if (stakeApiEnabled()) keys.add(raceKey(previousWindow(raceWindow(now).startsAt).startsAt))
+  const held = heldRaceKey()
+  if (held) keys.add(held)
+  else if (stakeApiEnabled()) keys.add(raceKey(previousWindow(raceWindow(now).startsAt).startsAt))
+  const heldStart = held ? windowFromKey(held)!.startsAt : Infinity
   return Array.from(keys)
     .map((key) => ({ key, ...windowFromKey(key)! }))
-    .filter((r) => r.startsAt && isFinished(r, now))
+    .filter((r) => r.startsAt && r.startsAt <= heldStart && isFinished(r, now))
     .sort((a, b) => b.startsAt - a.startsAt)
 }

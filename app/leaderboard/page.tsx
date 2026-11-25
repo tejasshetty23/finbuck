@@ -8,7 +8,7 @@ import Podium from '../../components/Podium'
 import Reveal from '../../components/Reveal'
 import { CODE, PARTNER, SIGNUP_URL } from '../../lib/site'
 import Link from 'next/link'
-import { getPastStandings, getStandings, listPastRaces, maskName, ordinal, prizeFor, usd } from '../../lib/leaderboard'
+import { getPastStandings, getStandings, heldRaceKey, listPastRaces, maskName, ordinal, prizeFor, usd } from '../../lib/leaderboard'
 
 export const metadata: Metadata = {
   title: 'Leaderboard — FinBuck',
@@ -41,6 +41,14 @@ export default async function LeaderboardPage({ searchParams }: { searchParams?:
   const race = past ?? (await getStandings())
   const { prizes, competitors } = race
   const isPast = !!race.isPast
+  // While held there's no race running: the picker lists finished races only,
+  // with the held one selected by default.
+  const held = heldRaceKey()
+  const selectedKey = pastKey ?? held
+  const pickerOptions = [
+    ...(held ? [] : [{ key: null as string | null, label: 'Current race' }]),
+    ...pastRaces.map((r) => ({ key: r.key as string | null, label: `${shortFmt.format(r.startsAt)} – ${shortFmt.format(r.endsAt)}` })),
+  ]
 
   const top3 = [1, 2, 3].map((p) => competitors.find((c) => c.position === p) ?? null)
   const top3Prizes = [1, 2, 3].map((p) => prizeFor(prizes, p))
@@ -113,10 +121,10 @@ export default async function LeaderboardPage({ searchParams }: { searchParams?:
       </section>
 
       {/* Race picker: the race running now, plus finished races to look back on */}
-      {pastRaces.length > 0 && (
+      {pickerOptions.length > 1 && (
         <nav aria-label="Choose a race" className="mx-auto mb-10 flex max-w-3xl flex-wrap items-center justify-center gap-2">
-          {[{ key: null as string | null, label: 'Current race' }, ...pastRaces.map((r) => ({ key: r.key as string | null, label: `${shortFmt.format(r.startsAt)} – ${shortFmt.format(r.endsAt)}` }))].map((o) => {
-            const active = o.key === null ? !isPast : isPast && pastKey === o.key
+          {pickerOptions.map((o) => {
+            const active = o.key === null ? !isPast : isPast && selectedKey === o.key
             return (
               <Link
                 key={o.key ?? 'current'}

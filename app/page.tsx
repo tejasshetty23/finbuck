@@ -128,7 +128,7 @@ export default async function Home() {
           <>
             Use code <b className="text-accent-bright">{CODE}</b> on {PARTNER.name}
           </>,
-          <>Race resets on the 25th</>,
+          ...(race.isPast ? [] : [<>Race resets on the 25th</>]),
           <>Live giveaways on stream</>,
         ]}
       />
@@ -260,7 +260,7 @@ export default async function Home() {
         <Reveal>
           <div className="mx-auto max-w-5xl">
             <SectionHeading
-              eyebrow="Live race"
+              eyebrow={race.isPast ? 'Final standings' : 'Live race'}
               title={
                 <>
                   <span className="block text-[4.5rem] text-white sm:text-[8rem]">
@@ -271,8 +271,14 @@ export default async function Home() {
               }
               className="mb-16"
             >
-              Wager under code {CODE} on {PARTNER.name} to climb the ranks. The top {race.prizes.length} split the pool
-              when the race closes.
+              {race.isPast ? (
+                <>Final results from the last race. The top {race.prizes.length} shared the pool.</>
+              ) : (
+                <>
+                  Wager under code {CODE} on {PARTNER.name} to climb the ranks. The top {race.prizes.length} split the pool
+                  when the race closes.
+                </>
+              )}
             </SectionHeading>
 
             <Podium entries={top3} prizes={top3Prizes} />

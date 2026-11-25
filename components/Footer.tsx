@@ -8,6 +8,7 @@ import { CODE, PARTNER, SOCIALS } from '../lib/site'
 const PAGES = [
   { href: '/leaderboard', label: 'Leaderboard' },
   { href: '/rewards', label: 'Rewards' },
+  { href: '/milestones', label: 'Wager Milestones' },
   { href: '/tournaments', label: 'Tournaments' },
   { href: '/vschat', label: 'Slot Battles' },
   { href: '/wheelspin', label: 'Giveaways' },

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { Metadata } from 'next'
 import Button from '../../components/Button'
 import CopyButton from '../../components/CopyButton'
@@ -8,7 +9,7 @@ import PlatformSwitch from '../../components/PlatformSwitch'
 import Panel from '../../components/Panel'
 import Reveal from '../../components/Reveal'
 import { PartnerWordmark } from '../../components/PartnerLogo'
-import { CODE, PARTNER, PARTNER_US, RACE, SIGNUP_URL, SIGNUP_URL_US, SOCIALS } from '../../lib/site'
+import { CODE, MILESTONES, PARTNER, PARTNER_US, RACE, SIGNUP_URL, SIGNUP_URL_US, SOCIALS } from '../../lib/site'
 import { usd } from '../../lib/leaderboard'
 
 export const metadata: Metadata = {
@@ -416,6 +417,37 @@ export default function RewardsPage() {
               Sign up on {PARTNER.name}
             </Button>
           </Panel>
+        </div>
+      </Reveal>
+
+      {/* Wager milestones: a teaser that links to the full page */}
+      <Reveal>
+        <div className="mx-auto mt-5 max-w-5xl">
+          <Link href="/milestones" className="group block">
+            <Panel tone="accent" innerClassName="flex flex-col items-start gap-5 p-6 sm:flex-row sm:items-center sm:p-7">
+              <span className="flex shrink-0 -space-x-3" aria-hidden>
+                {['/coin-bronze.webp', '/coin-silver.webp', '/coin-gold.webp'].map((c) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={c} src={c} alt="" className="h-11 w-11 drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]" />
+                ))}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent-bright">New · Wager milestones</span>
+                <span className="font-display mt-1 block text-[1.9rem] leading-none text-white">
+                  Up to <span className="text-accent-bright">${MILESTONES[MILESTONES.length - 1].reward.toLocaleString('en-US')}</span> for hitting a wager target
+                </span>
+                <span className="mt-1.5 block text-sm text-muted">
+                  {MILESTONES.length} cash rewards from $10K to $2.5M wagered. Resets every leaderboard month.
+                </span>
+              </span>
+              <span className="inline-flex shrink-0 items-center gap-2 text-sm font-bold text-accent-bright transition-colors group-hover:text-white">
+                View milestones
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </Panel>
+          </Link>
         </div>
       </Reveal>
 

@@ -46,3 +46,19 @@ export const SOCIALS = {
   discord: { label: 'Discord', handle: 'FinBuckers', href: 'https://discord.com/invite/finbuckers' },
   x: { label: 'X', handle: '@FinBuckk', href: 'https://x.com/FinBuckk' },
 } as const
+
+/**
+ * Wager milestones: hit a wager target in a leaderboard month, claim a cash
+ * reward. Each can be claimed once per month; claims go through a Discord
+ * ticket. `tier` picks the coin and colour on the cards.
+ */
+export const MILESTONES = [
+  { wager: 10_000, reward: 15, tier: 'bronze' },
+  { wager: 25_000, reward: 25, tier: 'bronze' },
+  { wager: 50_000, reward: 50, tier: 'bronze' },
+  { wager: 100_000, reward: 125, tier: 'silver' },
+  { wager: 250_000, reward: 300, tier: 'silver' },
+  { wager: 500_000, reward: 750, tier: 'silver' },
+  { wager: 1_000_000, reward: 1_500, tier: 'gold' },
+  { wager: 2_500_000, reward: 3_000, tier: 'gold' },
+] as const

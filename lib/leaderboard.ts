@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import { RACE } from './site'
-import { fetchStakeStandings } from './stakeApi'
+import { fetchStakeStandings, stakeApiEnabled } from './stakeApi'
 
 // Standings for FinBuck's monthly Stake race.
 //
@@ -35,7 +35,9 @@ export type Standings = {
   /** Placeholder data is showing — no API data and no real CSV. */
   isSample: boolean
   /** Where the standings came from. */
-  source: 'api' | 'csv' | 'sample'
+  source: 'api' | 'csv' | 'sample' | 'archive'
+  /** A finished race being looked back on, not the one running now. */
+  isPast?: boolean
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data')
@@ -44,9 +46,15 @@ const SAMPLE = path.join(DATA_DIR, 'leaderboard.sample.csv')
 
 export const PRIZES: Prize[] = RACE.prizes.map((amount, i) => ({ position: i + 1, amount }))
 
-/** The race running at `now`: the 25th to the 25th. */
+const SWITCH_MS = RACE.switchHourUtc * 3600_000
+
+/**
+ * The race shown at `now`: the 25th to the 25th, 00:00 UTC. The site switches
+ * to a new race at switchHourUtc on the 25th rather than midnight, so the race
+ * that just ended stays up until Stake's final update has landed.
+ */
 export function raceWindow(now = Date.now()) {
-  const d = new Date(now)
+  const d = new Date(now - SWITCH_MS)
   const y = d.getUTCFullYear()
   let m = d.getUTCMonth()
   if (d.getUTCDate() < RACE.dayOfMonth) m -= 1 // still in the race that began last month
@@ -94,6 +102,10 @@ export function parseCsv(text: string): Competitor[] {
 
 export async function getStandings(): Promise<Standings> {
   const race = raceWindow()
+
+  // Save the race before this one for the archive, in the background. Cheap
+  // once it's final: the saved file is read and nothing is fetched.
+  if (stakeApiEnabled()) void archiveRace(previousWindow(race.startsAt)).catch(() => {})
 
   // Live from Stake when the API is configured and answers.
   const live = await fetchStakeStandings(race.startsAt, race.endsAt)
@@ -152,4 +164,110 @@ export function usd(n: number, cents = false) {
     minimumFractionDigits: cents ? 2 : 0,
     maximumFractionDigits: cents ? 2 : 0,
   })
+}
+
+// ── Past races ──
+//
+// Each finished race is saved to data/races/<start date>.json (gitignored: it
+// holds full usernames) the first time it's needed after it ends: either a
+// visit to the leaderboard (the race before the current one is archived in the
+// background) or someone opening it from the race picker. For 48 hours after
+// the switch the snapshot is refreshed from Stake, to catch late corrections;
+// after that it's frozen and served from the file. Delete a file to rebuild it.
+
+const RACES_DIR = path.join(DATA_DIR, 'races')
+const FREEZE_AFTER_MS = 48 * 3600_000
+const ARCHIVE_ROWS = 100
+
+type Snapshot = { startsAt: number; endsAt: number; prizes: Prize[]; competitors: Competitor[]; savedAt: number }
+
+/** "2026-10-25" for the race starting on that day. */
+export const raceKey = (startsAt: number) => new Date(startsAt).toISOString().slice(0, 10)
+
+/** The race that started on `key` (YYYY-MM-DD on the race day), or null. */
+export function windowFromKey(key: string) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key)
+  if (!m) return null
+  const [y, mo, d] = [Number(m[1]), Number(m[2]) - 1, Number(m[3])]
+  if (d !== RACE.dayOfMonth) return null
+  return { startsAt: Date.UTC(y, mo, d), endsAt: Date.UTC(y, mo + 1, d) }
+}
+
+export function previousWindow(startsAt: number) {
+  const s = new Date(startsAt)
+  return { startsAt: Date.UTC(s.getUTCFullYear(), s.getUTCMonth() - 1, RACE.dayOfMonth), endsAt: startsAt }
+}
+
+/** Finished and past the switch hour, so its standings are final. */
+const isFinished = (w: { endsAt: number }, now = Date.now()) => now >= w.endsAt + SWITCH_MS
+
+async function readSnapshot(key: string): Promise<Snapshot | null> {
+  try {
+    return JSON.parse(await fs.readFile(path.join(RACES_DIR, `${key}.json`), 'utf8')) as Snapshot
+  } catch {
+    return null
+  }
+}
+
+/** Saves (or refreshes) a finished race's final standings; returns the snapshot. */
+async function archiveRace(w: { startsAt: number; endsAt: number }): Promise<Snapshot | null> {
+  if (!isFinished(w)) return null
+  const key = raceKey(w.startsAt)
+  const existing = await readSnapshot(key)
+  if (existing && existing.savedAt >= w.endsAt + FREEZE_AFTER_MS) return existing
+
+  const rows = await fetchStakeStandings(w.startsAt, w.endsAt)
+  if (!rows) return existing
+  const snapshot: Snapshot = {
+    startsAt: w.startsAt,
+    endsAt: w.endsAt,
+    prizes: existing?.prizes ?? PRIZES,
+    competitors: rows.slice(0, ARCHIVE_ROWS),
+    savedAt: Date.now(),
+  }
+  try {
+    await fs.mkdir(RACES_DIR, { recursive: true })
+    const file = path.join(RACES_DIR, `${key}.json`)
+    await fs.writeFile(`${file}.tmp`, JSON.stringify(snapshot))
+    await fs.rename(`${file}.tmp`, file)
+  } catch {
+    /* can't write (read-only host): still return the fresh standings */
+  }
+  return snapshot
+}
+
+/** Standings for a finished race, from the archive (or Stake, then saved). */
+export async function getPastStandings(key: string): Promise<Standings | null> {
+  const w = windowFromKey(key)
+  if (!w || !isFinished(w)) return null
+  const snap = stakeApiEnabled() ? await archiveRace(w) : await readSnapshot(key)
+  const prizes = snap?.prizes ?? PRIZES
+  return {
+    prizePool: prizes.reduce((a, p) => a + p.amount, 0),
+    prizes,
+    competitors: snap?.competitors ?? [],
+    startsAt: w.startsAt,
+    endsAt: w.endsAt,
+    updatedAt: snap?.savedAt ?? null,
+    isSample: false,
+    source: 'archive',
+    isPast: true,
+  }
+}
+
+/** Finished races that can be looked back on, newest first. */
+export async function listPastRaces(now = Date.now()): Promise<{ key: string; startsAt: number; endsAt: number }[]> {
+  const keys = new Set<string>()
+  try {
+    for (const f of await fs.readdir(RACES_DIR)) if (/^\d{4}-\d{2}-\d{2}\.json$/.test(f)) keys.add(f.slice(0, 10))
+  } catch {
+    /* no archive yet */
+  }
+  // The race just before the current one, even before it's been saved: with
+  // Stake connected it's fetched and saved on first view.
+  if (stakeApiEnabled()) keys.add(raceKey(previousWindow(raceWindow(now).startsAt).startsAt))
+  return Array.from(keys)
+    .map((key) => ({ key, ...windowFromKey(key)! }))
+    .filter((r) => r.startsAt && isFinished(r, now))
+    .sort((a, b) => b.startsAt - a.startsAt)
 }

@@ -50,3 +50,5 @@ node_modules
 # Giveaway picker cooldown (recent winners), written by the server at runtime.
 /data/giveaway-cooldown.json
 /data/giveaway-cooldown.json.tmp
+# Saved final standings of past races (full usernames), written by the server.
+/data/races/

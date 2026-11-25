@@ -28,6 +28,12 @@ export const SIGNUP_URL_US = `${PARTNER_US.url}/?offer=${CODE.toLowerCase()}`
  */
 export const RACE = {
   dayOfMonth: 25,
+  /**
+   * The site keeps showing the race that just ended until this hour (UTC) on
+   * the 25th, then switches to the new one. Stake posts its final daily
+   * update at 01:45 UTC, so the finished race's last standings show first.
+   */
+  switchHourUtc: 2,
   /** Prize per place in USD, 1st to 10th. The pool is their sum. */
   prizes: [2000, 1000, 600, 320, 275, 225, 180, 155, 135, 110],
   get prizePool() {

@@ -7,7 +7,8 @@ import HeadingGifts from '../../components/HeadingGifts'
 import Podium from '../../components/Podium'
 import Reveal from '../../components/Reveal'
 import { CODE, PARTNER, SIGNUP_URL } from '../../lib/site'
-import { getStandings, maskName, ordinal, prizeFor, usd } from '../../lib/leaderboard'
+import Link from 'next/link'
+import { getPastStandings, getStandings, listPastRaces, maskName, ordinal, prizeFor, usd } from '../../lib/leaderboard'
 
 export const metadata: Metadata = {
   title: 'Leaderboard — FinBuck',
@@ -30,9 +31,16 @@ const updatedFmt = new Intl.DateTimeFormat('en-US', {
   hour12: false,
 })
 
-export default async function LeaderboardPage() {
-  const race = await getStandings()
+const shortFmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+
+export default async function LeaderboardPage({ searchParams }: { searchParams?: { race?: string } }) {
+  // ?race=2026-10-25 opens a finished race from the archive; otherwise the
+  // race running now.
+  const pastKey = typeof searchParams?.race === 'string' ? searchParams.race : null
+  const [past, pastRaces] = await Promise.all([pastKey ? getPastStandings(pastKey) : null, listPastRaces()])
+  const race = past ?? (await getStandings())
   const { prizes, competitors } = race
+  const isPast = !!race.isPast
 
   const top3 = [1, 2, 3].map((p) => competitors.find((c) => c.position === p) ?? null)
   const top3Prizes = [1, 2, 3].map((p) => prizeFor(prizes, p))
@@ -62,7 +70,7 @@ export default async function LeaderboardPage() {
         <p className="relative mx-auto flex max-w-xs items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-accent-bright">
           <span className="h-px flex-1 bg-gradient-to-r from-transparent to-accent/50" />
           <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
-          <span className="whitespace-nowrap">Monthly prize pool</span>
+          <span className="whitespace-nowrap">{isPast ? 'Final standings' : 'Monthly prize pool'}</span>
           <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-accent" />
           <span className="h-px flex-1 bg-gradient-to-l from-transparent to-accent/50" />
         </p>
@@ -82,6 +90,12 @@ export default async function LeaderboardPage() {
         </h1>
         {/* A plain paragraph, not a flex row: as flex, the copy button forced a
             wrap that stranded "Play with code BUCK" on a line of its own. */}
+        {isPast ? (
+          <p className="relative mx-auto mt-6 max-w-xl text-sm sm:text-base leading-relaxed text-muted">
+            Final results of the {dateFmt.format(race.startsAt)} – {dateFmt.format(race.endsAt)} race. Prizes are paid 3–5
+            days after a race ends.
+          </p>
+        ) : (
         <p className="relative mx-auto mt-6 max-w-xl text-sm sm:text-base leading-relaxed text-muted">
           Play with code <span className="font-bold text-accent-bright">{CODE}</span>{' '}
           <span className="inline-block align-middle -mt-1">
@@ -89,6 +103,7 @@ export default async function LeaderboardPage() {
           </span>{' '}
           on {PARTNER.name}. Every wager counts, and the top {prizes.length} split the pool when the race closes.
         </p>
+        )}
 
         <div className="relative mt-8 flex justify-center">
           <Button href={SIGNUP_URL} external sponsored>
@@ -97,7 +112,32 @@ export default async function LeaderboardPage() {
         </div>
       </section>
 
-      {race.isSample && (
+      {/* Race picker: the race running now, plus finished races to look back on */}
+      {pastRaces.length > 0 && (
+        <nav aria-label="Choose a race" className="mx-auto mb-10 flex max-w-3xl flex-wrap items-center justify-center gap-2">
+          {[{ key: null as string | null, label: 'Current race' }, ...pastRaces.map((r) => ({ key: r.key as string | null, label: `${shortFmt.format(r.startsAt)} – ${shortFmt.format(r.endsAt)}` }))].map((o) => {
+            const active = o.key === null ? !isPast : isPast && pastKey === o.key
+            return (
+              <Link
+                key={o.key ?? 'current'}
+                href={o.key ? `/leaderboard?race=${o.key}` : '/leaderboard'}
+                scroll={false}
+                className={`rounded-full px-4 py-2 text-sm font-bold transition-colors ${
+                  active ? 'bg-accent text-[#0B0E2A] shadow-[0_0_18px_rgba(0,255,135,0.35)]' : 'bg-white/[0.06] text-muted hover:bg-white/[0.1] hover:text-white'
+                }`}
+              >
+                {o.label}
+              </Link>
+            )
+          })}
+        </nav>
+      )}
+
+      {isPast && competitors.length === 0 && (
+        <p className="mx-auto mb-8 max-w-md text-center text-sm text-faint">No saved standings for this race.</p>
+      )}
+
+      {race.isSample && !isPast && (
         <p className="mx-auto mb-8 flex max-w-md items-center justify-center gap-2 border border-gold/30 bg-gold/5 px-4 py-2.5 text-center text-xs text-gold" style={{ clipPath: 'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)' }}>
           <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-gold" />
           Preview — placeholder standings until the first {PARTNER.name} race data is uploaded.
@@ -109,9 +149,17 @@ export default async function LeaderboardPage() {
         <Podium entries={top3} prizes={top3Prizes} />
       </section>
 
-      {/* Countdown to the end of the current race */}
+      {/* Countdown to the end of the current race; a finished race just says so */}
       <section className="mx-auto mt-14 max-w-5xl">
-        <Countdown endsAt={race.endsAt} label="Race ends in" endedLabel="Race finished" />
+        {isPast ? (
+          <p className="flex items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-[0.3em] text-gold">
+            <span className="h-1.5 w-1.5 rotate-45 bg-gold" />
+            Race finished · {dateFmt.format(race.endsAt)}
+            <span className="h-1.5 w-1.5 rotate-45 bg-gold" />
+          </p>
+        ) : (
+          <Countdown endsAt={race.endsAt} label="Race ends in" endedLabel="Race finished" />
+        )}
       </section>
 
       {/* Standings table */}
@@ -160,7 +208,9 @@ export default async function LeaderboardPage() {
 
           <p className="mt-6 text-center text-xs text-faint">
             {dateFmt.format(race.startsAt)} – {dateFmt.format(race.endsAt)} (UTC)
-            {race.updatedAt !== null && !race.isSample && <> · Updated {updatedFmt.format(race.updatedAt)} UTC</>}
+            {race.updatedAt !== null && !race.isSample && (
+              <> · {isPast ? 'Saved' : 'Updated'} {updatedFmt.format(race.updatedAt)} UTC</>
+            )}
             {' · '}Wagers as reported by {PARTNER.name}.
           </p>
 

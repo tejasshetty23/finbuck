@@ -39,7 +39,8 @@ const TIMEOUT_MS = 10_000
 const CACHE_MS = 60_000
 
 type Cached = { key: string; at: number; rows: Competitor[] | null }
-let cache: Cached | null = null
+// One entry per race window, so a past race and the current one don't evict each other.
+const cache = new Map<string, Cached>()
 let lastWarn = 0
 
 /** True once a token is configured on the server. */
@@ -117,7 +118,8 @@ export async function fetchStakeStandings(startsAt: number, endsAt: number): Pro
   const end = Math.min(endsAt - 1, Date.now())
   if (end < startsAt) return null // the race hasn't started yet
   const cacheKey = `${startsAt}-${endsAt}-${amount}`
-  if (cache && cache.key === cacheKey && Date.now() - cache.at < CACHE_MS) return cache.rows
+  const hit = cache.get(cacheKey)
+  if (hit && Date.now() - hit.at < CACHE_MS) return hit.rows
 
   const url = new URL(process.env.STAKE_API_URL || DEFAULT_URL)
   url.searchParams.set('timePeriod', 'customRange')
@@ -170,6 +172,7 @@ export async function fetchStakeStandings(startsAt: number, endsAt: number): Pro
     if (!rows) warn('Stake replied, but the CSV had no user_name / amount columns')
   }
 
-  cache = { key: cacheKey, at: Date.now(), rows }
+  cache.set(cacheKey, { key: cacheKey, at: Date.now(), rows })
+  if (cache.size > 12) cache.delete(cache.keys().next().value as string)
   return rows
 }

@@ -11,8 +11,8 @@
 // The reply is a CSV:
 //   rank,user_name,campaign_code,total_wagered_amount (USD),total_weighted_amount (USD)
 //
-// startDate and endDate are both inclusive, so the race window (25th 00:00
-// UTC to the next 25th, end exclusive) is sent as start .. end - 1 ms.
+// startDate and endDate are both inclusive, so the race window (race day
+// 00:00 UTC to the next race day, end exclusive) is sent as start .. end - 1 ms.
 //
 // Server settings (.env.local on the VPS, never committed):
 //

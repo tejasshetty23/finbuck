@@ -48,19 +48,29 @@ export const PRIZES: Prize[] = RACE.prizes.map((amount, i) => ({ position: i + 1
 
 const SWITCH_MS = RACE.switchHourUtc * 3600_000
 
+/** The race day for races starting in month `m` of year `y` (m may be out of range). */
+function raceDay(y: number, m: number) {
+  return Date.UTC(y, m, 1) < RACE.earlier.until ? RACE.earlier.dayOfMonth : RACE.dayOfMonth
+}
+
+/** The race that starts in month `m` of year `y`: race day to race day, 00:00 UTC. */
+function monthWindow(y: number, m: number) {
+  const day = raceDay(y, m)
+  return { startsAt: Date.UTC(y, m, day), endsAt: Date.UTC(y, m + 1, day) }
+}
+
 /**
- * The race shown at `now`: the 25th to the 25th, 00:00 UTC. The site switches
- * to a new race at switchHourUtc on the 25th rather than midnight, so the race
- * that just ended stays up until Stake's final update has landed.
+ * The race shown at `now`: race day to race day (the 26th; the 25th for
+ * races before Nov 2026), 00:00 UTC. The site switches to a new race at
+ * switchHourUtc on race day rather than midnight, so the race that just
+ * ended stays up until Stake's final update has landed.
  */
 export function raceWindow(now = Date.now()) {
   const d = new Date(now - SWITCH_MS)
   const y = d.getUTCFullYear()
   let m = d.getUTCMonth()
-  if (d.getUTCDate() < RACE.dayOfMonth) m -= 1 // still in the race that began last month
-  const startsAt = Date.UTC(y, m, RACE.dayOfMonth)
-  const endsAt = Date.UTC(y, m + 1, RACE.dayOfMonth)
-  return { startsAt, endsAt }
+  if (d.getUTCDate() < raceDay(y, m)) m -= 1 // still in the race that began last month
+  return monthWindow(y, m)
 }
 
 /** Splits one CSV line, honouring "quoted, fields". */
@@ -196,13 +206,14 @@ export function windowFromKey(key: string) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key)
   if (!m) return null
   const [y, mo, d] = [Number(m[1]), Number(m[2]) - 1, Number(m[3])]
-  if (d !== RACE.dayOfMonth) return null
-  return { startsAt: Date.UTC(y, mo, d), endsAt: Date.UTC(y, mo + 1, d) }
+  if (d !== raceDay(y, mo)) return null
+  return monthWindow(y, mo)
 }
 
+/** The race before the one starting at `startsAt`, with its own real end date. */
 export function previousWindow(startsAt: number) {
   const s = new Date(startsAt)
-  return { startsAt: Date.UTC(s.getUTCFullYear(), s.getUTCMonth() - 1, RACE.dayOfMonth), endsAt: startsAt }
+  return monthWindow(s.getUTCFullYear(), s.getUTCMonth() - 1)
 }
 
 /** Finished and past the switch hour, so its standings are final. */

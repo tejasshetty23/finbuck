@@ -23,14 +23,19 @@ export const PARTNER_US = {
 export const SIGNUP_URL_US = `${PARTNER_US.url}/?offer=${CODE.toLowerCase()}`
 
 /**
- * The monthly race. Each race runs from the 25th to the 25th (00:00 UTC),
+ * The monthly race. Each race runs from the 26th to the 26th (00:00 UTC),
  * rolling over on its own — nothing here needs editing month to month.
  */
 export const RACE = {
-  dayOfMonth: 25,
+  dayOfMonth: 26,
+  /**
+   * Races that started before `until` ran on `dayOfMonth` instead (the first
+   * race was Oct 25 – Nov 25 2026), so past races keep their real dates.
+   */
+  earlier: { dayOfMonth: 25, until: Date.UTC(2026, 10, 1) },
   /**
    * The site keeps showing the race that just ended until this hour (UTC) on
-   * the 25th, then switches to the new one. Stake posts its final daily
+   * race day, then switches to the new one. Stake posts its final daily
    * update at 01:45 UTC, so the finished race's last standings show first.
    */
   switchHourUtc: 2,

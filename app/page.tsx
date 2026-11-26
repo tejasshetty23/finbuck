@@ -128,7 +128,7 @@ export default async function Home() {
           <>
             Use code <b className="text-accent-bright">{CODE}</b> on {PARTNER.name}
           </>,
-          ...(race.isPast ? [] : [<>Race resets on the 25th</>]),
+          ...(race.isPast ? [] : [<>Race resets on the {RACE.dayOfMonth}th</>]),
           <>Live giveaways on stream</>,
         ]}
       />
